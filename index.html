@@ -1158,11 +1158,24 @@ function initThree() {
   cv.addEventListener('mousedown', e => { mdown=true; mbtn=e.button; lmx=e.clientX; lmy=e.clientY; e.preventDefault(); });
   window.addEventListener('mousemove', e => {
     if (!mdown) return;
-    const dx=e.clientX-lmx, dy=e.clientY-lmy;
-    if (mbtn===0) { theta-=dx*.4; phi=Math.max(3,Math.min(87,phi-dy*.4)); }
-    else if (mbtn===2) { const ps=radius*.002; target.x-=dx*ps; target.y+=dy*ps; }
-    lmx=e.clientX; lmy=e.clientY; updCam();
-  });
+    const dx = e.clientX - lmx;
+    const dy = e.clientY - lmy;
+
+    if (mbtn === 0) { 
+        // Rotação Horizontal (Theta)
+        theta -= dx * 0.4; 
+        // Rotação Vertical (Phi) - Agora sem travas para giro 360°
+        phi -= dy * 0.4; 
+    }
+    else if (mbtn === 2) { 
+        const ps = radius * 0.002; 
+        target.x -= dx * ps; 
+        target.y += dy * ps; 
+    }
+    lmx = e.clientX; 
+    lmy = e.clientY; 
+    updCam();
+});
   window.addEventListener('mouseup', () => mdown=false);
   cv.addEventListener('wheel', e => { radius=Math.max(.5,Math.min(80,radius+e.deltaY*.01)); updCam(); e.preventDefault(); }, {passive:false});
   cv.addEventListener('contextmenu', e => e.preventDefault());
@@ -1175,8 +1188,15 @@ function initThree() {
 
 function updCam() {
   if (!camera) return;
-  const p=phi*Math.PI/180, t=theta*Math.PI/180;
-  camera.position.set(target.x+radius*Math.cos(p)*Math.sin(t), target.y+radius*Math.sin(p), target.z+radius*Math.cos(p)*Math.cos(t));
+  // Converte os ângulos de graus para radianos
+  const p = phi * Math.PI / 180;
+  const t = theta * Math.PI / 180;
+
+  // Cálculo da posição da câmera em coordenadas esféricas para rotação 360°
+  camera.position.x = target.x + radius * Math.sin(t) * Math.cos(p);
+  camera.position.y = target.y + radius * Math.sin(p);
+  camera.position.z = target.z + radius * Math.cos(t) * Math.cos(p);
+
   camera.lookAt(target.x, target.y, target.z);
 }
 function resetCam() { theta=45; phi=30; radius=S.bounds?Math.max(S.bounds.x,S.bounds.y,S.bounds.z)*2.5:5; target={x:0,y:S.bounds?S.bounds.y/2:0,z:0}; updCam(); }
