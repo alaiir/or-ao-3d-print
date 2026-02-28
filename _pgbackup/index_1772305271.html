@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orça 3D Print — Calculadora de Impressão 3D</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #080c10;
+  --surface: #0e1318;
+  --surface2: #141b22;
+  --surface3: #1a242e;
+  --border: #1e2d3d;
+  --border2: #243447;
+  --cyan: #00d4ff;
+  --orange: #ff6b35;
+  --green: #00ff88;
+  --purple: #a855f7;
+  --yellow: #fbbf24;
+  --text: #e2eaf2;
+  --muted: #4a6378;
+  --muted2: #6b8499;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 20%,rgba(0,212,255,.04) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 90% 80%,rgba(168,85,247,.04) 0%,transparent 60%),
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(30,45,61,.4) 39px,rgba(30,45,61,.4) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(30,45,61,.4) 39px,rgba(30,45,61,.4) 40px);
+  pointer-events:none;z-index:0
+}
+
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(8,12,16,.88);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  padding:0 48px;height:64px;
+  display:flex;align-items:center;justify-content:space-between
+}
+
+.logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;letter-spacing:-1px}
+.logo-mark svg{width:34px;height:34px}
+.logo em{font-style:normal;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.hpills{display:flex;gap:8px}
+.pill{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);color:var(--muted2);background:var(--surface2)}
+.pill.live{border-color:rgba(0,255,136,.3);color:var(--green);background:rgba(0,255,136,.06)}
+.pill.live::before{content:'● ';animation:blink 1.5s ease infinite}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+main{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:48px 48px 80px}
+
+.hero{margin-bottom:50px;max-width:660px;animation:fadeUp .7s cubic-bezier(.22,1,.36,1) both}
+.hero-eye{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.hero-eye::before{content:'';display:block;width:24px;height:1px;background:var(--cyan)}
+.hero h1{font-size:clamp(38px,5vw,66px);font-weight:800;line-height:1;letter-spacing:-2.5px;margin-bottom:16px}
+.hero h1 .hl{background:linear-gradient(135deg,var(--cyan) 0%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--muted2);font-size:16px;line-height:1.6;letter-spacing:0}
+
+.layout{display:grid;grid-template-columns:420px 1fr;gap:20px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden;animation:fadeUp .7s cubic-bezier(.22,1,.36,1) both}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.12),transparent)}
+
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.ct{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted2);display:flex;align-items:center;gap:8px}
+.ct-bar{width:3px;height:12px;background:var(--cyan);border-radius:2px}
+
+/* Upload */
+.upload-zone{border:2px dashed var(--border2);border-radius:16px;padding:42px 20px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;background:var(--surface2)}
+.upload-zone::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,212,255,.07) 0%,transparent 70%);opacity:0;transition:opacity .3s}
+.upload-zone:hover,.upload-zone.drag-active{border-color:var(--cyan)}
+.upload-zone:hover::after,.upload-zone.drag-active::after{opacity:1}
+
+.cube-anim{width:68px;height:68px;margin:0 auto 14px;animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+.ut{font-size:17px;font-weight:700;margin-bottom:6px;letter-spacing:-.3px}
+.us{color:var(--muted2);font-size:13px;margin-bottom:18px;line-height:1.5}
+
+.btn-up{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--cyan),#0096b4);color:#020a0e;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:11px 22px;border-radius:10px;border:none;cursor:pointer;transition:all .2s}
+.btn-up:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,255,.25)}
+
+.fmts{display:flex;gap:6px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.fmt{font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--surface3);border:1px solid var(--border2);color:var(--muted2);padding:3px 9px;border-radius:4px}
+
+.file-info{display:none;align-items:center;gap:14px;padding:14px 16px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:12px;margin-bottom:16px}
+.file-info.vis{display:flex}
+.ficon{width:42px;height:42px;background:rgba(0,212,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.fdtl{flex:1;min-width:0}
+.fname{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fmeta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2);margin-top:2px}
+.fremove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;border-radius:6px;transition:all .2s;line-height:1}
+.fremove:hover{color:var(--orange);background:rgba(255,107,53,.1)}
+
+.prog-wrap{margin-top:14px;display:none}
+.prog-wrap.vis{display:block}
+.prog-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2);margin-bottom:6px;display:flex;justify-content:space-between}
+.prog-track{height:3px;background:var(--border2);border-radius:2px;overflow:hidden}
+.prog-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:2px;transition:width .3s ease}
+
+/* Params */
+.psect{margin-bottom:20px}
+.ptitle{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+
+.prow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.prow.single{grid-template-columns:1fr}
+
+.pg label{display:block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:6px}
+
+.inp{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;padding:10px 13px;outline:none;transition:all .2s;-webkit-appearance:none}
+.inp:focus{border-color:var(--cyan);background:rgba(0,212,255,.04)}
+.inp option{background:var(--surface2)}
+
+.iu{position:relative}
+.iu .inp{padding-right:42px}
+.unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);pointer-events:none}
+
+.slg{margin-bottom:14px}
+.slh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.sll{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2)}
+.slv{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--cyan)}
+
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(--border2);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--cyan);border:2px solid var(--bg);box-shadow:0 0 10px rgba(0,212,255,.4);cursor:pointer;transition:transform .2s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+
+.mats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mopt{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;cursor:pointer;transition:all .2s;font-size:13px;font-weight:600;position:relative;overflow:hidden}
+.mopt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--mc,var(--cyan));border-radius:2px 0 0 2px;opacity:0;transition:opacity .2s}
+.mopt:hover{background:var(--surface3)}
+.mopt.sel{border-color:var(--mc,var(--cyan));background:rgba(0,212,255,.05)}
+.mopt.sel::before{opacity:1}
+.mdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:var(--mc,var(--cyan))}
+.mname{font-size:12px;font-weight:700}
+.mph{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);margin-top:1px}
+
+.btn-calc{width:100%;padding:15px;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;color:var(--muted2);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .3s;margin-top:8px}
+.btn-calc.on{background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(168,85,247,.1));border-color:var(--cyan);color:var(--cyan)}
+.btn-calc.on:hover{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#000;border-color:transparent;box-shadow:0 8px 32px rgba(0,212,255,.2);transform:translateY(-1px)}
+
+/* Viewer */
+.viewer-card{grid-column:2;grid-row:1;animation-delay:.2s;min-height:480px}
+
+#cvwrap{width:100%;height:390px;background:radial-gradient(ellipse at 30% 40%,rgba(0,212,255,.03) 0%,transparent 60%),radial-gradient(ellipse at 70% 70%,rgba(168,85,247,.03) 0%,transparent 60%),var(--surface2);border-radius:12px;position:relative;overflow:hidden}
+#cvwrap canvas{width:100%!important;height:100%!important;border-radius:12px}
+
+.vempty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted)}
+.vempty-icon{font-size:52px;opacity:.12;animation:float 4s ease-in-out infinite}
+.vempty p{font-size:13px;color:var(--muted);opacity:.6}
+.vempty small{font-family:'JetBrains Mono',monospace;font-size:11px;opacity:.4}
+
+.vctrl{position:absolute;top:12px;right:12px;display:none;gap:6px}
+.cbtn{width:30px;height:30px;background:rgba(14,19,24,.85);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:7px;color:var(--muted2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.cbtn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.vstats{position:absolute;bottom:12px;left:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);display:none;gap:14px;background:rgba(8,12,16,.7);backdrop-filter:blur(8px);padding:7px 12px;border-radius:7px;border:1px solid var(--border)}
+.vhint{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-align:center;margin-top:10px;letter-spacing:.5px;display:none}
+
+/* Results */
+.res-card{grid-column:1 / -1;display:none;animation-delay:.25s}
+.res-card.vis{display:block}
+
+.kpig{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px}
+.kpi{background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden;transition:all .3s}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,var(--cyan))}
+.kpi:hover{transform:translateY(-2px);border-color:var(--kc,var(--cyan))}
+.kl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:10px}
+.kv{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;line-height:1;color:var(--kc,var(--cyan));margin-bottom:4px;animation:cntup .5s ease both}
+.ks{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+
+@keyframes cntup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.resbottom{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
+.brow{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:8px;transition:background .15s;font-size:14px}
+.brow:hover{background:var(--surface2)}
+.brow+.brow{border-top:1px solid var(--border)}
+.brl{display:flex;align-items:center;gap:10px;color:var(--muted2)}
+.brdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.brv{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px}
+
+.btotal{display:flex;align-items:center;justify-content:space-between;padding:16px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:12px;margin-top:12px}
+.tl{font-size:14px;font-weight:700}
+.tv{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--cyan)}
+
+.qpanel{background:var(--surface2);border:1px solid var(--border2);border-radius:16px;padding:24px}
+.qpanel-title{font-size:13px;font-weight:700;margin-bottom:18px}
+
+.qdisp{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;margin-bottom:16px}
+.qdl{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:8px}
+.qdv{font-family:'JetBrains Mono',monospace;font-size:42px;font-weight:600;color:var(--green);letter-spacing:-1px;transition:all .3s}
+.qdp{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted2);margin-top:4px}
+
+.btn-exp{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),#00cc6a);border:none;border-radius:12px;color:#001a0d;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .3s;margin-bottom:8px}
+.btn-exp:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,255,136,.25)}
+.btn-cpy{width:100%;padding:11px;background:var(--surface3);border:1px solid var(--border2);border-radius:10px;color:var(--muted2);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-cpy:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.toast{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:14px 18px;font-size:13px;display:flex;align-items:center;gap:10px;transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.22,1,.36,1);max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:rgba(0,255,136,.3)}
+.toast.error{border-color:rgba(255,107,53,.4)}
+.toast.info{border-color:rgba(0,212,255,.3)}
+.ticon{font-size:18px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:1100px){.layout{grid-template-columns:1fr}.viewer-card{grid-column:1;grid-row:auto}.kpig{grid-template-columns:repeat(3,1fr)}.resbottom{grid-template-columns:1fr}}
+@media(max-width:700px){main{padding:24px 20px 60px}header{padding:0 20px}.kpig{grid-template-columns:1fr 1fr}.mats{grid-template-columns:1fr}.prow{grid-template-columns:1fr}.hero h1{letter-spacing:-1.5px}.hpills{display:none}}
+
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+select.inp{cursor:pointer}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 34 34" fill="none">
+        <polygon points="17,2 31,10 31,24 17,32 3,24 3,10" stroke="#00d4ff" stroke-width="1.5" fill="rgba(0,212,255,.06)" stroke-linejoin="round"/>
+        <polygon points="17,8 26,13 26,22 17,27 8,22 8,13" stroke="#a855f7" stroke-width="1" fill="rgba(168,85,247,.08)" stroke-linejoin="round"/>
+        <circle cx="17" cy="17" r="2.5" fill="#00d4ff"/>
+      </svg>
+    </div>
+    <span>Orça<em> 3D Print</em></span>
+  </div>
+  <div class="hpills">
+    <span class="pill live">Online</span>
+    <span class="pill">Grátis</span>
+    <span class="pill">Brasil</span>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="hero-eye">Calculadora Profissional</div>
+    <h1>Precifique sua<br><span class="hl">impressão 3D</span><br>em segundos</h1>
+    <p>Importe o modelo STL/OBJ, configure os parâmetros e receba automaticamente o custo de produção com detalhamento completo e visualização 3D interativa.</p>
+  </div>
+
+  <div class="layout">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div class="card" style="animation-delay:.1s">
+        <div class="ch">
+          <div class="ct"><div class="ct-bar"></div> Modelo 3D</div>
+        </div>
+        <div class="file-info" id="finfo">
+          <div class="ficon">📦</div>
+          <div class="fdtl">
+            <div class="fname" id="fname">modelo.stl</div>
+            <div class="fmeta" id="fmeta">—</div>
+          </div>
+          <button class="fremove" onclick="removeFile()">✕</button>
+        </div>
+        <div class="upload-zone" id="upzone"
+          onclick="document.getElementById('finput').click()"
+          ondragover="doDragOver(event)"
+          ondrop="doDrop(event)"
+          ondragleave="doDragLeave(event)">
+          <div class="cube-anim">
+            <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+              <polygon points="34,4 60,18 60,50 34,64 8,50 8,18" stroke="#00d4ff" stroke-width="1.5" fill="rgba(0,212,255,.06)" stroke-linejoin="round"/>
+              <polygon points="34,4 60,18 34,32 8,18" stroke="#00d4ff" stroke-width="1" fill="rgba(0,212,255,.1)" stroke-linejoin="round"/>
+              <line x1="34" y1="32" x2="34" y2="64" stroke="#00d4ff" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>
+              <circle cx="34" cy="32" r="3" fill="#00d4ff" opacity=".8"/>
+            </svg>
+          </div>
+          <div class="ut">Arraste o arquivo aqui</div>
+          <div class="us">Suporte para STL, OBJ, PLY e 3MF<br>até 50MB</div>
+          <button class="btn-up" onclick="event.stopPropagation(); document.getElementById('finput').click()">↑ Selecionar Arquivo</button>
+          <div class="fmts">
+            <span class="fmt">.STL</span>
+            <span class="fmt">.OBJ</span>
+            <span class="fmt">.3MF</span>
+            <span class="fmt">.PLY</span>
+          </div>
+        </div>
+        <div class="prog-wrap" id="progwrap">
+          <div class="prog-lbl"><span id="progtxt">Processando...</span><span id="progpct">0%</span></div>
+          <div class="prog-track"><div class="prog-bar" id="progbar"></div></div>
+        </div>
+        <input type="file" id="finput" accept=".stl,.obj,.3mf,.ply" style="display:none" onchange="handleFile(event)">
+      </div>
+
+      <div class="card" style="animation-delay:.15s">
+        <div class="ch">
+          <div class="ct"><div class="ct-bar" style="background:var(--purple)"></div> Parâmetros</div>
+        </div>
+        <div class="psect">
+          <div class="ptitle">Material / Filamento</div>
+          <div class="mats" id="matgrid">
+            <div class="mopt sel" style="--mc:#00d4ff" data-mat="PLA" data-price="80" onclick="pickMat(this)">
+              <div class="mdot" style="background:#00d4ff"></div>
+              <div><div class="mname">PLA</div><div class="mph">~R$80/kg</div></div>
+            </div>
+            <div class="mopt" style="--mc:#ff6b35" data-mat="ABS" data-price="90" onclick="pickMat(this)">
+              <div class="mdot" style="background:#ff6b35"></div>
+              <div><div class="mname">ABS</div><div class="mph">~R$90/kg</div></div>
+            </div>
+            <div class="mopt" style="--mc:#a855f7" data-mat="PETG" data-price="100" onclick="pickMat(this)">
+              <div class="mdot" style="background:#a855f7"></div>
+              <div><div class="mname">PETG</div><div class="mph">~R$100/kg</div></div>
+            </div>
+            <div class="mopt" style="--mc:#fbbf24" data-mat="TPU" data-price="150" onclick="pickMat(this)">
+              <div class="mdot" style="background:#fbbf24"></div>
+              <div><div class="mname">TPU</div><div class="mph">~R$150/kg</div></div>
+            </div>
+            <div class="mopt" style="--mc:#f472b6" data-mat="Resina" data-price="200" onclick="pickMat(this)">
+              <div class="mdot" style="background:#f472b6"></div>
+              <div><div class="mname">Resina</div><div class="mph">~R$200/kg</div></div>
+            </div>
+            <div class="mopt" style="--mc:#34d399" data-mat="Nylon" data-price="180" onclick="pickMat(this)">
+              <div class="mdot" style="background:#34d399"></div>
+              <div><div class="mname">Nylon</div><div class="mph">~R$180/kg</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="psect">
+          <div class="ptitle">Custos de Produção</div>
+          <div class="prow">
+            <div class="pg"><label>Filamento (R$/kg)</label>
+              <div class="iu"><input type="number" id="filprice" class="inp" value="80" min="10" step="5" oninput="autoCalc()"><span class="unit">R$/kg</span></div>
+            </div>
+            <div class="pg"><label>Máquina (R$/hora)</label>
+              <div class="iu"><input type="number" id="machcost" class="inp" value="3.50" min="0" step=".5" oninput="autoCalc()"><span class="unit">R$/h</span></div>
+            </div>
+          </div>
+          <div class="prow">
+            <div class="pg"><label>Mão de obra (R$/hora)</label>
+              <div class="iu"><input type="number" id="laborcost" class="inp" value="15" min="0" step="1" oninput="autoCalc()"><span class="unit">R$/h</span></div>
+            </div>
+            <div class="pg"><label>Energia (R$/kWh)</label>
+              <div class="iu"><input type="number" id="energycost" class="inp" value="0.75" min="0" step=".05" oninput="autoCalc()"><span class="unit">R$/kWh</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="psect">
+          <div class="ptitle">Configurações de Impressão</div>
+          <div class="slg">
+            <div class="slh"><span class="sll">Preenchimento (Infill)</span><span class="slv" id="infv">20%</span></div>
+            <input type="range" id="infill" min="5" max="100" value="20" oninput="document.getElementById('infv').textContent=this.value+'%'; autoCalc()">
+          </div>
+          <div class="slg">
+            <div class="slh"><span class="sll">Altura de Camada</span><span class="slv" id="layv">0.20 mm</span></div>
+            <input type="range" id="layerh" min="5" max="40" value="20" oninput="document.getElementById('layv').textContent=(this.value/100).toFixed(2)+' mm'; autoCalc()">
+          </div>
+          <div class="prow">
+            <div class="pg"><label>Velocidade (mm/s)</label>
+              <input type="number" id="speed" class="inp" value="60" min="10" max="300" oninput="autoCalc()">
+            </div>
+            <div class="pg"><label>Suporte</label>
+              <select id="support" class="inp" onchange="autoCalc()">
+                <option value="0">Sem suporte</option>
+                <option value="8">Leve (+8%)</option>
+                <option value="18">Denso (+18%)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <button class="btn-calc" id="btncalc" onclick="doCalc()">⚡ Calcular Custo</button>
+      </div>
+    </div><div class="card viewer-card">
+      <div class="ch">
+        <div class="ct"><div class="ct-bar" style="background:var(--orange)"></div> Pré-visualização 3D</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2)" id="mdims"></div>
+      </div>
+      <div id="cvwrap">
+        <div class="vempty" id="vempty">
+          <div class="vempty-icon">◈</div>
+          <p>Carregue um modelo para visualizar</p>
+          <small>Rotação · Zoom · Pan</small>
+        </div>
+      </div>
+      <div class="vctrl" id="vctrl" style="display:none;position:absolute;top:68px;right:40px">
+        <button class="cbtn" title="Reset câmera" onclick="resetCam()">⊕</button>
+        <button class="cbtn" title="Wireframe" onclick="toggleWF()">⬡</button>
+        <button class="cbtn" title="Vista frontal" onclick="setView('front')">⊞</button>
+        <button class="cbtn" title="Vista superior" onclick="setView('top')">⊟</button>
+      </div>
+      <div class="vstats" id="vstats"></div>
+      <div class="vhint" id="vhint">🖱 Arrastar para girar · Scroll para zoom · Botão direito para mover</div>
+    </div>
+
+    <div class="card res-card" id="rescard">
+      <div class="ch">
+        <div class="ct"><div class="ct-bar" style="background:var(--green)"></div> Resultado da Cotação</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2)" id="rests"></div>
+      </div>
+      <div class="kpig" id="kpig"></div>
+      <div class="resbottom">
+        <div>
+          <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:14px">Detalhamento de Custos</div>
+          <div id="bktable"></div>
+        </div>
+        <div>
+          <div class="qpanel">
+            <div class="qpanel-title">💰 Calcular Preço de Venda</div>
+            <div class="slg">
+              <div class="slh"><span class="sll">Margem de Lucro</span><span class="slv" id="margv">50%</span></div>
+              <input type="range" id="margin" min="0" max="300" value="50" oninput="document.getElementById('margv').textContent=this.value+'%'; updateSelling()">
+            </div>
+            <div class="qdisp">
+              <div class="qdl">Preço de Venda Sugerido</div>
+              <div class="qdv" id="sellprice">R$ 0,00</div>
+              <div class="qdp" id="sellinfo">Lucro: R$ 0,00 · Margem: 50%</div>
+            </div>
+            <button class="btn-exp" onclick="exportQ()">📋 Exportar Orçamento</button>
+            <button class="btn-cpy" onclick="copyQ()">📎 Copiar Resumo</button>
+          </div>
+          <div class="qpanel" style="margin-top: 20px; border-color: var(--purple);">
+            <div class="qpanel-title">📈 Projeção de Faturamento Mensal</div>
+            <div class="slg">
+              <div class="slh">
+                <span class="sll">Peças Vendidas / Mês</span>
+                <span class="slv" id="qtyv">10</span>
+              </div>
+              <input type="range" id="quantity" min="1" max="200" value="10" oninput="document.getElementById('qtyv').textContent=this.value; updateMonthly()">
+            </div>
+            <div class="kpig" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0;">
+              <div class="kpi" style="padding: 12px; --kc: var(--green);">
+                <div class="kl" style="font-size: 8px;">Lucro Líquido</div>
+                <div class="kv" id="mon-profit" style="font-size: 18px;">R$ 0,00</div>
+              </div>
+              <div class="kpi" style="padding: 12px; --kc: var(--cyan);">
+                <div class="kl" style="font-size: 8px;">Faturamento</div>
+                <div class="kv" id="mon-total" style="font-size: 18px;">R$ 0,00</div>
+              </div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size: 10px; color: var(--muted2); margin-top: 10px; text-align: center;">
+              Tempo total ocupado: <span id="mon-time" style="color: var(--orange);">0h</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast">
+  <span class="ticon" id="ticon">✓</span>
+  <span id="tmsg">Mensagem</span>
+</div>
+
+<script>
+// ---- STATE ----
+const S = {
+  loaded:false, fileName:'', fileSize:0,
+  volume:0, bounds:null, tris:0,
+  printTime:0, filGrams:0, costs:null, selling:0
+};
+
+// ---- THREE.JS ----
+let scene,camera,renderer,mesh,wfMode=false;
+let mdown=false,mbtn=0,lmx=0,lmy=0;
+let theta=45,phi=30,radius=5,target={x:0,y:0,z:0};
+
+function initThree(){
+  const el=document.getElementById('cvwrap');
+  const W=el.clientWidth, H=el.clientHeight;
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,W/H,.01,1000);
+  renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(W,H);
+  renderer.shadowMap.enabled=true;
+  el.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff,.5));
+  const d1=new THREE.DirectionalLight(0x00d4ff,1.2);d1.position.set(5,10,7);d1.castShadow=true;scene.add(d1);
+  const d2=new THREE.DirectionalLight(0xa855f7,.6);d2.position.set(-5,-3,-5);scene.add(d2);
+  scene.add(new THREE.PointLight(0xffffff,.4,0).position.set(0,5,0));
+  const grid=new THREE.GridHelper(10,20,0x1e2d3d,0x1e2d3d);scene.add(grid);
+
+  updCam();
+
+  renderer.domElement.addEventListener('mousedown',e=>{mdown=true;mbtn=e.button;lmx=e.clientX;lmy=e.clientY;e.preventDefault()});
+  window.addEventListener('mousemove',e=>{
+    if(!mdown)return;
+    const dx=e.clientX-lmx,dy=e.clientY-lmy;
+    if(mbtn===0){theta-=dx*.5;phi=Math.max(5,Math.min(85,phi-dy*.5));}
+    else if(mbtn===2){const ps=radius*.002;target.x-=dx*ps;target.y+=dy*ps;}
+    lmx=e.clientX;lmy=e.clientY;updCam();
+  });
+  window.addEventListener('mouseup',()=>mdown=false);
+  renderer.domElement.addEventListener('wheel',e=>{radius=Math.max(.5,Math.min(50,radius+e.deltaY*.01));updCam();});
+  
+  window.addEventListener('resize',()=>{
+    const W2=el.clientWidth,H2=el.clientHeight;
+    camera.aspect=W2/H2;camera.updateProjectionMatrix();
+    renderer.setSize(W2,H2);
+  });
+  
+  (function loop(){requestAnimationFrame(loop);renderer.render(scene,camera);})();
+}
+
+function updCam(){
+  if(!camera)return;
+  const p=phi*Math.PI/180,t=theta*Math.PI/180;
+  camera.position.set(target.x+radius*Math.cos(p)*Math.sin(t),target.y+radius*Math.sin(p),target.z+radius*Math.cos(p)*Math.cos(t));
+  camera.lookAt(target.x,target.y,target.z);
+}
+
+function resetCam(){theta=45;phi=30;if(S.bounds){const m=Math.max(S.bounds.x,S.bounds.y,S.bounds.z);radius=m*2.5;}else radius=5;target={x:0,y:0,z:0};updCam();}
+function toggleWF(){if(!mesh)return;wfMode=!wfMode;mesh.traverse(c=>{if(c.isMesh)c.material.wireframe=wfMode;});toast(wfMode?'Wireframe ativado':'Modo sólido','info');}
+function setView(v){if(v==='front'){theta=0;phi=15;}else if(v==='top'){theta=0;phi=85;}updCam();}
+
+// ---- STL PARSER ----
+function parseSTL(buf){
+  const dv=new DataView(buf);
+  const n=dv.getUint32(80,true);
+  const expected=84+n*50;
+  const binary=(buf.byteLength>=84 && Math.abs(buf.byteLength-expected)<16);
+  if(binary){
+    const verts=[],norms=[];
+    let off=84;
+    for(let i=0;i<n;i++){
+      const nx=dv.getFloat32(off,true),ny=dv.getFloat32(off+4,true),nz=dv.getFloat32(off+8,true);off+=12;
+      for(let v=0;v<3;v++){verts.push(dv.getFloat32(off,true),dv.getFloat32(off+4,true),dv.getFloat32(off+8,true));norms.push(nx,ny,nz);off+=12;}
+      off+=2;
+    }
+    return{v:new Float32Array(verts),n:new Float32Array(norms),t:n};
+  }
+  const txt=new TextDecoder().decode(buf);
+  const verts=[],norms=[],nreg=/facet normal\s+([\S]+)\s+([\S]+)\s+([\S]+)/g,vreg=/vertex\s+([\S]+)\s+([\S]+)\s+([\S]+)/g;
+  const na=[];let m;
+  while((m=nreg.exec(txt))!==null)na.push([+m[1],+m[2],+m[3]]);
+  let vi=0;
+  while((m=vreg.exec(txt))!==null){
+    verts.push(+m[1],+m[2],+m[3]);
+    const nn=na[Math.floor(vi/3)]||[0,1,0];norms.push(nn[0],nn[1],nn[2]);vi++;
+  }
+  return{v:new Float32Array(verts),n:new Float32Array(norms),t:verts.length/9};
+}
+
+function parseOBJ(txt){
+  const pos=[],verts=[];
+  for(const line of txt.split('\n')){
+    const p=line.trim().split(/\s+/);
+    if(p[0]==='v')pos.push([+p[1],+p[2],+p[3]]);
+    else if(p[0]==='f'){
+      const ids=p.slice(1).map(x=>+x.split('/')[0]-1);
+      for(let i=1;i<ids.length-1;i++)verts.push(...pos[ids[0]],...pos[ids[i]],...pos[ids[i+1]]);
+    }
+  }
+  return{v:new Float32Array(verts),n:new Float32Array(verts.length),t:verts.length/9};
+}
+
+function loadMesh(buf,name){
+  const ext=name.split('.').pop().toLowerCase();
+  let parsed;
+  try{parsed=ext==='obj'?parseOBJ(new TextDecoder().decode(buf)):parseSTL(buf);}
+  catch(e){toast('Erro ao ler o arquivo.','error');return;}
+  if(!parsed||parsed.t<4){toast('Arquivo inválido.','error');return;}
+
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(parsed.v,3));
+  geo.setAttribute('normal',new THREE.BufferAttribute(parsed.n,3));
+  geo.computeVertexNormals();geo.computeBoundingBox();
+  const bb=geo.boundingBox,sz=new THREE.Vector3(),ctr=new THREE.Vector3();
+  bb.getSize(sz);bb.getCenter(ctr);
+  geo.translate(-ctr.x,-ctr.y,-ctr.z);geo.translate(0,sz.y/2,0);
+
+  const mat=new THREE.MeshStandardMaterial({color:0x00b8d9,metalness:.15,roughness:.45});
+  if(mesh)scene.remove(mesh);
+  mesh=new THREE.Mesh(geo,mat);mesh.castShadow=true;scene.add(mesh);
+
+  const maxD=Math.max(sz.x,sz.y,sz.z);
+  radius=maxD*2.5;theta=45;phi=30;target={x:0,y:sz.y/2,z:0};updCam();
+
+  S.bounds={x:sz.x,y:sz.y,z:sz.z};
+  S.tris=parsed.t;
+  S.volume=(sz.x*sz.y*sz.z)/1000;
+
+  document.getElementById('vempty').style.display='none';
+  document.getElementById('vctrl').style.display='flex';
+  document.getElementById('vhint').style.display='block';
+  const vstats=document.getElementById('vstats');
+  vstats.style.display='flex';
+  vstats.innerHTML=`<span>${parsed.t.toLocaleString('pt-BR')} tris</span><span>${sz.x.toFixed(1)}×${sz.y.toFixed(1)}×${sz.z.toFixed(1)}mm</span>`;
+  document.getElementById('mdims').textContent=`${sz.x.toFixed(0)}×${sz.y.toFixed(0)}×${sz.z.toFixed(0)} mm`;
+  document.getElementById('btncalc').classList.add('on');
+
+  toast(`✓ Modelo carregado`,'success');
+  setTimeout(doCalc,400);
+}
+
+// ---- FILE HANDLING ----
+function doDragOver(e){e.preventDefault();document.getElementById('upzone').classList.add('drag-active');}
+function doDragLeave(){document.getElementById('upzone').classList.remove('drag-active');}
+function doDrop(e){e.preventDefault();doDragLeave();const f=e.dataTransfer.files[0];if(f)processFile(f);}
+function handleFile(e){const f=e.target.files[0];if(f)processFile(f);}
+
+function processFile(file){
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(!['stl','obj','3mf','ply'].includes(ext)){toast('Formato não suportado.','error');return;}
+  S.loaded=true;S.fileName=file.name;S.fileSize=file.size;
+
+  document.getElementById('finfo').classList.add('vis');
+  document.getElementById('fname').textContent=file.name;
+  document.getElementById('fmeta').textContent=`${(file.size/1024).toFixed(0)} KB · ${ext.toUpperCase()}`;
+
+  const pw=document.getElementById('progwrap'),pb=document.getElementById('progbar'),pp=document.getElementById('progpct');
+  pw.classList.add('vis');
+  let pct=0;
+  const iv=setInterval(()=>{pct=Math.min(85,pct+12);pb.style.width=pct+'%';pp.textContent=pct+'%';},60);
+  const reader=new FileReader();
+  reader.onload=e=>{
+    clearInterval(iv);pb.style.width='100%';pp.textContent='100%';
+    setTimeout(()=>{pw.classList.remove('vis');loadMesh(e.target.result,file.name);},400);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function removeFile(){
+  S.loaded=false;S.bounds=null;S.volume=0;
+  if(mesh){scene.remove(mesh);mesh=null;}
+  document.getElementById('finfo').classList.remove('vis');
+  document.getElementById('vempty').style.display='flex';
+  document.getElementById('vctrl').style.display='none';
+  document.getElementById('vhint').style.display='none';
+  document.getElementById('vstats').style.display='none';
+  document.getElementById('rescard').classList.remove('vis');
+  document.getElementById('finput').value='';
+}
+
+// ---- CALCULATION ----
+function pickMat(el){
+  document.querySelectorAll('.mopt').forEach(m=>m.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('filprice').value=el.getAttribute('data-price');
+  autoCalc();
+}
+
+function doCalc(){
+  if(!S.volume){toast('Carregue um modelo primeiro!','error');return;}
+  const fp=+document.getElementById('filprice').value;
+  const mc=+document.getElementById('machcost').value;
+  const lc=+document.getElementById('laborcost').value;
+  const ec=+document.getElementById('energycost').value;
+  const inf=+document.getElementById('infill').value;
+  const lh=+document.getElementById('layerh').value/100;
+  const spd=+document.getElementById('speed').value;
+  const sup=+document.getElementById('support').value;
+
+  const selMat=document.querySelector('.mopt.sel');
+  const matName=selMat?selMat.getAttribute('data-mat'):'PLA';
+  const density = (matName==='ABS'?1.05:matName==='PETG'?1.27:1.24);
+
+  const effVol=S.volume*(inf/100)*1.18;
+  const grams=effVol*density;
+  const filCost=(grams/1000)*fp;
+  
+  const b=S.bounds;
+  const layers=b.y/lh;
+  const travelPerLayer=(b.x+b.z)*2*2;
+  let timeH=(layers*travelPerLayer/spd)/3600*1.25;
+  if(sup>0)timeH*=(1+sup/100);
+
+  const machCost=timeH*mc;
+  const laborCost=.25*lc+timeH*.1*lc;
+  const engCost=0.15*timeH*ec;
+  const risk=(filCost+machCost)*.05;
+  const total=filCost+machCost+laborCost+engCost+risk;
+
+  S.costs={fil:filCost,mach:machCost,labor:laborCost,energy:engCost,risk,total,matName,timeH,grams};
+  S.printTime = timeH;
+  renderResults();
+}
+
+function autoCalc(){
+  if(S.loaded && S.volume){
+    savePreferences();
+    clearTimeout(window._acd);
+    window._acd=setTimeout(doCalc,280);
+  }
+}
+
+function renderResults(){
+  document.getElementById('rescard').classList.add('vis');
+  const d=S.costs;
+  const h=Math.floor(d.timeH),m=Math.round((d.timeH-h)*60);
+  const ts=`${h}h ${m}m`;
+
+  document.getElementById('kpig').innerHTML=`
+    <div class="kpi" style="--kc:var(--cyan)"><div class="kl">Filamento</div><div class="kv">${d.grams.toFixed(0)}g</div><div class="ks">${d.matName}</div></div>
+    <div class="kpi" style="--kc:var(--orange)"><div class="kl">Tempo</div><div class="kv">${ts}</div><div class="ks">${d.timeH.toFixed(2)}h</div></div>
+    <div class="kpi" style="--kc:var(--purple)"><div class="kl">Volume</div><div class="kv">${S.volume.toFixed(1)}cm³</div><div class="ks">${S.tris.toLocaleString()} tris</div></div>
+    <div class="kpi" style="--kc:var(--yellow)"><div class="kl">Produção</div><div class="kv">${brl(d.total)}</div><div class="ks">Sem lucro</div></div>
+    <div class="kpi" style="--kc:var(--green)"><div class="kl">Custo/h</div><div class="kv">${brl(d.total/d.timeH)}</div><div class="ks">Eficiência</div></div>
+  `;
+
+  document.getElementById('bktable').innerHTML=`
+    <div class="brow"><div class="brl"><div class="brdot" style="background:var(--cyan)"></div>Material</div><div class="brv">${brl(d.fil)}</div></div>
+    <div class="brow"><div class="brl"><div class="brdot" style="background:var(--orange)"></div>Máquina</div><div class="brv">${brl(d.mach)}</div></div>
+    <div class="brow"><div class="brl"><div class="brdot" style="background:var(--purple)"></div>Mão de obra</div><div class="brv">${brl(d.labor)}</div></div>
+    <div class="brow"><div class="brl"><div class="brdot" style="background:var(--yellow)"></div>Energia</div><div class="brv">${brl(d.energy)}</div></div>
+    <div class="btotal"><div class="tl">Custo Total</div><div class="tv">${brl(d.total)}</div></div>
+  `;
+  updateSelling();
+}
+
+function updateSelling(){
+  if(!S.costs)return;
+  const m=+document.getElementById('margin').value;
+  S.selling=S.costs.total*(1+m/100);
+  document.getElementById('sellprice').textContent=brl(S.selling);
+  document.getElementById('sellinfo').textContent=`Lucro: ${brl(S.selling-S.costs.total)} · Margem: ${m}%`;
+  updateMonthly();
+}
+
+function updateMonthly() {
+  if (!S.costs || !S.selling) return;
+  const qty = parseInt(document.getElementById('quantity').value);
+  const totalRevenue = S.selling * qty;
+  const totalProfit = (S.selling - S.costs.total) * qty;
+  const totalTime = S.costs.printTime * qty;
+
+  document.getElementById('mon-total').textContent = brl(totalRevenue);
+  document.getElementById('mon-profit').textContent = brl(totalProfit);
+  
+  const days = Math.floor(totalTime/24), hours = Math.floor(totalTime%24), mins = Math.round((totalTime%1)*60);
+  document.getElementById('mon-time').textContent = (days > 0 ? days+"d " : "") + hours+"h "+mins+"m";
+}
+
+// ---- STORAGE ----
+function savePreferences() {
+  const prefs = {
+    filprice: document.getElementById('filprice').value,
+    machcost: document.getElementById('machcost').value,
+    laborcost: document.getElementById('laborcost').value,
+    energycost: document.getElementById('energycost').value,
+    margin: document.getElementById('margin').value
+  };
+  localStorage.setItem('orca3d_prefs', JSON.stringify(prefs));
+}
+
+function loadPreferences() {
+  const saved = localStorage.getItem('orca3d_prefs');
+  if (saved) {
+    const prefs = JSON.parse(saved);
+    Object.keys(prefs).forEach(key => {
+      const el = document.getElementById(key);
+      if (el) { el.value = prefs[key]; el.dispatchEvent(new Event('input')); }
+    });
+  }
+}
+
+// ---- UTILS & INIT ----
+function brl(v){return 'R$ '+(+v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function toast(msg,type='success'){
+  const el=document.getElementById('toast');
+  el.className=`toast ${type} show`;
+  document.getElementById('tmsg').textContent=msg;
+  clearTimeout(window._tt);window._tt=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+function exportQ(){
+  const d=S.costs;
+  const txt=`ORÇAMENTO 3D\nArquivo: ${S.fileName}\nCusto: ${brl(d.total)}\nVenda: ${brl(S.selling)}`;
+  const blob=new Blob([txt],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="orcamento.txt";a.click();
+}
+
+function copyQ(){
+  const txt=`🖨 Orçamento: ${S.fileName}\n💰 Preço: ${brl(S.selling)}`;
+  navigator.clipboard.writeText(txt).then(()=>toast('Copiado!'));
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  initThree();
+  loadPreferences();
+});
+</script>
+</body>
+</html>

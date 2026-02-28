@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orça 3D Print — Calculadora Profissional</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@300;400;500&display=swap');
+
+/* ═══════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════ */
+:root {
+  --ink:    #0B0D14;
+  --ink2:   #10131C;
+  --ink3:   #161A26;
+  --ink4:   #1D2232;
+  --rim:    #252B3E;
+  --rim2:   #2E364E;
+
+  --lime:   #C8FF57;
+  --lime-a: rgba(200,255,87,.12);
+  --lime-b: rgba(200,255,87,.06);
+  --lime-c: rgba(200,255,87,.03);
+
+  --sky:    #57C8FF;
+  --sky-a:  rgba(87,200,255,.12);
+
+  --rose:   #FF6B8A;
+  --rose-a: rgba(255,107,138,.1);
+
+  --amber:  #FFB347;
+  --amber-a:rgba(255,179,71,.1);
+
+  --violet: #A78BFA;
+  --violet-a:rgba(167,139,250,.1);
+
+  --tx:  #E4E8F5;
+  --tx2: #7B88A8;
+  --tx3: #404B66;
+  --tx4: #252E45;
+
+  --r-card: 18px;
+  --r-sm:   10px;
+  --r-xs:   7px;
+
+  --shadow: 0 4px 32px rgba(0,0,0,.45);
+  --shadow-lg: 0 12px 60px rgba(0,0,0,.6);
+}
+
+/* ═══════════════════════════════════════
+   BASE
+═══════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--ink);
+  color:var(--tx);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* Noise + glow background */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at -5% 0%,  rgba(200,255,87,.055) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 70% at 105% 100%,rgba(87,200,255,.04) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(167,139,250,.018) 0%,transparent 60%);
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(37,43,62,.25) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(37,43,62,.25) 1px,transparent 1px);
+  background-size:56px 56px;
+}
+
+/* ═══════════════════════════════════════
+   HEADER
+═══════════════════════════════════════ */
+header{
+  position:sticky;top:0;z-index:200;
+  height:58px;padding:0 36px;
+  background:rgba(11,13,20,.82);
+  backdrop-filter:blur(24px) saturate(1.4);
+  border-bottom:1px solid var(--rim);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{display:flex;align-items:center;gap:10px;cursor:default;user-select:none}
+.logo-mark{
+  width:32px;height:32px;
+  background:var(--lime);
+  border-radius:9px;
+  display:grid;place-items:center;
+  box-shadow:0 0 20px rgba(200,255,87,.3);
+  flex-shrink:0;
+}
+.logo-mark svg{width:18px;height:18px}
+.logo-name{font-size:17px;font-weight:700;letter-spacing:-.4px;color:var(--tx)}
+.logo-name em{font-style:normal;color:var(--lime)}
+.h-right{display:flex;align-items:center;gap:8px}
+.h-chip{
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:1.2px;text-transform:uppercase;
+  padding:4px 11px;border-radius:20px;
+  border:1px solid var(--rim2);color:var(--tx3);
+  background:var(--ink3);
+}
+.h-chip.on{
+  border-color:rgba(200,255,87,.3);
+  color:var(--lime);background:var(--lime-a);
+}
+.h-chip.on::before{content:'● ';animation:pulse-dot 1.6s ease infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ═══════════════════════════════════════
+   NAV TABS
+═══════════════════════════════════════ */
+.nav-bar{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:2px;
+  padding:20px 36px 0;
+}
+.nav-tab{
+  display:flex;align-items:center;gap:7px;
+  padding:9px 18px;
+  border-radius:var(--r-sm) var(--r-sm) 0 0;
+  font-size:13px;font-weight:600;
+  cursor:pointer;color:var(--tx3);
+  transition:all .2s;border:none;
+  background:transparent;font-family:'DM Sans',sans-serif;
+  border:1px solid transparent;border-bottom:none;
+  position:relative;bottom:-1px;
+}
+.nav-tab .n-ico{font-size:15px;opacity:.6;transition:opacity .2s}
+.nav-tab:hover{color:var(--tx2)}
+.nav-tab:hover .n-ico{opacity:1}
+.nav-tab.active{
+  background:var(--ink2);
+  color:var(--tx);
+  border-color:var(--rim);
+}
+.nav-tab.active .n-ico{opacity:1}
+.nav-badge{
+  font-family:'DM Mono',monospace;font-size:9px;
+  background:var(--lime-a);border:1px solid rgba(200,255,87,.25);
+  color:var(--lime);padding:1px 6px;border-radius:10px;
+  display:none;
+}
+.tab-divider{flex:1;border-bottom:1px solid var(--rim)}
+
+/* ═══════════════════════════════════════
+   MAIN / PANELS
+═══════════════════════════════════════ */
+main{
+  position:relative;z-index:1;
+  background:var(--ink2);
+  border-top:1px solid var(--rim);
+  min-height:calc(100vh - 58px - 46px);
+}
+.panel{display:none}
+.panel.active{display:block}
+.panel-inner{
+  max-width:1500px;margin:0 auto;
+  padding:32px 36px 72px;
+}
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+.hero{
+  margin-bottom:32px;
+  animation:rise .55s cubic-bezier(.22,1,.36,1) both;
+}
+.hero-eyebrow{
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--lime);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.hero-eyebrow::before{content:'';width:18px;height:1px;background:var(--lime)}
+.hero h1{
+  font-size:clamp(30px,4vw,54px);
+  font-weight:700;letter-spacing:-2px;line-height:1.04;
+  margin-bottom:10px;
+}
+.hero h1 .gr{
+  background:linear-gradient(120deg,var(--lime) 0%,var(--sky) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero p{color:var(--tx2);font-size:15px;line-height:1.65;letter-spacing:-.1px}
+
+/* ═══════════════════════════════════════
+   LAYOUT GRID
+═══════════════════════════════════════ */
+.app-grid{
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:18px;
+  align-items:start;
+}
+.left-col{display:flex;flex-direction:column;gap:14px}
+.right-col{display:flex;flex-direction:column;gap:14px}
+
+/* ═══════════════════════════════════════
+   CARD
+═══════════════════════════════════════ */
+.card{
+  background:var(--ink3);
+  border:1px solid var(--rim);
+  border-radius:var(--r-card);
+  padding:22px;
+  position:relative;overflow:hidden;
+  animation:rise .55s cubic-bezier(.22,1,.36,1) both;
+}
+/* top accent line */
+.card[data-accent]::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  border-radius:var(--r-card) var(--r-card) 0 0;
+}
+.card[data-accent="lime"]::before{background:linear-gradient(90deg,var(--lime),transparent 70%)}
+.card[data-accent="sky"]::before{background:linear-gradient(90deg,var(--sky),transparent 70%)}
+.card[data-accent="rose"]::before{background:linear-gradient(90deg,var(--rose),transparent 70%)}
+.card[data-accent="violet"]::before{background:linear-gradient(90deg,var(--violet),transparent 70%)}
+.card[data-accent="amber"]::before{background:linear-gradient(90deg,var(--amber),transparent 70%)}
+
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;
+}
+.card-label{
+  font-family:'DM Mono',monospace;
+  font-size:9.5px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--tx3);
+  display:flex;align-items:center;gap:7px;
+}
+.cl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* ═══════════════════════════════════════
+   CLIENT FIELDS
+═══════════════════════════════════════ */
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:5px}
+.field-label{
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);
+}
+.field-input{
+  background:var(--ink4);border:1px solid var(--rim);
+  border-radius:var(--r-xs);
+  color:var(--tx);font-family:'DM Sans',sans-serif;
+  font-size:13px;padding:9px 12px;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;
+}
+.field-input:focus{
+  border-color:var(--lime);
+  box-shadow:0 0 0 3px var(--lime-a);
+}
+.field-input::placeholder{color:var(--tx4)}
+
+/* ═══════════════════════════════════════
+   UPLOAD ZONE
+═══════════════════════════════════════ */
+.drop-zone{
+  border:1.5px dashed var(--rim2);
+  border-radius:14px;padding:36px 20px;
+  text-align:center;cursor:pointer;
+  transition:all .25s;
+  background:var(--ink4);
+  position:relative;overflow:hidden;
+}
+.drop-zone::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,var(--lime-b) 0%,transparent 65%);
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.drop-zone:hover,.drop-zone.over{border-color:var(--lime);background:var(--ink3)}
+.drop-zone:hover::before,.drop-zone.over::before{opacity:1}
+.dz-ico{width:52px;height:52px;margin:0 auto 14px;animation:bob 4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.dz-title{font-size:15px;font-weight:600;margin-bottom:5px;letter-spacing:-.2px}
+.dz-sub{color:var(--tx2);font-size:12px;margin-bottom:16px;line-height:1.5}
+.btn-choose{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--lime);color:var(--ink);
+  font-family:'DM Sans',sans-serif;font-weight:700;
+  font-size:12px;letter-spacing:.3px;
+  padding:10px 20px;border-radius:8px;
+  border:none;cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 16px rgba(200,255,87,.25);
+}
+.btn-choose:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(200,255,87,.35);filter:brightness(1.05)}
+.ext-pills{display:flex;gap:5px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.ext-pill{
+  font-family:'DM Mono',monospace;font-size:9px;
+  background:var(--ink3);border:1px solid var(--rim);
+  color:var(--tx3);padding:2px 8px;border-radius:4px;
+}
+
+/* File loaded state */
+.file-loaded{
+  display:none;align-items:center;gap:12px;
+  padding:11px 14px;
+  background:var(--lime-a);border:1px solid rgba(200,255,87,.2);
+  border-radius:10px;margin-bottom:12px;
+}
+.file-loaded.show{display:flex}
+.fl-icon{
+  width:36px;height:36px;background:var(--lime-a);
+  border-radius:8px;display:grid;place-items:center;
+  font-size:16px;flex-shrink:0;
+}
+.fl-info{flex:1;min-width:0}
+.fl-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fl-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--tx2);margin-top:2px}
+.fl-remove{
+  background:none;border:none;color:var(--tx3);cursor:pointer;
+  font-size:15px;padding:4px;border-radius:5px;transition:all .2s;line-height:1;
+}
+.fl-remove:hover{color:var(--rose);background:var(--rose-a)}
+
+/* Progress */
+.progress{margin-top:12px;display:none}
+.progress.show{display:block}
+.progress-row{
+  display:flex;justify-content:space-between;
+  font-family:'DM Mono',monospace;font-size:10px;
+  color:var(--tx2);margin-bottom:5px;
+}
+.progress-track{height:3px;background:var(--rim);border-radius:2px;overflow:hidden}
+.progress-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--lime),var(--sky));
+  border-radius:2px;transition:width .25s ease;
+}
+
+/* ═══════════════════════════════════════
+   PARAMETERS
+═══════════════════════════════════════ */
+.section-title{
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--tx4);margin-bottom:10px;padding-bottom:7px;
+  border-bottom:1px solid var(--rim);
+}
+.params-sect{margin-bottom:16px}
+
+/* Material chips */
+.mat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mat-chip{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:9px 5px;background:var(--ink4);
+  border:1.5px solid var(--rim);border-radius:10px;
+  cursor:pointer;transition:all .2s;
+  position:relative;overflow:hidden;
+}
+.mat-chip::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:var(--mc,var(--lime));
+  transform:scaleX(0);transition:transform .2s;
+  transform-origin:left;
+}
+.mat-chip:hover{background:var(--ink3);border-color:var(--rim2)}
+.mat-chip.sel{border-color:var(--mc,var(--lime));background:var(--ink3)}
+.mat-chip.sel::after{transform:scaleX(1)}
+.mat-dot{width:11px;height:11px;border-radius:50%;background:var(--mc,var(--lime))}
+.mat-name{font-size:11px;font-weight:700;letter-spacing:.2px}
+.mat-price{
+  font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3);
+  display:flex;align-items:center;gap:3px;
+  border-radius:4px;padding:1px 5px;transition:background .2s,color .2s;
+  cursor:text;
+}
+.mat-price:hover{background:var(--lime-a);color:var(--lime)}
+.mat-price .ep{font-size:8px;opacity:0;transition:opacity .15s;line-height:1}
+.mat-price:hover .ep{opacity:.6}
+.mat-price-inp{
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:600;
+  width:54px;background:var(--ink);
+  border:1.5px solid var(--lime);border-radius:5px;
+  color:var(--lime);text-align:center;
+  padding:2px 4px;outline:none;
+  box-shadow:0 0 0 3px var(--lime-a);
+  -webkit-appearance:none;
+}
+.mat-price-inp::-webkit-inner-spin-button,
+.mat-price-inp::-webkit-outer-spin-button{-webkit-appearance:none}
+.mat-chip .edit-badge{
+  position:absolute;top:4px;right:5px;
+  font-size:7px;opacity:0;transition:opacity .2s;
+  color:var(--tx4);pointer-events:none;font-family:'DM Mono',monospace;
+}
+.mat-chip:hover .edit-badge{opacity:1}
+
+/* Form row */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);
+}
+.inp{
+  background:var(--ink4);border:1px solid var(--rim);
+  border-radius:var(--r-xs);color:var(--tx);
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:500;
+  padding:9px 11px;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;width:100%;
+}
+.inp:focus{border-color:var(--lime);box-shadow:0 0 0 3px var(--lime-a)}
+.inp option{background:var(--ink4)}
+select.inp{cursor:pointer}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+
+/* Slider */
+.slider-group{margin-bottom:12px}
+.slider-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.slider-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx2)}
+.slider-val{
+  font-family:'DM Mono',monospace;font-size:12px;font-weight:500;
+  color:var(--lime);background:var(--lime-a);
+  padding:2px 8px;border-radius:5px;
+}
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:4px;
+  background:var(--rim);border-radius:2px;outline:none;
+  cursor:pointer;border:none;padding:0;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;
+  border-radius:50%;background:var(--lime);
+  border:2px solid var(--ink);cursor:pointer;
+  box-shadow:0 0 8px rgba(200,255,87,.4);
+  transition:transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
+
+/* ═══════════════════════════════════════
+   CALC BUTTON
+═══════════════════════════════════════ */
+.btn-calc{
+  width:100%;padding:13px;margin-top:6px;
+  background:var(--ink4);border:1px solid var(--rim2);
+  border-radius:10px;color:var(--tx3);
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+  letter-spacing:.2px;cursor:pointer;
+  transition:all .25s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-calc.ready{
+  background:linear-gradient(135deg,var(--lime-a),rgba(87,200,255,.06));
+  border-color:rgba(200,255,87,.4);color:var(--lime);
+}
+.btn-calc.ready:hover{
+  background:var(--lime);color:var(--ink);
+  border-color:transparent;
+  box-shadow:0 6px 28px rgba(200,255,87,.25);
+  transform:translateY(-1px);
+}
+
+/* ═══════════════════════════════════════
+   3D VIEWER
+═══════════════════════════════════════ */
+#cv-wrap{
+  width:100%;height:360px;
+  background:
+    radial-gradient(ellipse at 35% 40%,rgba(200,255,87,.02) 0%,transparent 55%),
+    radial-gradient(ellipse at 70% 70%,rgba(87,200,255,.02) 0%,transparent 55%),
+    var(--ink4);
+  border-radius:12px;
+  position:relative;overflow:hidden;
+}
+#cv-wrap canvas{width:100%!important;height:100%!important;border-radius:12px}
+.v-empty{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;pointer-events:none;
+}
+.v-empty-ico{font-size:44px;opacity:.06;animation:bob 5s ease-in-out infinite}
+.v-empty p{font-size:12px;color:var(--tx3)}
+.v-empty small{font-family:'DM Mono',monospace;font-size:10px;color:var(--tx4)}
+.v-ctrl{
+  position:absolute;top:10px;right:10px;
+  display:none;flex-direction:column;gap:5px;z-index:5;
+}
+.v-btn{
+  width:28px;height:28px;
+  background:rgba(11,13,20,.8);backdrop-filter:blur(8px);
+  border:1px solid var(--rim2);border-radius:6px;
+  color:var(--tx3);font-size:12px;cursor:pointer;
+  display:grid;place-items:center;transition:all .2s;
+}
+.v-btn:hover{border-color:var(--lime);color:var(--lime)}
+.v-stats{
+  position:absolute;bottom:10px;left:10px;
+  font-family:'DM Mono',monospace;font-size:9.5px;
+  color:var(--tx2);background:rgba(11,13,20,.8);
+  backdrop-filter:blur(8px);
+  padding:5px 10px;border-radius:6px;
+  border:1px solid var(--rim);
+  display:none;gap:12px;
+}
+.v-hint{
+  font-family:'DM Mono',monospace;font-size:9.5px;
+  color:var(--tx4);text-align:center;margin-top:8px;
+  letter-spacing:.3px;display:none;
+}
+
+/* ═══════════════════════════════════════
+   RESULTS
+═══════════════════════════════════════ */
+.res-wrapper{display:none}
+.res-wrapper.show{display:block}
+
+/* KPI strip */
+.kpi-strip{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:10px;margin-bottom:18px;
+}
+.kpi{
+  background:var(--ink4);border:1px solid var(--rim);
+  border-radius:14px;padding:14px 13px;
+  position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s;cursor:default;
+}
+.kpi::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:2px;background:var(--kc,var(--lime));
+}
+.kpi:hover{transform:translateY(-2px);border-color:var(--kc,var(--lime))}
+.kpi-label{
+  font-family:'DM Mono',monospace;font-size:8.5px;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--tx3);margin-bottom:8px;
+}
+.kpi-val{
+  font-family:'DM Mono',monospace;
+  font-size:21px;font-weight:500;line-height:1;
+  color:var(--kc,var(--lime));
+  margin-bottom:3px;
+  animation:pop .4s ease both;
+}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.kpi-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4)}
+
+/* Results bottom grid */
+.res-bottom{display:grid;grid-template-columns:1fr 360px;gap:14px}
+
+/* Breakdown table */
+.breakdown{
+  background:var(--ink4);border:1px solid var(--rim);
+  border-radius:12px;overflow:hidden;
+}
+.brow{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 15px;font-size:13px;
+  transition:background .15s;
+}
+.brow:hover{background:rgba(255,255,255,.018)}
+.brow+.brow{border-top:1px solid var(--rim)}
+.brow-left{display:flex;align-items:center;gap:9px;color:var(--tx2)}
+.brow-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.brow-val{font-family:'DM Mono',monospace;font-weight:500;font-size:13px}
+.brow-total{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 15px;
+  background:rgba(200,255,87,.05);
+  border-top:1px solid rgba(200,255,87,.15);
+}
+.brow-total-label{font-size:13px;font-weight:600}
+.brow-total-val{font-family:'DM Mono',monospace;font-size:19px;font-weight:500;color:var(--lime)}
+
+/* ═══════════════════════════════════════
+   QUOTE PANEL (right side)
+═══════════════════════════════════════ */
+.quote-panel{
+  background:var(--ink4);border:1px solid var(--rim);
+  border-radius:12px;padding:18px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.qp-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px}
+
+/* Sell price display */
+.sell-disp{
+  background:var(--ink);border:1px solid var(--rim);
+  border-radius:10px;padding:16px;text-align:center;
+}
+.sell-label{
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--tx3);margin-bottom:7px;
+}
+.sell-price{
+  font-family:'DM Mono',monospace;font-size:36px;
+  font-weight:500;letter-spacing:-1px;
+  color:var(--sky);transition:all .3s;
+  line-height:1;
+}
+.sell-info{
+  font-family:'DM Mono',monospace;font-size:10px;
+  color:var(--tx3);margin-top:5px;
+}
+
+/* Action buttons */
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-action{
+  padding:11px;border-radius:9px;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  border:1px solid transparent;
+}
+.btn-pdf{
+  background:linear-gradient(135deg,var(--lime),#a8e832);
+  color:var(--ink);box-shadow:0 4px 16px rgba(200,255,87,.2);
+}
+.btn-pdf:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(200,255,87,.3)}
+.btn-copy{
+  background:var(--ink3);border-color:var(--rim2);color:var(--tx2);
+}
+.btn-copy:hover{border-color:var(--sky);color:var(--sky)}
+.btn-save{
+  grid-column:1/-1;
+  background:var(--ink3);border-color:var(--rim2);color:var(--tx2);
+  padding:10px;
+}
+.btn-save:hover{border-color:var(--violet);color:var(--violet)}
+
+/* Monthly projection */
+.monthly-box{
+  background:rgba(167,139,250,.05);
+  border:1px solid rgba(167,139,250,.18);
+  border-radius:10px;padding:14px;
+  margin-top:14px;
+}
+.monthly-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.mon-kpi{background:var(--ink);border:1px solid var(--rim);border-radius:8px;padding:10px 12px}
+.mon-kpi .mk-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px}
+.mon-kpi .mk-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500}
+.mon-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--tx3);text-align:center;margin-top:8px}
+
+/* ═══════════════════════════════════════
+   HISTORY PANEL
+═══════════════════════════════════════ */
+.hist-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.hist-empty{
+  text-align:center;padding:56px 20px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.hist-empty-ico{font-size:40px;opacity:.15}
+.hist-empty-text{color:var(--tx3);font-size:14px;font-weight:500}
+.hist-empty-sub{color:var(--tx4);font-size:12px}
+.hist-grid{display:flex;flex-direction:column;gap:8px}
+.hist-card{
+  background:var(--ink3);border:1px solid var(--rim);
+  border-radius:12px;padding:14px 16px;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all .2s;
+}
+.hist-card:hover{border-color:var(--rim2);background:var(--ink4)}
+.hist-icon{
+  width:40px;height:40px;background:var(--ink4);
+  border-radius:9px;display:grid;place-items:center;
+  font-size:18px;flex-shrink:0;
+}
+.hist-info{flex:1;min-width:0}
+.hist-name{font-weight:600;font-size:13px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--tx2)}
+.hist-amounts{text-align:right;flex-shrink:0}
+.hist-cost{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--lime)}
+.hist-sell{font-family:'DM Mono',monospace;font-size:10px;color:var(--sky);margin-top:2px}
+.hist-del{
+  background:none;border:none;color:var(--tx4);
+  cursor:pointer;font-size:13px;padding:5px;
+  border-radius:5px;transition:all .2s;flex-shrink:0;
+}
+.hist-del:hover{color:var(--rose);background:var(--rose-a)}
+.btn-sm{
+  padding:7px 13px;background:var(--ink4);border:1px solid var(--rim);
+  border-radius:7px;color:var(--tx3);
+  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.btn-sm:hover{border-color:var(--rim2);color:var(--tx)}
+.btn-sm.danger:hover{border-color:var(--rose);color:var(--rose)}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+.toast{
+  position:fixed;bottom:22px;right:22px;z-index:9999;
+  background:var(--ink3);border:1px solid var(--rim2);
+  border-radius:12px;padding:12px 16px;
+  font-size:13px;font-weight:500;
+  display:flex;align-items:center;gap:9px;
+  transform:translateY(80px);opacity:0;
+  transition:all .32s cubic-bezier(.22,1,.36,1);
+  box-shadow:var(--shadow);max-width:300px;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{border-color:rgba(200,255,87,.3)}
+.toast.err{border-color:rgba(255,107,138,.3)}
+.toast.info{border-color:rgba(87,200,255,.3)}
+.toast-ico{font-size:16px}
+
+/* ═══════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════ */
+@keyframes rise{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media(max-width:1200px){
+  .app-grid{grid-template-columns:350px 1fr}
+  .kpi-strip{grid-template-columns:repeat(3,1fr)}
+  .res-bottom{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .app-grid{grid-template-columns:1fr}
+  .panel-inner{padding:24px 20px 56px}
+  header,.nav-bar{padding:0 20px}
+  .nav-bar{padding:16px 20px 0}
+  .kpi-strip{grid-template-columns:1fr 1fr}
+  .mat-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* Print */
+@media print{
+  header,.nav-bar,.v-ctrl,.btn-calc,.btn-action,.btn-save,
+  .monthly-box,.drop-zone,.params-sect,.hero,body::before,body::after{display:none!important}
+  body{background:#fff;color:#000}
+  .card{border-color:#ddd;background:#fff}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18" fill="none">
+        <polygon points="9,1 16,5 16,13 9,17 2,13 2,5" stroke="#0B0D14" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+        <circle cx="9" cy="9" r="2" fill="#0B0D14"/>
+      </svg>
+    </div>
+    <div class="logo-name">Orça<em> 3D Print</em></div>
+  </div>
+  <div class="h-right">
+    <span class="h-chip on">Online</span>
+    <span class="h-chip">Grátis</span>
+    <span class="h-chip">v3.0</span>
+  </div>
+</header>
+
+<!-- NAVIGATION TABS -->
+<div class="nav-bar">
+  <button class="nav-tab active" onclick="switchTab('calc',this)">
+    <span class="n-ico">⚡</span> Calculadora
+  </button>
+  <button class="nav-tab" onclick="switchTab('history',this)">
+    <span class="n-ico">🕐</span> Histórico
+    <span class="nav-badge" id="hist-badge"></span>
+  </button>
+  <div class="tab-divider"></div>
+</div>
+
+<!-- MAIN AREA -->
+<main>
+
+  <!-- ════ PANEL: CALCULADORA ════ -->
+  <div class="panel active" id="panel-calc">
+    <div class="panel-inner">
+
+      <div class="hero">
+        <div class="hero-eyebrow">Calculadora Profissional</div>
+        <h1>Precifique sua<br><span class="gr">impressão 3D</span></h1>
+        <p>Importe o modelo, configure os parâmetros e receba o custo detalhado com visualização 3D interativa.</p>
+      </div>
+
+      <div class="app-grid">
+
+        <!-- LEFT COLUMN -->
+        <div class="left-col">
+
+          <!-- Client card -->
+          <div class="card" data-accent="violet" style="animation-delay:.05s">
+            <div class="card-head">
+              <div class="card-label">
+                <div class="cl-dot" style="background:var(--violet)"></div>
+                Dados do Cliente
+              </div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <div class="field-label">Nome</div>
+                <input class="field-input" id="c-name" type="text" placeholder="Ex: João Silva">
+              </div>
+              <div class="field">
+                <div class="field-label">Empresa</div>
+                <input class="field-input" id="c-company" type="text" placeholder="Ex: StartupXYZ">
+              </div>
+              <div class="field field-full">
+                <div class="field-label">Descrição da Peça</div>
+                <input class="field-input" id="c-desc" type="text" placeholder="Ex: Suporte para câmera, escala 1:1">
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload card -->
+          <div class="card" data-accent="lime" style="animation-delay:.1s">
+            <div class="card-head">
+              <div class="card-label">
+                <div class="cl-dot" style="background:var(--lime)"></div>
+                Modelo 3D
+              </div>
+            </div>
+
+            <div class="file-loaded" id="file-loaded">
+              <div class="fl-icon">📦</div>
+              <div class="fl-info">
+                <div class="fl-name" id="fl-name">—</div>
+                <div class="fl-meta" id="fl-meta">—</div>
+              </div>
+              <button class="fl-remove" onclick="removeFile()">✕</button>
+            </div>
+
+            <div class="drop-zone" id="drop-zone"
+              onclick="document.getElementById('f-input').click()"
+              ondragover="onDragOver(event)"
+              ondrop="onDrop(event)"
+              ondragleave="onDragLeave()">
+              <div class="dz-ico">
+                <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+                  <polygon points="26,3 46,14 46,38 26,49 6,38 6,14" stroke="#C8FF57" stroke-width="1.5" fill="rgba(200,255,87,.06)" stroke-linejoin="round"/>
+                  <polygon points="26,3 46,14 26,25 6,14" stroke="#C8FF57" stroke-width="1" fill="rgba(200,255,87,.1)" stroke-linejoin="round"/>
+                  <line x1="26" y1="25" x2="26" y2="49" stroke="#C8FF57" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
+                  <circle cx="26" cy="25" r="2.5" fill="#C8FF57" opacity=".8"/>
+                </svg>
+              </div>
+              <div class="dz-title">Arraste o arquivo aqui</div>
+              <div class="dz-sub">Suporte para STL, OBJ, PLY e 3MF<br>até 50MB</div>
+              <button class="btn-choose" onclick="event.stopPropagation(); document.getElementById('f-input').click()">
+                ↑ Selecionar Arquivo
+              </button>
+              <div class="ext-pills">
+                <span class="ext-pill">.STL</span>
+                <span class="ext-pill">.OBJ</span>
+                <span class="ext-pill">.3MF</span>
+                <span class="ext-pill">.PLY</span>
+              </div>
+            </div>
+
+            <div class="progress" id="progress">
+              <div class="progress-row">
+                <span id="prog-text">Processando...</span>
+                <span id="prog-pct">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" id="prog-fill"></div>
+              </div>
+            </div>
+
+            <input type="file" id="f-input" accept=".stl,.obj,.3mf,.ply" style="display:none" onchange="onFileInput(event)">
+          </div>
+
+          <!-- Parameters card -->
+          <div class="card" data-accent="sky" style="animation-delay:.15s">
+            <div class="card-head">
+              <div class="card-label">
+                <div class="cl-dot" style="background:var(--sky)"></div>
+                Parâmetros
+              </div>
+            </div>
+
+            <!-- Materials -->
+            <div class="params-sect">
+              <div class="section-title" style="display:flex;align-items:center;justify-content:space-between">
+                Material / Filamento
+                <span style="display:flex;align-items:center;gap:8px">
+                  <button onclick="resetMatPrices()" style="font-family:'DM Mono',monospace;font-size:8px;color:var(--tx4);background:none;border:none;cursor:pointer;letter-spacing:.5px;padding:0;transition:color .2s" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--tx4)'">↺ redefinir</button>
+                  <span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--tx4);letter-spacing:.5px">✏ clique no preço p/ editar</span>
+                </span>
+              </div>
+              <div class="mat-grid" id="mat-grid"></div>
+            </div>
+
+            <!-- Costs -->
+            <div class="params-sect">
+              <div class="section-title">Custos Operacionais</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Filamento (R$/kg)</label>
+                  <input type="number" id="filprice" class="inp" value="80" min="10" step="5" oninput="autoCalc()">
+                </div>
+                <div class="form-group">
+                  <label>Máquina (R$/h)</label>
+                  <input type="number" id="machcost" class="inp" value="3.50" min="0" step=".5" oninput="autoCalc()">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Mão de obra (R$/h)</label>
+                  <input type="number" id="laborcost" class="inp" value="15" min="0" step="1" oninput="autoCalc()">
+                </div>
+                <div class="form-group">
+                  <label>Energia (R$/kWh)</label>
+                  <input type="number" id="energycost" class="inp" value="0.75" min="0" step=".05" oninput="autoCalc()">
+                </div>
+              </div>
+            </div>
+
+            <!-- Print settings -->
+            <div class="params-sect">
+              <div class="section-title">Configurações de Impressão</div>
+              <div class="slider-group">
+                <div class="slider-head">
+                  <span class="slider-label">Preenchimento (Infill)</span>
+                  <span class="slider-val" id="infill-val">20%</span>
+                </div>
+                <input type="range" id="infill" min="5" max="100" value="20"
+                  oninput="document.getElementById('infill-val').textContent=this.value+'%'; autoCalc()">
+              </div>
+              <div class="slider-group">
+                <div class="slider-head">
+                  <span class="slider-label">Altura de Camada</span>
+                  <span class="slider-val" id="layer-val">0.20 mm</span>
+                </div>
+                <input type="range" id="layerh" min="5" max="40" value="20"
+                  oninput="document.getElementById('layer-val').textContent=(this.value/100).toFixed(2)+' mm'; autoCalc()">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Velocidade (mm/s)</label>
+                  <input type="number" id="speed" class="inp" value="60" min="10" max="300" oninput="autoCalc()">
+                </div>
+                <div class="form-group">
+                  <label>Suporte</label>
+                  <select id="support" class="inp" onchange="autoCalc()">
+                    <option value="0">Sem suporte</option>
+                    <option value="8">Leve (+8%)</option>
+                    <option value="18">Denso (+18%)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Pós-processamento</label>
+                  <select id="postproc" class="inp" onchange="autoCalc()">
+                    <option value="0">Nenhum</option>
+                    <option value="10">Lixamento (+R$10)</option>
+                    <option value="25">Pintura (+R$25)</option>
+                    <option value="50">Acabamento (+R$50)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Quantidade</label>
+                  <input type="number" id="qty" class="inp" value="1" min="1" max="999" oninput="autoCalc()">
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-calc" id="btn-calc" onclick="doCalc()">⚡ Calcular Custo</button>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="right-col">
+
+          <!-- Viewer card -->
+          <div class="card" data-accent="rose" style="animation-delay:.12s">
+            <div class="card-head">
+              <div class="card-label">
+                <div class="cl-dot" style="background:var(--rose)"></div>
+                Pré-visualização 3D
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--tx3)" id="v-dims"></div>
+            </div>
+            <div id="cv-wrap">
+              <div class="v-empty" id="v-empty">
+                <div class="v-empty-ico">◈</div>
+                <p>Carregue um modelo para visualizar</p>
+                <small>Rotação · Zoom · Pan</small>
+              </div>
+            </div>
+            <div class="v-ctrl" id="v-ctrl" style="display:none; position:absolute; top:62px; right:34px">
+              <button class="v-btn" onclick="resetCam()" title="Reset">⊕</button>
+              <button class="v-btn" onclick="toggleWF()" id="wf-btn" title="Wireframe">⬡</button>
+              <button class="v-btn" onclick="setView('front')" title="Frontal">⊞</button>
+              <button class="v-btn" onclick="setView('top')" title="Superior">⊟</button>
+            </div>
+            <div class="v-stats" id="v-stats"></div>
+            <div class="v-hint" id="v-hint">🖱 Arrastar · Scroll para zoom · Clique direito para mover</div>
+          </div>
+
+          <!-- Results -->
+          <div class="res-wrapper" id="res-wrapper">
+
+            <!-- KPI Strip -->
+            <div class="kpi-strip" id="kpi-strip"></div>
+
+            <!-- Bottom: breakdown + quote -->
+            <div class="res-bottom">
+              <div>
+                <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);margin-bottom:10px">
+                  Detalhamento
+                </div>
+                <div class="breakdown" id="breakdown"></div>
+              </div>
+
+              <div>
+                <div class="quote-panel">
+                  <div class="qp-title">💰 Preço de Venda</div>
+
+                  <div class="slider-group" style="margin-bottom:0">
+                    <div class="slider-head">
+                      <span class="slider-label">Margem de Lucro</span>
+                      <span class="slider-val" id="margin-val">50%</span>
+                    </div>
+                    <input type="range" id="margin" min="0" max="300" value="50"
+                      oninput="document.getElementById('margin-val').textContent=this.value+'%'; updateSell()">
+                  </div>
+
+                  <div class="sell-disp">
+                    <div class="sell-label">Preço de Venda Sugerido</div>
+                    <div class="sell-price" id="sell-price">R$ 0,00</div>
+                    <div class="sell-info" id="sell-info">Lucro: R$ 0,00 · Margem: 50%</div>
+                  </div>
+
+                  <div class="action-grid">
+                    <button class="btn-action btn-pdf" onclick="exportPDF()">📄 Gerar PDF</button>
+                    <button class="btn-action btn-copy" onclick="copyQ()">📎 Copiar</button>
+                    <button class="btn-action btn-save" onclick="saveToHistory()">💾 Salvar no Histórico</button>
+                  </div>
+                </div>
+
+                <!-- Monthly -->
+                <div class="monthly-box">
+                  <div class="qp-title" style="font-size:12px">📈 Projeção Mensal</div>
+                  <div class="slider-group" style="margin:10px 0 0">
+                    <div class="slider-head">
+                      <span class="slider-label">Peças / Mês</span>
+                      <span class="slider-val" id="qty-proj-val">10</span>
+                    </div>
+                    <input type="range" id="qty-proj" min="1" max="200" value="10"
+                      oninput="document.getElementById('qty-proj-val').textContent=this.value; updateMonthly()">
+                  </div>
+                  <div class="monthly-row">
+                    <div class="mon-kpi">
+                      <div class="mk-label">Lucro Líquido</div>
+                      <div class="mk-val" id="mon-profit" style="color:var(--lime)">R$ 0</div>
+                    </div>
+                    <div class="mon-kpi">
+                      <div class="mk-label">Faturamento</div>
+                      <div class="mk-val" id="mon-total" style="color:var(--sky)">R$ 0</div>
+                    </div>
+                  </div>
+                  <div class="mon-time">Tempo total: <span id="mon-time" style="color:var(--amber)">0h</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PANEL: HISTÓRICO ════ -->
+  <div class="panel" id="panel-history">
+    <div class="panel-inner">
+      <div class="hero" style="margin-bottom:24px">
+        <div class="hero-eyebrow">Seus Orçamentos</div>
+        <h1>Histórico de <span class="gr">cotações</span></h1>
+        <p>Todos os orçamentos salvos ficam aqui para fácil acesso e reemissão em PDF.</p>
+      </div>
+      <div class="card">
+        <div class="hist-head">
+          <div class="card-label">
+            <div class="cl-dot" style="background:var(--amber)"></div>
+            Orçamentos Salvos
+          </div>
+          <button class="btn-sm danger" onclick="clearHistory()">🗑 Limpar tudo</button>
+        </div>
+        <div id="hist-list"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-ico" id="toast-ico">✓</span>
+  <span id="toast-msg">Mensagem</span>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════
+const S = {
+  loaded: false, fileName: '', fileSize: 0,
+  volume: 0, bounds: null, tris: 0,
+  costs: null, selling: 0
+};
+
+// ═══════════════════════════════════════
+//  TAB SWITCH
+// ═══════════════════════════════════════
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'history') renderHistory();
+}
+
+// ═══════════════════════════════════════
+//  THREE.JS
+// ═══════════════════════════════════════
+let scene, camera, renderer, mesh, wfMode = false;
+let mdown = false, mbtn = 0, lmx = 0, lmy = 0;
+let theta = 45, phi = 30, radius = 5, target = { x:0, y:0, z:0 };
+
+function initThree() {
+  const el = document.getElementById('cv-wrap');
+  const W = el.clientWidth, H = el.clientHeight;
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(45, W/H, .01, 1000);
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(W, H);
+  renderer.shadowMap.enabled = true;
+  el.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, .4));
+  const d1 = new THREE.DirectionalLight(0xC8FF57, 1.0); d1.position.set(5,10,7); d1.castShadow=true; scene.add(d1);
+  const d2 = new THREE.DirectionalLight(0x57C8FF, .5); d2.position.set(-5,-3,-5); scene.add(d2);
+  const d3 = new THREE.DirectionalLight(0xffffff, .2); d3.position.set(0,0,8); scene.add(d3);
+  scene.add(new THREE.GridHelper(10, 20, 0x1D2232, 0x1D2232));
+
+  updCam();
+  const cv = renderer.domElement;
+  cv.addEventListener('mousedown', e => { mdown=true; mbtn=e.button; lmx=e.clientX; lmy=e.clientY; e.preventDefault(); });
+  window.addEventListener('mousemove', e => {
+    if (!mdown) return;
+    const dx=e.clientX-lmx, dy=e.clientY-lmy;
+    if (mbtn===0) { theta-=dx*.4; phi=Math.max(3,Math.min(87,phi-dy*.4)); }
+    else if (mbtn===2) { const ps=radius*.002; target.x-=dx*ps; target.y+=dy*ps; }
+    lmx=e.clientX; lmy=e.clientY; updCam();
+  });
+  window.addEventListener('mouseup', () => mdown=false);
+  cv.addEventListener('wheel', e => { radius=Math.max(.5,Math.min(80,radius+e.deltaY*.01)); updCam(); e.preventDefault(); }, {passive:false});
+  cv.addEventListener('contextmenu', e => e.preventDefault());
+  window.addEventListener('resize', () => {
+    const W2=el.clientWidth, H2=el.clientHeight;
+    camera.aspect=W2/H2; camera.updateProjectionMatrix(); renderer.setSize(W2,H2);
+  });
+  (function loop(){ requestAnimationFrame(loop); renderer.render(scene,camera); })();
+}
+
+function updCam() {
+  if (!camera) return;
+  const p=phi*Math.PI/180, t=theta*Math.PI/180;
+  camera.position.set(target.x+radius*Math.cos(p)*Math.sin(t), target.y+radius*Math.sin(p), target.z+radius*Math.cos(p)*Math.cos(t));
+  camera.lookAt(target.x, target.y, target.z);
+}
+function resetCam() { theta=45; phi=30; radius=S.bounds?Math.max(S.bounds.x,S.bounds.y,S.bounds.z)*2.5:5; target={x:0,y:S.bounds?S.bounds.y/2:0,z:0}; updCam(); }
+function toggleWF() { if(!mesh)return; wfMode=!wfMode; mesh.traverse(c=>{if(c.isMesh)c.material.wireframe=wfMode;}); document.getElementById('wf-btn').style.color=wfMode?'var(--lime)':''; }
+function setView(v) { theta=0; phi=v==='top'?85:12; updCam(); }
+
+// ═══════════════════════════════════════
+//  STL / OBJ PARSERS
+// ═══════════════════════════════════════
+function parseSTL(buf) {
+  const dv = new DataView(buf);
+  const n = dv.getUint32(80, true);
+  const expected = 84 + n*50;
+  const binary = buf.byteLength >= 84 && Math.abs(buf.byteLength-expected) < 16 && n > 0;
+  if (binary) {
+    const verts=[], norms=[]; let off=84;
+    for (let i=0; i<n; i++) {
+      const nx=dv.getFloat32(off,true), ny=dv.getFloat32(off+4,true), nz=dv.getFloat32(off+8,true); off+=12;
+      for (let v=0; v<3; v++) { verts.push(dv.getFloat32(off,true),dv.getFloat32(off+4,true),dv.getFloat32(off+8,true)); norms.push(nx,ny,nz); off+=12; }
+      off+=2;
+    }
+    return { v: new Float32Array(verts), n: new Float32Array(norms), t: n };
+  }
+  const txt = new TextDecoder().decode(buf);
+  const verts=[], norms=[], nreg=/facet normal\s+([\S]+)\s+([\S]+)\s+([\S]+)/g, vreg=/vertex\s+([\S]+)\s+([\S]+)\s+([\S]+)/g;
+  const na=[]; let m;
+  while ((m=nreg.exec(txt))!==null) na.push([+m[1],+m[2],+m[3]]);
+  let vi=0;
+  while ((m=vreg.exec(txt))!==null) { verts.push(+m[1],+m[2],+m[3]); const nn=na[Math.floor(vi/3)]||[0,1,0]; norms.push(nn[0],nn[1],nn[2]); vi++; }
+  return { v: new Float32Array(verts), n: new Float32Array(norms), t: verts.length/9 };
+}
+
+function parseOBJ(txt) {
+  const pos=[], verts=[];
+  for (const line of txt.split('\n')) {
+    const p=line.trim().split(/\s+/);
+    if (p[0]==='v') pos.push([+p[1],+p[2],+p[3]]);
+    else if (p[0]==='f') {
+      const ids=p.slice(1).map(x=>+x.split('/')[0]-1);
+      for (let i=1; i<ids.length-1; i++) verts.push(...pos[ids[0]],...pos[ids[i]],...pos[ids[i+1]]);
+    }
+  }
+  return { v: new Float32Array(verts), n: new Float32Array(verts.length), t: verts.length/9 };
+}
+
+function loadMesh(buf, name) {
+  const ext = name.split('.').pop().toLowerCase();
+  let parsed;
+  try { parsed = ext==='obj' ? parseOBJ(new TextDecoder().decode(buf)) : parseSTL(buf); }
+  catch(e) { toast('Erro ao ler o arquivo.','err'); return; }
+  if (!parsed || parsed.t < 4) { toast('Arquivo inválido ou vazio.','err'); return; }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(parsed.v, 3));
+  geo.setAttribute('normal', new THREE.BufferAttribute(parsed.n, 3));
+  geo.computeVertexNormals(); geo.computeBoundingBox();
+  const bb=geo.boundingBox, sz=new THREE.Vector3(), ctr=new THREE.Vector3();
+  bb.getSize(sz); bb.getCenter(ctr);
+  geo.translate(-ctr.x,-ctr.y,-ctr.z); geo.translate(0,sz.y/2,0);
+
+  const mat = new THREE.MeshStandardMaterial({ color: 0x9BD44B, metalness:.08, roughness:.42 });
+  if (mesh) scene.remove(mesh);
+  mesh = new THREE.Mesh(geo, mat); mesh.castShadow=true; scene.add(mesh);
+  radius = Math.max(sz.x,sz.y,sz.z)*2.5; theta=45; phi=30; target={x:0,y:sz.y/2,z:0}; updCam();
+
+  S.bounds = { x:sz.x, y:sz.y, z:sz.z }; S.tris = parsed.t;
+  S.volume = (sz.x*sz.y*sz.z)/1000*0.45;
+
+  document.getElementById('v-empty').style.display = 'none';
+  document.getElementById('v-ctrl').style.display = 'flex';
+  document.getElementById('v-hint').style.display = 'block';
+  const vs = document.getElementById('v-stats');
+  vs.style.display = 'flex';
+  vs.innerHTML = `<span>${parsed.t.toLocaleString('pt-BR')} tri</span><span>${sz.x.toFixed(1)}×${sz.y.toFixed(1)}×${sz.z.toFixed(1)} mm</span>`;
+  document.getElementById('v-dims').textContent = `${sz.x.toFixed(0)}×${sz.y.toFixed(0)}×${sz.z.toFixed(0)} mm · ${S.volume.toFixed(1)} cm³`;
+  document.getElementById('btn-calc').classList.add('ready');
+  toast('✓ Modelo carregado!', 'ok');
+  setTimeout(doCalc, 300);
+}
+
+// ═══════════════════════════════════════
+//  FILE HANDLING
+// ═══════════════════════════════════════
+function onDragOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('over'); }
+function onDragLeave() { document.getElementById('drop-zone').classList.remove('over'); }
+function onDrop(e) { e.preventDefault(); onDragLeave(); const f=e.dataTransfer.files[0]; if(f) processFile(f); }
+function onFileInput(e) { const f=e.target.files[0]; if(f) processFile(f); }
+
+function processFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['stl','obj','3mf','ply'].includes(ext)) { toast('Formato não suportado.','err'); return; }
+  S.loaded=true; S.fileName=file.name; S.fileSize=file.size;
+  document.getElementById('file-loaded').classList.add('show');
+  document.getElementById('fl-name').textContent = file.name;
+  document.getElementById('fl-meta').textContent = `${(file.size/1024).toFixed(0)} KB · ${ext.toUpperCase()}`;
+
+  const prog=document.getElementById('progress'), fill=document.getElementById('prog-fill'), pct=document.getElementById('prog-pct');
+  prog.classList.add('show');
+  const msgs=['Lendo arquivo...','Analisando geometria...','Calculando volume...','Renderizando...'];
+  let p=0, mi=0;
+  const iv = setInterval(()=>{
+    p = Math.min(85, p+11); fill.style.width=p+'%'; pct.textContent=p+'%';
+    document.getElementById('prog-text').textContent = msgs[Math.min(Math.floor(p/22),3)];
+  }, 80);
+  const reader = new FileReader();
+  reader.onload = e => {
+    clearInterval(iv); fill.style.width='100%'; pct.textContent='100%';
+    setTimeout(()=>{ prog.classList.remove('show'); loadMesh(e.target.result, file.name); }, 380);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function removeFile() {
+  S.loaded=false; S.bounds=null; S.volume=0; S.costs=null;
+  if (mesh) { scene.remove(mesh); mesh=null; }
+  document.getElementById('file-loaded').classList.remove('show');
+  document.getElementById('v-empty').style.display='flex';
+  document.getElementById('v-ctrl').style.display='none';
+  document.getElementById('v-hint').style.display='none';
+  document.getElementById('v-stats').style.display='none';
+  document.getElementById('v-dims').textContent='';
+  document.getElementById('res-wrapper').classList.remove('show');
+  document.getElementById('btn-calc').classList.remove('ready');
+  document.getElementById('f-input').value='';
+}
+
+// ═══════════════════════════════════════
+//  MATERIALS — editable prices
+// ═══════════════════════════════════════
+const DEFAULT_MATS = [
+  { id:'PLA',   color:'#C8FF57', density:1.24, price:80  },
+  { id:'ABS',   color:'#FF6B8A', density:1.05, price:90  },
+  { id:'PETG',  color:'#A78BFA', density:1.27, price:100 },
+  { id:'TPU',   color:'#FFB347', density:1.20, price:150 },
+  { id:'Resina',color:'#F472B6', density:1.10, price:200 },
+  { id:'Nylon', color:'#34D399', density:1.14, price:180 },
+];
+
+function getMats() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('orca3d_mats') || 'null');
+    if (saved && saved.length === DEFAULT_MATS.length) return saved;
+  } catch(e) {}
+  return DEFAULT_MATS.map(m => ({ ...m }));
+}
+function saveMats(mats) {
+  localStorage.setItem('orca3d_mats', JSON.stringify(mats));
+}
+
+function resetMatPrices() {
+  if (!confirm('Redefinir todos os preços para o padrão?')) return;
+  MATS = DEFAULT_MATS.map(m => ({ ...m }));
+  saveMats(MATS);
+  // update filprice if selected mat changed
+  const mat = MATS.find(m => m.id === selectedMatId);
+  if (mat) document.getElementById('filprice').value = mat.price;
+  renderMatGrid();
+  autoCalc();
+  toast('↺ Preços redefinidos', 'info');
+}
+
+let MATS = getMats();
+let selectedMatId = 'PLA';
+
+function renderMatGrid() {
+  const grid = document.getElementById('mat-grid');
+  grid.innerHTML = MATS.map(m => `
+    <div class="mat-chip${m.id===selectedMatId?' sel':''}"
+      style="--mc:${m.color}"
+      data-mat="${m.id}"
+      data-price="${m.price}"
+      data-density="${m.density}"
+      onclick="pickMat(this)">
+      <div class="edit-badge">✏ editar</div>
+      <div class="mat-dot" style="background:${m.color}"></div>
+      <div class="mat-name">${m.id}</div>
+      <div class="mat-price" onclick="openPriceEdit(event,'${m.id}')">
+        <span class="price-text">R$${m.price}/kg</span>
+        <span class="ep">✏</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openPriceEdit(e, matId) {
+  e.stopPropagation(); // don't trigger pickMat
+  const mat = MATS.find(m => m.id === matId);
+  if (!mat) return;
+
+  // Find the .mat-price el that was clicked
+  const priceEl = e.currentTarget;
+  if (priceEl.querySelector('.mat-price-inp')) return; // already editing
+
+  const oldText = priceEl.querySelector('.price-text');
+  oldText.style.display = 'none';
+  priceEl.querySelector('.ep').style.display = 'none';
+
+  const inp = document.createElement('input');
+  inp.type = 'number';
+  inp.className = 'mat-price-inp';
+  inp.value = mat.price;
+  inp.min = 1;
+  inp.step = 1;
+  priceEl.appendChild(inp);
+  inp.focus();
+  inp.select();
+
+  function commit() {
+    const val = parseFloat(inp.value);
+    if (!isNaN(val) && val > 0) {
+      mat.price = Math.round(val);
+      saveMats(MATS);
+      // if this mat is selected, update the filprice field too
+      if (selectedMatId === matId) {
+        document.getElementById('filprice').value = mat.price;
+        autoCalc();
+      }
+      toast(`✏ ${matId} atualizado para R$${mat.price}/kg`, 'ok');
+    }
+    renderMatGrid();
+  }
+
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { inp.blur(); }
+    if (ev.key === 'Escape') { inp.removeEventListener('blur', commit); renderMatGrid(); }
+  });
+}
+
+function pickMat(el) {
+  selectedMatId = el.dataset.mat;
+  const mat = MATS.find(m => m.id === selectedMatId);
+  if (mat) document.getElementById('filprice').value = mat.price;
+  renderMatGrid();
+  autoCalc();
+}
+
+function doCalc() {
+  if (!S.volume) { toast('Carregue um modelo primeiro!','err'); return; }
+  const mat = MATS.find(m => m.id === selectedMatId);
+  if (!mat) return;
+  const fp   = +document.getElementById('filprice').value;
+  const mc   = +document.getElementById('machcost').value;
+  const lc   = +document.getElementById('laborcost').value;
+  const ec   = +document.getElementById('energycost').value;
+  const inf  = +document.getElementById('infill').value;
+  const lh   = +document.getElementById('layerh').value / 100;
+  const spd  = +document.getElementById('speed').value;
+  const sup  = +document.getElementById('support').value;
+  const post = +document.getElementById('postproc').value;
+  const qty  = Math.max(1, +document.getElementById('qty').value || 1);
+  const dens = mat.density;
+  const matN = mat.id;
+
+  const effVol = S.volume * (inf/100) * 1.18;
+  const grams  = effVol * dens;
+  const filCost = (grams/1000) * fp;
+
+  const b = S.bounds;
+  const layers = b.y / lh;
+  const travel = (b.x + b.z) * 2 * 2;
+  let timeH = (layers * travel / spd) / 3600 * 1.25;
+  if (sup > 0) timeH *= (1 + sup/100);
+
+  const machCost  = timeH * mc;
+  const laborCost = .25*lc + timeH*.1*lc;
+  const engCost   = 0.15 * timeH * ec;
+  const risk      = (filCost + machCost) * .05;
+  const totalUnit = filCost + machCost + laborCost + engCost + risk + post;
+  const total     = totalUnit * qty;
+
+  S.costs = { fil:filCost, mach:machCost, labor:laborCost, energy:engCost, risk, post, totalUnit, total, matName:matN, timeH, grams, qty };
+  renderResults();
+}
+
+function autoCalc() {
+  if (S.loaded && S.volume) { savePref(); clearTimeout(window._acd); window._acd = setTimeout(doCalc, 280); }
+}
+
+// ═══════════════════════════════════════
+//  RENDER RESULTS
+// ═══════════════════════════════════════
+function renderResults() {
+  document.getElementById('res-wrapper').classList.add('show');
+  const d = S.costs;
+  const h = Math.floor(d.timeH), m = Math.round((d.timeH-h)*60);
+  const ts = `${h}h${m>0?` ${m}m`:''}`;
+  const qty = d.qty;
+
+  // KPIs
+  const kpis = [
+    {label:'Filamento', val:`${d.grams.toFixed(0)}g`, sub:d.matName,         kc:'var(--lime)'},
+    {label:'Tempo/Unid',val:ts,                        sub:`${d.timeH.toFixed(2)}h`,kc:'var(--rose)'},
+    {label:'Volume',    val:`${S.volume.toFixed(1)}cm³`,sub:`${S.tris.toLocaleString('pt-BR')} tri`, kc:'var(--violet)'},
+    {label:'Custo Unit',val:brl(d.totalUnit),           sub:'sem lucro',       kc:'var(--amber)'},
+    {label:`Total${qty>1?` ×${qty}`:''}`, val:brl(d.total), sub:`${brl(d.total/d.timeH/qty)}/h`, kc:'var(--sky)'},
+  ];
+  document.getElementById('kpi-strip').innerHTML = kpis.map(k=>`
+    <div class="kpi" style="--kc:${k.kc}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-val">${k.val}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`).join('');
+
+  // Breakdown
+  const rows = [
+    {label:`Material (${d.grams.toFixed(1)}g)`, val:d.fil,   color:'var(--lime)'},
+    {label:'Hora-máquina',                       val:d.mach,  color:'var(--rose)'},
+    {label:'Mão de obra',                        val:d.labor, color:'var(--violet)'},
+    {label:'Energia',                            val:d.energy,color:'var(--amber)'},
+    {label:'Risco de falha (5%)',                val:d.risk,  color:'var(--tx2)'},
+  ];
+  if (d.post > 0) rows.push({label:'Pós-processamento', val:d.post, color:'var(--sky)'});
+  if (qty > 1) rows.push({label:`× ${qty} unidades`, val:d.total, color:'var(--violet)'});
+
+  document.getElementById('breakdown').innerHTML =
+    rows.map(r=>`<div class="brow">
+      <div class="brow-left"><div class="brow-dot" style="background:${r.color}"></div>${r.label}</div>
+      <div class="brow-val" style="color:${r.color}">${brl(r.val)}</div>
+    </div>`).join('') +
+    `<div class="brow-total"><div class="brow-total-label">Custo Total</div><div class="brow-total-val">${brl(d.total)}</div></div>`;
+
+  updateSell();
+}
+
+function updateSell() {
+  if (!S.costs) return;
+  const m = +document.getElementById('margin').value;
+  S.selling = S.costs.total * (1 + m/100);
+  document.getElementById('sell-price').textContent = brl(S.selling);
+  document.getElementById('sell-info').textContent = `Lucro: ${brl(S.selling-S.costs.total)} · Margem: ${m}%`;
+  updateMonthly();
+}
+
+function updateMonthly() {
+  if (!S.costs || !S.selling) return;
+  const qty = +document.getElementById('qty-proj').value;
+  const rev = S.selling*qty, profit = (S.selling-S.costs.total)*qty, time = S.costs.timeH*qty;
+  document.getElementById('mon-total').textContent  = brl(rev);
+  document.getElementById('mon-profit').textContent = brl(profit);
+  const d=Math.floor(time/24), hr=Math.floor(time%24), mn=Math.round((time%1)*60);
+  document.getElementById('mon-time').textContent = (d>0?d+'d ':'')+hr+'h '+mn+'m';
+}
+
+// ═══════════════════════════════════════
+//  PDF EXPORT — design premium dark
+// ═══════════════════════════════════════
+function exportPDF() {
+  if (!S.costs) { toast('Calcule primeiro!','err'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const W=210, P=18;
+  const d = S.costs;
+  const margin = +document.getElementById('margin').value;
+  const client = document.getElementById('c-name').value;
+  const company = document.getElementById('c-company').value;
+  const desc = document.getElementById('c-desc').value;
+  const dateStr = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+
+  // ─── PAGE BG ───
+  doc.setFillColor(11,13,20); doc.rect(0,0,W,297,'F');
+
+  // ─── HEADER BAND ───
+  doc.setFillColor(16,19,28); doc.rect(0,0,W,42,'F');
+  // lime accent line
+  doc.setFillColor(200,255,87); doc.rect(0,42,W,1.5,'F');
+
+  // Logo mark
+  doc.setFillColor(200,255,87); doc.roundedRect(P,10,22,22,4,4,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(11,13,20);
+  doc.text('O3', P+4, 25);
+
+  // Name
+  doc.setFontSize(20); doc.setTextColor(228,232,245); doc.setFont('helvetica','bold');
+  doc.text('Orça', P+28, 22);
+  doc.setTextColor(200,255,87);
+  doc.text(' 3D Print', P+28+doc.getTextWidth('Orça'), 22);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(120,136,168);
+  doc.text('ORÇAMENTO PROFISSIONAL', P+28, 30);
+
+  // Right: date + number
+  const docNum = 'ORC-' + Date.now().toString().slice(-6);
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(200,255,87);
+  doc.text(docNum, W-P, 20, {align:'right'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(120,136,168);
+  doc.text(dateStr, W-P, 28, {align:'right'});
+  doc.text('Validade: 30 dias', W-P, 35, {align:'right'});
+
+  let y = 56;
+
+  // ─── CLIENT BLOCK ───
+  if (client || company || desc) {
+    const bH = [client,company,desc].filter(Boolean).length * 8 + 14;
+    doc.setFillColor(22,26,38); doc.roundedRect(P, y, W-P*2, bH, 4,4,'F');
+    doc.setFillColor(167,139,250); doc.rect(P, y, 2, bH, 'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(123,136,168);
+    doc.text('CLIENTE', P+8, y+7);
+    let cy = y+14;
+    if (client) {
+      doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(228,232,245);
+      doc.text(client, P+8, cy); cy+=8;
+    }
+    if (company) {
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(123,136,168);
+      doc.text(company, P+8, cy); cy+=7;
+    }
+    if (desc) {
+      doc.setFontSize(9); doc.setTextColor(100,120,150);
+      doc.text('Peça: '+desc, P+8, cy);
+    }
+    y += bH + 10;
+  }
+
+  // ─── MODEL BLOCK ───
+  doc.setFillColor(22,26,38); doc.roundedRect(P, y, W-P*2, 26, 4,4,'F');
+  doc.setFillColor(87,200,255); doc.rect(P, y, 2, 26, 'F');
+  doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(123,136,168);
+  doc.text('ARQUIVO / MODELO', P+8, y+7);
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(228,232,245);
+  doc.text(S.fileName||'Modelo 3D', P+8, y+15);
+  if (S.bounds) {
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(100,120,150);
+    doc.text(`${S.bounds.x.toFixed(0)}×${S.bounds.y.toFixed(0)}×${S.bounds.z.toFixed(0)} mm  ·  ${S.volume.toFixed(1)} cm³  ·  ${S.tris.toLocaleString('pt-BR')} triângulos`, P+8, y+22);
+  }
+  y += 34;
+
+  // ─── KPI ROW ───
+  const kpis2 = [
+    {l:'Material', v:`${d.grams.toFixed(0)}g`, s:d.matName, c:[200,255,87]},
+    {l:'Tempo',    v:`${Math.floor(d.timeH)}h ${Math.round((d.timeH%1)*60)}m`, s:'de impressão', c:[87,200,255]},
+    {l:'Infill',   v:`${document.getElementById('infill').value}%`, s:'preenchimento', c:[167,139,250]},
+    {l:'Qtd',      v:`×${d.qty}`, s:'unidades', c:[255,179,71]},
+  ];
+  const kw = (W-P*2-9)/4;
+  kpis2.forEach((k,i) => {
+    const kx = P + i*(kw+3);
+    doc.setFillColor(17,21,32); doc.roundedRect(kx, y, kw, 20, 3,3,'F');
+    doc.setFillColor(...k.c); doc.rect(kx, y, kw, 1.5, 'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(100,120,150);
+    doc.text(k.l, kx+5, y+7);
+    doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(...k.c);
+    doc.text(k.v, kx+5, y+14.5);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(80,96,120);
+    doc.text(k.s, kx+5, y+19);
+  });
+  y += 28;
+
+  // ─── BREAKDOWN ───
+  doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(100,120,150);
+  doc.text('DETALHAMENTO DE CUSTOS', P, y); y+=7;
+
+  const bRows = [
+    {l:`Material – ${d.matName} (${d.grams.toFixed(1)}g)`, v:d.fil,   c:[200,255,87]},
+    {l:'Hora-máquina',                                       v:d.mach,  c:[87,200,255]},
+    {l:'Mão de obra',                                        v:d.labor, c:[167,139,250]},
+    {l:'Energia elétrica',                                   v:d.energy,c:[255,179,71]},
+    {l:'Margem de risco (5%)',                               v:d.risk,  c:[120,136,168]},
+  ];
+  if (d.post>0) bRows.push({l:'Pós-processamento', v:d.post, c:[100,200,150]});
+  bRows.forEach((r,i) => {
+    doc.setFillColor(i%2===0?17:20, i%2===0?21:24, i%2===0?32:36);
+    doc.rect(P, y, W-P*2, 8.5, 'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(170,188,210);
+    doc.text(r.l, P+5, y+5.5);
+    doc.setFont('helvetica','bold'); doc.setTextColor(...r.c);
+    doc.text(brl(r.v), W-P-4, y+5.5, {align:'right'});
+    y += 8.5;
+  });
+  // total row
+  doc.setFillColor(20,30,22); doc.rect(P, y, W-P*2, 11,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(200,220,200);
+  doc.text('Custo de Produção', P+5, y+7.5);
+  doc.setFontSize(13); doc.setTextColor(200,255,87);
+  doc.text(brl(d.total), W-P-4, y+7.5, {align:'right'});
+  y += 19;
+
+  // ─── SELL PRICE BOX ───
+  doc.setFillColor(10,26,40); doc.roundedRect(P, y, W-P*2, 34, 5,5,'F');
+  doc.setDrawColor(87,200,255,.8); doc.setLineWidth(.4);
+  doc.roundedRect(P, y, W-P*2, 34, 5,5,'S');
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(100,160,200);
+  doc.text(`PREÇO DE VENDA SUGERIDO — Margem de Lucro: ${margin}%`, P+7, y+9);
+  doc.setFont('helvetica','bold'); doc.setFontSize(24); doc.setTextColor(87,200,255);
+  doc.text(brl(S.selling), P+7, y+25);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(80,140,180);
+  doc.text(`Lucro líquido: ${brl(S.selling-d.total)}`, W-P-5, y+25, {align:'right'});
+  y += 42;
+
+  // ─── FOOTER ───
+  doc.setFillColor(14,17,26); doc.rect(0,277,W,20,'F');
+  doc.setFillColor(200,255,87); doc.rect(0,277,W,.8,'F');
+  doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(60,76,100);
+  doc.text('Gerado por Orça 3D Print', P, 286);
+  doc.text('Este documento é apenas uma estimativa e pode variar conforme o modelo final.', W-P, 286, {align:'right'});
+  doc.setTextColor(80,100,130);
+  doc.text(docNum + ' · ' + dateStr, W/2, 291, {align:'center'});
+
+  const fname = (S.fileName||'modelo').replace(/\.[^.]+$/,'');
+  doc.save(`orca3d-${fname}-${docNum}.pdf`);
+  toast('📄 PDF exportado!','ok');
+}
+
+// ═══════════════════════════════════════
+//  COPY QUOTE
+// ═══════════════════════════════════════
+function copyQ() {
+  if (!S.costs) return;
+  const d = S.costs;
+  const client = document.getElementById('c-name').value;
+  const txt =
+`🖨 ORÇAMENTO — Orça 3D Print
+${client ? '👤 Cliente: ' + client + '\n' : ''}📦 Arquivo: ${S.fileName}
+🧱 Material: ${d.matName} (${d.grams.toFixed(1)}g)
+⏱ Tempo: ${Math.floor(d.timeH)}h ${Math.round((d.timeH%1)*60)}m
+💰 Custo: ${brl(d.total)}
+💵 Preço de venda: ${brl(S.selling)} (${document.getElementById('margin').value}% margem)
+📅 ${new Date().toLocaleString('pt-BR')}`;
+  navigator.clipboard.writeText(txt).then(() => toast('📎 Copiado!','ok'));
+}
+
+// ═══════════════════════════════════════
+//  HISTORY
+// ═══════════════════════════════════════
+function getHist() { try { return JSON.parse(localStorage.getItem('orca3d_v3')||'[]'); } catch{ return []; } }
+function setHist(h) { localStorage.setItem('orca3d_v3', JSON.stringify(h)); }
+
+function saveToHistory() {
+  if (!S.costs) { toast('Calcule primeiro!','err'); return; }
+  const h = getHist();
+  h.unshift({
+    id: Date.now(),
+    date: new Date().toLocaleString('pt-BR'),
+    fileName: S.fileName,
+    client: document.getElementById('c-name').value || '',
+    company: document.getElementById('c-company').value || '',
+    desc: document.getElementById('c-desc').value || '',
+    matName: S.costs.matName,
+    total: S.costs.total,
+    selling: S.selling,
+    margin: +document.getElementById('margin').value,
+    grams: S.costs.grams,
+    timeH: S.costs.timeH,
+    qty: S.costs.qty,
+  });
+  if (h.length > 60) h.pop();
+  setHist(h);
+  updateHistBadge();
+  toast('💾 Salvo no histórico!','ok');
+}
+
+function updateHistBadge() {
+  const h = getHist();
+  const b = document.getElementById('hist-badge');
+  if (h.length > 0) { b.style.display='inline'; b.textContent=h.length; }
+  else b.style.display='none';
+}
+
+function renderHistory() {
+  const h = getHist();
+  const el = document.getElementById('hist-list');
+  if (!h.length) {
+    el.innerHTML = `<div class="hist-empty">
+      <div class="hist-empty-ico">🕐</div>
+      <div class="hist-empty-text">Nenhum orçamento salvo</div>
+      <div class="hist-empty-sub">Calcule e clique em "Salvar no Histórico"</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = `<div class="hist-grid">` + h.map(e => `
+    <div class="hist-card">
+      <div class="hist-icon">📦</div>
+      <div class="hist-info">
+        <div class="hist-name">${e.fileName||'Modelo'}${e.desc?' · '+e.desc:''}</div>
+        <div class="hist-meta">${e.date} · ${e.client||''}${e.client?' · ':''}${e.matName} · ${e.grams.toFixed(0)}g · ${Math.floor(e.timeH)}h${Math.round((e.timeH%1)*60)}m${e.qty>1?' · ×'+e.qty:''}</div>
+      </div>
+      <div class="hist-amounts">
+        <div class="hist-cost">${brl(e.total)}</div>
+        <div class="hist-sell">Venda: ${brl(e.selling)}</div>
+      </div>
+      <button class="hist-del" onclick="delHistItem(${e.id},event)">✕</button>
+    </div>
+  `).join('') + `</div>`;
+}
+
+function delHistItem(id, e) {
+  e.stopPropagation();
+  const h = getHist().filter(x => x.id !== id);
+  setHist(h); updateHistBadge(); renderHistory();
+  toast('Removido','info');
+}
+
+function clearHistory() {
+  if (!confirm('Limpar todo o histórico?')) return;
+  localStorage.removeItem('orca3d_v3');
+  updateHistBadge(); renderHistory();
+  toast('Histórico limpo','info');
+}
+
+// ═══════════════════════════════════════
+//  PREFERENCES
+// ═══════════════════════════════════════
+function savePref() {
+  localStorage.setItem('orca3d_pref', JSON.stringify({
+    filprice: document.getElementById('filprice').value,
+    machcost: document.getElementById('machcost').value,
+    laborcost: document.getElementById('laborcost').value,
+    energycost: document.getElementById('energycost').value,
+    margin: document.getElementById('margin').value,
+  }));
+}
+function loadPref() {
+  try {
+    const p = JSON.parse(localStorage.getItem('orca3d_pref') || '{}');
+    ['filprice','machcost','laborcost','energycost','margin'].forEach(k => {
+      if (p[k] !== undefined) document.getElementById(k).value = p[k];
+    });
+    if (p.margin) document.getElementById('margin-val').textContent = p.margin + '%';
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════
+function brl(v) {
+  return 'R$ ' + (+v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+let _tt;
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  const ico = {ok:'✓', err:'✕', info:'ℹ'}[type] || '✓';
+  el.className = `toast ${type} show`;
+  document.getElementById('toast-ico').textContent = ico;
+  document.getElementById('toast-msg').textContent = msg;
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  initThree();
+  loadPref();
+  updateHistBadge();
+  renderMatGrid();
+});
+</script>
+</body>
+</html>
