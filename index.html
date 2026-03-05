@@ -10,9 +10,6 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@300;400;500&display=swap');
 
-/* ═══════════════════════════════════════
-   TOKENS
-═══════════════════════════════════════ */
 :root {
   --ink:    #0B0D14;
   --ink2:   #10131C;
@@ -51,9 +48,6 @@
   --shadow-lg: 0 12px 60px rgba(0,0,0,.6);
 }
 
-/* ═══════════════════════════════════════
-   BASE
-═══════════════════════════════════════ */
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
@@ -64,7 +58,6 @@ body{
   overflow-x:hidden;
 }
 
-/* Noise + glow background */
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
@@ -80,9 +73,6 @@ body::after{
   background-size:56px 56px;
 }
 
-/* ═══════════════════════════════════════
-   HEADER
-═══════════════════════════════════════ */
 header{
   position:sticky;top:0;z-index:200;
   height:58px;padding:0 36px;
@@ -118,9 +108,6 @@ header{
 .h-chip.on::before{content:'● ';animation:pulse-dot 1.6s ease infinite}
 @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ═══════════════════════════════════════
-   NAV TABS
-═══════════════════════════════════════ */
 .nav-bar{
   position:relative;z-index:1;
   display:flex;align-items:center;gap:2px;
@@ -152,11 +139,9 @@ header{
   color:var(--lime);padding:1px 6px;border-radius:10px;
   display:none;
 }
+#empresa-badge { display: none; }
 .tab-divider{flex:1;border-bottom:1px solid var(--rim)}
 
-/* ═══════════════════════════════════════
-   MAIN / PANELS
-═══════════════════════════════════════ */
 main{
   position:relative;z-index:1;
   background:var(--ink2);
@@ -170,9 +155,6 @@ main{
   padding:32px 36px 72px;
 }
 
-/* ═══════════════════════════════════════
-   HERO
-═══════════════════════════════════════ */
 .hero{
   margin-bottom:32px;
   animation:rise .55s cubic-bezier(.22,1,.36,1) both;
@@ -196,9 +178,6 @@ main{
 }
 .hero p{color:var(--tx2);font-size:15px;line-height:1.65;letter-spacing:-.1px}
 
-/* ═══════════════════════════════════════
-   LAYOUT GRID
-═══════════════════════════════════════ */
 .app-grid{
   display:grid;
   grid-template-columns:380px 1fr;
@@ -208,9 +187,6 @@ main{
 .left-col{display:flex;flex-direction:column;gap:14px}
 .right-col{display:flex;flex-direction:column;gap:14px}
 
-/* ═══════════════════════════════════════
-   CARD
-═══════════════════════════════════════ */
 .card{
   background:var(--ink3);
   border:1px solid var(--rim);
@@ -219,7 +195,6 @@ main{
   position:relative;overflow:hidden;
   animation:rise .55s cubic-bezier(.22,1,.36,1) both;
 }
-/* top accent line */
 .card[data-accent]::before{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
   border-radius:var(--r-card) var(--r-card) 0 0;
@@ -242,9 +217,6 @@ main{
 }
 .cl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
-/* ═══════════════════════════════════════
-   CLIENT FIELDS
-═══════════════════════════════════════ */
 .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field-full{grid-column:1/-1}
 .field{display:flex;flex-direction:column;gap:5px}
@@ -266,9 +238,6 @@ main{
 }
 .field-input::placeholder{color:var(--tx4)}
 
-/* ═══════════════════════════════════════
-   UPLOAD ZONE
-═══════════════════════════════════════ */
 .drop-zone{
   border:1.5px dashed var(--rim2);
   border-radius:14px;padding:36px 20px;
@@ -305,7 +274,6 @@ main{
   color:var(--tx3);padding:2px 8px;border-radius:4px;
 }
 
-/* File loaded state */
 .file-loaded{
   display:none;align-items:center;gap:12px;
   padding:11px 14px;
@@ -327,7 +295,6 @@ main{
 }
 .fl-remove:hover{color:var(--rose);background:var(--rose-a)}
 
-/* Progress */
 .progress{margin-top:12px;display:none}
 .progress.show{display:block}
 .progress-row{
@@ -342,9 +309,6 @@ main{
   border-radius:2px;transition:width .25s ease;
 }
 
-/* ═══════════════════════════════════════
-   PARAMETERS
-═══════════════════════════════════════ */
 .section-title{
   font-family:'DM Mono',monospace;font-size:9px;
   letter-spacing:2px;text-transform:uppercase;
@@ -353,7 +317,6 @@ main{
 }
 .params-sect{margin-bottom:16px}
 
-/* Material chips */
 .mat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .mat-chip{
   display:flex;flex-direction:column;align-items:center;gap:4px;
@@ -400,7 +363,6 @@ main{
 }
 .mat-chip:hover .edit-badge{opacity:1}
 
-/* Form row */
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .form-group{display:flex;flex-direction:column;gap:5px}
 .form-group label{
@@ -421,7 +383,6 @@ select.inp{cursor:pointer}
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
-/* Slider */
 .slider-group{margin-bottom:12px}
 .slider-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
 .slider-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx2)}
@@ -445,8 +406,114 @@ input[type=range]::-webkit-slider-thumb{
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
 
 /* ═══════════════════════════════════════
-   CALC BUTTON
+   SMART DEBOUNCE INDICATOR — NEW
 ═══════════════════════════════════════ */
+.calc-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .5px;
+  border: 1px solid transparent;
+  transition: all .3s ease;
+  min-height: 34px;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+}
+.calc-status-bar.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.calc-status-bar.idle {
+  background: var(--lime-a);
+  border-color: rgba(200,255,87,.2);
+  color: var(--lime);
+}
+.calc-status-bar.pending {
+  background: var(--amber-a);
+  border-color: rgba(255,179,71,.2);
+  color: var(--amber);
+}
+.calc-status-bar.calculating {
+  background: var(--sky-a);
+  border-color: rgba(87,200,255,.2);
+  color: var(--sky);
+}
+.calc-status-bar.error {
+  background: var(--rose-a);
+  border-color: rgba(255,107,138,.2);
+  color: var(--rose);
+}
+.csb-left { display: flex; align-items: center; gap: 7px; }
+.csb-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.calc-status-bar.pending .csb-dot {
+  animation: dot-pulse 0.8s ease-in-out infinite;
+}
+.calc-status-bar.calculating .csb-dot {
+  animation: dot-spin-pulse 0.6s ease-in-out infinite;
+}
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.6); }
+}
+@keyframes dot-spin-pulse {
+  0%, 100% { opacity: 1; transform: scale(1.2); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* Countdown bar under the status */
+.csb-countdown {
+  width: 48px; height: 2px;
+  background: var(--rim);
+  border-radius: 1px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.csb-countdown-fill {
+  height: 100%;
+  background: currentColor;
+  border-radius: 1px;
+  width: 100%;
+  transition: width linear;
+  opacity: .7;
+}
+
+/* Changed field highlight */
+.inp.changed, .field-input.changed {
+  border-color: rgba(255,179,71,.5) !important;
+  box-shadow: 0 0 0 2px rgba(255,179,71,.1) !important;
+  animation: field-flash .4s ease both;
+}
+@keyframes field-flash {
+  0%   { background: rgba(255,179,71,.15); }
+  100% { background: var(--ink4); }
+}
+input[type=range].changed {
+  outline: 2px solid rgba(255,179,71,.35);
+  outline-offset: 3px;
+  border-radius: 3px;
+  animation: field-flash .4s ease both;
+}
+
+/* Results shimmer during recalc */
+.kpi.recalc .kpi-val {
+  opacity: .35;
+  animation: shimmer 0.8s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%, 100% { opacity: .35; }
+  50% { opacity: .6; }
+}
+
 .btn-calc{
   width:100%;padding:13px;margin-top:6px;
   background:var(--ink4);border:1px solid var(--rim2);
@@ -466,10 +533,18 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
   box-shadow:0 6px 28px rgba(200,255,87,.25);
   transform:translateY(-1px);
 }
+.btn-calc.calculating-state {
+  border-color: rgba(87,200,255,.4);
+  color: var(--sky);
+  background: var(--sky-a);
+  cursor: not-allowed;
+  animation: calc-pulse 1s ease-in-out infinite;
+}
+@keyframes calc-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(87,200,255,0); }
+  50% { box-shadow: 0 0 0 4px rgba(87,200,255,.12); }
+}
 
-/* ═══════════════════════════════════════
-   3D VIEWER
-═══════════════════════════════════════ */
 #cv-wrap{
   width:100%;height:360px;
   background:
@@ -515,13 +590,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
   letter-spacing:.3px;display:none;
 }
 
-/* ═══════════════════════════════════════
-   RESULTS
-═══════════════════════════════════════ */
 .res-wrapper{display:none}
 .res-wrapper.show{display:block}
 
-/* KPI strip */
 .kpi-strip{
   display:grid;grid-template-columns:repeat(5,1fr);
   gap:10px;margin-bottom:18px;
@@ -552,10 +623,8 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
 @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .kpi-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4)}
 
-/* Results bottom grid */
 .res-bottom{display:grid;grid-template-columns:1fr 360px;gap:14px}
 
-/* Breakdown table */
 .breakdown{
   background:var(--ink4);border:1px solid var(--rim);
   border-radius:12px;overflow:hidden;
@@ -579,9 +648,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
 .brow-total-label{font-size:13px;font-weight:600}
 .brow-total-val{font-family:'DM Mono',monospace;font-size:19px;font-weight:500;color:var(--lime)}
 
-/* ═══════════════════════════════════════
-   QUOTE PANEL (right side)
-═══════════════════════════════════════ */
 .quote-panel{
   background:var(--ink4);border:1px solid var(--rim);
   border-radius:12px;padding:18px;
@@ -589,7 +655,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
 }
 .qp-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px}
 
-/* Sell price display */
 .sell-disp{
   background:var(--ink);border:1px solid var(--rim);
   border-radius:10px;padding:16px;text-align:center;
@@ -610,7 +675,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
   color:var(--tx3);margin-top:5px;
 }
 
-/* Action buttons */
 .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .btn-action{
   padding:11px;border-radius:9px;
@@ -635,7 +699,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
 }
 .btn-save:hover{border-color:var(--violet);color:var(--violet)}
 
-/* Monthly projection */
 .monthly-box{
   background:rgba(167,139,250,.05);
   border:1px solid rgba(167,139,250,.18);
@@ -648,9 +711,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
 .mon-kpi .mk-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500}
 .mon-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--tx3);text-align:center;margin-top:8px}
 
-/* ═══════════════════════════════════════
-   HISTORY PANEL
-═══════════════════════════════════════ */
 .hist-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .hist-empty{
   text-align:center;padding:56px 20px;
@@ -693,9 +753,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
 .btn-sm:hover{border-color:var(--rim2);color:var(--tx)}
 .btn-sm.danger:hover{border-color:var(--rose);color:var(--rose)}
 
-/* ═══════════════════════════════════════
-   TOAST
-═══════════════════════════════════════ */
 .toast{
   position:fixed;bottom:22px;right:22px;z-index:9999;
   background:var(--ink3);border:1px solid var(--rim2);
@@ -712,17 +769,11 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
 .toast.info{border-color:rgba(87,200,255,.3)}
 .toast-ico{font-size:16px}
 
-/* ═══════════════════════════════════════
-   ANIMATIONS
-═══════════════════════════════════════ */
 @keyframes rise{
   from{opacity:0;transform:translateY(18px)}
   to{opacity:1;transform:translateY(0)}
 }
 
-/* ═══════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════ */
 @media(max-width:1200px){
   .app-grid{grid-template-columns:350px 1fr}
   .kpi-strip{grid-template-columns:repeat(3,1fr)}
@@ -736,19 +787,165 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
   .kpi-strip{grid-template-columns:1fr 1fr}
   .mat-grid{grid-template-columns:repeat(3,1fr)}
 }
+/* ═══════════════════════════════════════
+   FEEDBACK — CATEGORY TILES
+═══════════════════════════════════════ */
 
-/* Print */
-@media print{
-  header,.nav-bar,.v-ctrl,.btn-calc,.btn-action,.btn-save,
-  .monthly-box,.drop-zone,.params-sect,.hero,body::before,body::after{display:none!important}
-  body{background:#fff;color:#000}
-  .card{border-color:#ddd;background:#fff}
+/* Grid of 5 category tiles */
+.cat-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 8px 12px;
+  background: var(--ink4);
+  border: 1.5px solid var(--rim);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all .22s cubic-bezier(.22,1,.36,1);
+  position: relative;
+  overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+}
+/* Top accent line — hidden by default */
+.cat-tile::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--ct-accent, var(--lime));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .25s ease;
+}
+/* Glow bg on select */
+.cat-tile::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, var(--ct-glow, rgba(200,255,87,.08)) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity .25s;
+  pointer-events: none;
+}
+.cat-tile:hover {
+  background: var(--ink3);
+  border-color: var(--rim2);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,.3);
+}
+.cat-tile.cat-tile-sel {
+  background: var(--ink3);
+  border-color: var(--ct-accent, var(--lime));
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px rgba(0,0,0,.35);
+}
+.cat-tile.cat-tile-sel::before { transform: scaleX(1); }
+.cat-tile.cat-tile-sel::after  { opacity: 1; }
+
+.ct-ico {
+  font-size: 24px;
+  line-height: 1;
+  transition: transform .2s;
+}
+.cat-tile:hover .ct-ico,
+.cat-tile.cat-tile-sel .ct-ico { transform: scale(1.18); }
+
+.ct-lbl {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  text-align: center;
+  color: var(--tx3);
+  transition: color .2s;
+  line-height: 1.2;
+}
+.cat-tile:hover .ct-lbl { color: var(--tx2); }
+.cat-tile.cat-tile-sel .ct-lbl { color: var(--ct-accent, var(--lime)); }
+
+/* ── SEND BUTTON ── */
+.fb-send-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  cursor: pointer;
+  transition: all .25s;
+  /* default: not-ready state */
+  background: var(--ink4);
+  border: 1.5px solid var(--rim2);
+  color: var(--tx3);
+  position: relative;
+  overflow: hidden;
+}
+.fb-send-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--lime-a), rgba(87,200,255,.06));
+  opacity: 0;
+  transition: opacity .25s;
+}
+/* ready state — filled when form is valid */
+.fb-send-btn.fb-send-ready {
+  border-color: rgba(200,255,87,.45);
+  color: var(--lime);
+  box-shadow: 0 4px 20px rgba(200,255,87,.12);
+}
+.fb-send-btn.fb-send-ready::before { opacity: 1; }
+.fb-send-btn.fb-send-ready:hover {
+  background: var(--lime);
+  color: var(--ink);
+  border-color: transparent;
+  box-shadow: 0 6px 28px rgba(200,255,87,.3);
+  transform: translateY(-1px);
+}
+.fb-send-btn.fb-send-ready:hover::before { opacity: 0; }
+
+.fsb-ico   { font-size: 16px; position: relative; z-index: 1; }
+.fsb-text  { position: relative; z-index: 1; }
+.fsb-arrow {
+  margin-left: auto;
+  font-size: 16px;
+  position: relative; z-index: 1;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: all .2s;
+}
+.fb-send-btn.fb-send-ready:hover .fsb-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── HISTORY ITEMS ── */
+.fb-hist-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 11px 13px; border-radius: 9px;
+  background: var(--ink4); border: 1px solid var(--rim);
+  margin-bottom: 7px; transition: border-color .18s, background .18s;
+}
+.fb-hist-item:hover { border-color: var(--rim2); background: var(--ink3); }
+.fb-cat-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px;
+}
+
+@media(max-width:1100px){
+  #panel-feedback .panel-inner > div[style*="grid-template-columns:1fr 380px"]{
+    grid-template-columns: 1fr !important;
+  }
+}
+@media(max-width:700px){
+  #cat-row { grid-template-columns: repeat(3,1fr) !important; }
 }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="logo">
     <div class="logo-mark">
@@ -762,11 +959,10 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
   <div class="h-right">
     <span class="h-chip on">Online</span>
     <span class="h-chip">Grátis</span>
-    <span class="h-chip">v3.0</span>
+    <span class="h-chip">v3.2</span>
   </div>
 </header>
 
-<!-- NAVIGATION TABS -->
 <div class="nav-bar">
   <button class="nav-tab active" onclick="switchTab('calc',this)">
     <span class="n-ico">⚡</span> Calculadora
@@ -775,13 +971,17 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
     <span class="n-ico">🕐</span> Histórico
     <span class="nav-badge" id="hist-badge"></span>
   </button>
+  <button class="nav-tab" onclick="switchTab('empresa',this)" id="tab-empresa">
+    <span class="n-ico">🏢</span> Minha Empresa
+    <span class="nav-badge" id="empresa-badge" style="background:var(--lime-a);border-color:rgba(200,255,87,.25);color:var(--lime)">✓</span>
+  </button>
+  <button class="nav-tab" onclick="switchTab('feedback',this)" id="tab-feedback">
+    <span class="n-ico">💬</span> Feedback
+  </button>
   <div class="tab-divider"></div>
 </div>
 
-<!-- MAIN AREA -->
 <main>
-
-  <!-- ════ PANEL: CALCULADORA ════ -->
   <div class="panel active" id="panel-calc">
     <div class="panel-inner">
 
@@ -792,11 +992,8 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
       </div>
 
       <div class="app-grid">
-
-        <!-- LEFT COLUMN -->
         <div class="left-col">
 
-          <!-- Client card -->
           <div class="card" data-accent="violet" style="animation-delay:.05s">
             <div class="card-head">
               <div class="card-label">
@@ -820,7 +1017,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
             </div>
           </div>
 
-          <!-- Upload card -->
           <div class="card" data-accent="lime" style="animation-delay:.1s">
             <div class="card-head">
               <div class="card-label">
@@ -877,7 +1073,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
             <input type="file" id="f-input" accept=".stl,.obj,.3mf,.ply" style="display:none" onchange="onFileInput(event)">
           </div>
 
-          <!-- Parameters card -->
           <div class="card" data-accent="sky" style="animation-delay:.15s">
             <div class="card-head">
               <div class="card-label">
@@ -886,7 +1081,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
               </div>
             </div>
 
-            <!-- Materials -->
             <div class="params-sect">
               <div class="section-title" style="display:flex;align-items:center;justify-content:space-between">
                 Material / Filamento
@@ -898,32 +1092,30 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
               <div class="mat-grid" id="mat-grid"></div>
             </div>
 
-            <!-- Costs -->
             <div class="params-sect">
               <div class="section-title">Custos Operacionais</div>
               <div class="form-row">
                 <div class="form-group">
                   <label>Filamento (R$/kg)</label>
-                  <input type="number" id="filprice" class="inp" value="80" min="10" step="5" oninput="autoCalc()">
+                  <input type="number" id="filprice" class="inp" value="80" min="10" step="5" oninput="autoCalc(this,'cost')">
                 </div>
                 <div class="form-group">
                   <label>Máquina (R$/h)</label>
-                  <input type="number" id="machcost" class="inp" value="3.50" min="0" step=".5" oninput="autoCalc()">
+                  <input type="number" id="machcost" class="inp" value="3.50" min="0" step=".5" oninput="autoCalc(this,'cost')">
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label>Mão de obra (R$/h)</label>
-                  <input type="number" id="laborcost" class="inp" value="15" min="0" step="1" oninput="autoCalc()">
+                  <input type="number" id="laborcost" class="inp" value="15" min="0" step="1" oninput="autoCalc(this,'cost')">
                 </div>
                 <div class="form-group">
                   <label>Energia (R$/kWh)</label>
-                  <input type="number" id="energycost" class="inp" value="0.75" min="0" step=".05" oninput="autoCalc()">
+                  <input type="number" id="energycost" class="inp" value="0.75" min="0" step=".05" oninput="autoCalc(this,'cost')">
                 </div>
               </div>
             </div>
 
-            <!-- Print settings -->
             <div class="params-sect">
               <div class="section-title">Configurações de Impressão</div>
               <div class="slider-group">
@@ -932,7 +1124,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
                   <span class="slider-val" id="infill-val">20%</span>
                 </div>
                 <input type="range" id="infill" min="5" max="100" value="20"
-                  oninput="document.getElementById('infill-val').textContent=this.value+'%'; autoCalc()">
+                  oninput="document.getElementById('infill-val').textContent=this.value+'%'; autoCalc(this,'slider')">
               </div>
               <div class="slider-group">
                 <div class="slider-head">
@@ -940,16 +1132,16 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
                   <span class="slider-val" id="layer-val">0.20 mm</span>
                 </div>
                 <input type="range" id="layerh" min="5" max="40" value="20"
-                  oninput="document.getElementById('layer-val').textContent=(this.value/100).toFixed(2)+' mm'; autoCalc()">
+                  oninput="document.getElementById('layer-val').textContent=(this.value/100).toFixed(2)+' mm'; autoCalc(this,'slider')">
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label>Velocidade (mm/s)</label>
-                  <input type="number" id="speed" class="inp" value="60" min="10" max="300" oninput="autoCalc()">
+                  <input type="number" id="speed" class="inp" value="60" min="10" max="300" oninput="autoCalc(this,'cost')">
                 </div>
                 <div class="form-group">
                   <label>Suporte</label>
-                  <select id="support" class="inp" onchange="autoCalc()">
+                  <select id="support" class="inp" onchange="autoCalc(this,'select')">
                     <option value="0">Sem suporte</option>
                     <option value="8">Leve (+8%)</option>
                     <option value="18">Denso (+18%)</option>
@@ -959,7 +1151,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
               <div class="form-row">
                 <div class="form-group">
                   <label>Pós-processamento</label>
-                  <select id="postproc" class="inp" onchange="autoCalc()">
+                  <select id="postproc" class="inp" onchange="autoCalc(this,'select')">
                     <option value="0">Nenhum</option>
                     <option value="10">Lixamento (+R$10)</option>
                     <option value="25">Pintura (+R$25)</option>
@@ -968,8 +1160,19 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
                 </div>
                 <div class="form-group">
                   <label>Quantidade</label>
-                  <input type="number" id="qty" class="inp" value="1" min="1" max="999" oninput="autoCalc()">
+                  <input type="number" id="qty" class="inp" value="1" min="1" max="999" oninput="autoCalc(this,'cost')">
                 </div>
+              </div>
+            </div>
+
+            <!-- ═══ SMART DEBOUNCE STATUS BAR — NEW ═══ -->
+            <div class="calc-status-bar" id="calc-status-bar">
+              <div class="csb-left">
+                <div class="csb-dot"></div>
+                <span id="csb-msg">Pronto</span>
+              </div>
+              <div class="csb-countdown" id="csb-countdown">
+                <div class="csb-countdown-fill" id="csb-fill"></div>
               </div>
             </div>
 
@@ -977,10 +1180,8 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
           </div>
         </div>
 
-        <!-- RIGHT COLUMN -->
         <div class="right-col">
 
-          <!-- Viewer card -->
           <div class="card" data-accent="rose" style="animation-delay:.12s">
             <div class="card-head">
               <div class="card-label">
@@ -1006,13 +1207,10 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
             <div class="v-hint" id="v-hint">🖱 Arrastar · Scroll para zoom · Clique direito para mover</div>
           </div>
 
-          <!-- Results -->
           <div class="res-wrapper" id="res-wrapper">
 
-            <!-- KPI Strip -->
             <div class="kpi-strip" id="kpi-strip"></div>
 
-            <!-- Bottom: breakdown + quote -->
             <div class="res-bottom">
               <div>
                 <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);margin-bottom:10px">
@@ -1047,7 +1245,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
                   </div>
                 </div>
 
-                <!-- Monthly -->
                 <div class="monthly-box">
                   <div class="qp-title" style="font-size:12px">📈 Projeção Mensal</div>
                   <div class="slider-group" style="margin:10px 0 0">
@@ -1079,7 +1276,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
     </div>
   </div>
 
-  <!-- ════ PANEL: HISTÓRICO ════ -->
   <div class="panel" id="panel-history">
     <div class="panel-inner">
       <div class="hero" style="margin-bottom:24px">
@@ -1099,16 +1295,353 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
       </div>
     </div>
   </div>
+  <!-- ════ PANEL: MINHA EMPRESA ════ -->
+  <div class="panel" id="panel-empresa">
+    <div class="panel-inner">
+      <div class="hero" style="margin-bottom:24px">
+        <div class="hero-eyebrow">Identidade Visual</div>
+        <h1>Minha <span class="gr">Empresa</span></h1>
+        <p>Configure os dados do seu negócio. Eles aparecerão no cabeçalho de todos os PDFs gerados.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 420px;gap:18px;align-items:start">
+
+        <!-- LEFT: form -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+
+          <!-- Logo upload card -->
+          <div class="card" data-accent="lime">
+            <div class="card-head">
+              <div class="card-label">
+                <div class="cl-dot" style="background:var(--lime)"></div>
+                Logo da Empresa
+              </div>
+              <button class="btn-sm" onclick="removeLogo()" id="btn-remove-logo" style="display:none">✕ Remover</button>
+            </div>
+
+            <!-- Preview when loaded -->
+            <div id="logo-loaded" style="display:none;margin-bottom:14px">
+              <div style="background:var(--ink4);border:1px solid var(--rim);border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px">
+                <div style="width:72px;height:72px;background:var(--ink);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid var(--rim2)">
+                  <img id="logo-preview-img" src="" alt="Logo" style="max-width:68px;max-height:68px;object-fit:contain;border-radius:6px">
+                </div>
+                <div>
+                  <div id="logo-preview-name" style="font-weight:600;font-size:13px;margin-bottom:4px">logo.png</div>
+                  <div id="logo-preview-size" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--tx2)">—</div>
+                  <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lime);margin-top:4px">✓ Pronta para o PDF</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Drop zone -->
+            <div class="drop-zone" id="logo-drop-zone"
+              onclick="document.getElementById('logo-input').click()"
+              ondragover="onLogoDragOver(event)" ondrop="onLogoDrop(event)" ondragleave="onLogoDragLeave()"
+              style="padding:28px 20px">
+              <div style="font-size:36px;margin-bottom:10px;opacity:.5">🏢</div>
+              <div class="dz-title" style="font-size:14px">Arraste sua logo aqui</div>
+              <div class="dz-sub" style="margin-bottom:12px">PNG, JPG, SVG, WebP — até 2MB<br>Fundo transparente recomendado</div>
+              <button class="btn-choose" style="font-size:11px;padding:8px 16px" onclick="event.stopPropagation();document.getElementById('logo-input').click()">
+                ↑ Selecionar Logo
+              </button>
+              <div class="ext-pills" style="margin-top:10px">
+                <span class="ext-pill">.PNG</span>
+                <span class="ext-pill">.JPG</span>
+                <span class="ext-pill">.SVG</span>
+                <span class="ext-pill">.WEBP</span>
+              </div>
+            </div>
+            <input type="file" id="logo-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none" onchange="onLogoInput(event)">
+
+            <div style="margin-top:10px;padding:10px 12px;background:var(--ink4);border-radius:8px;border:1px solid var(--rim)">
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">Dica de uso</div>
+              <div style="font-size:12px;color:var(--tx2);line-height:1.6">Use imagens em PNG com fundo transparente para melhor resultado no PDF escuro. Tamanho ideal: <span style="color:var(--lime);font-family:'DM Mono',monospace">200×80px</span> ou proporcional.</div>
+            </div>
+          </div>
+
+          <!-- Company info card -->
+          <div class="card" data-accent="violet">
+            <div class="card-head">
+              <div class="card-label">
+                <div class="cl-dot" style="background:var(--violet)"></div>
+                Dados da Empresa
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="field" style="grid-column:1/-1">
+                <div class="field-label">Nome da Empresa *</div>
+                <input class="field-input" id="emp-nome" type="text" placeholder="Ex: Impressões 3D Pro" oninput="saveEmpresa();updateEmpresaBadge()">
+              </div>
+              <div class="field">
+                <div class="field-label">Slogan / Especialidade</div>
+                <input class="field-input" id="emp-slogan" type="text" placeholder="Ex: Impressão 3D de alta precisão" oninput="saveEmpresa()">
+              </div>
+              <div class="field">
+                <div class="field-label">CNPJ / CPF</div>
+                <input class="field-input" id="emp-doc" type="text" placeholder="Ex: 12.345.678/0001-99" oninput="saveEmpresa()">
+              </div>
+              <div class="field">
+                <div class="field-label">Telefone / WhatsApp</div>
+                <input class="field-input" id="emp-tel" type="text" placeholder="Ex: (31) 99999-9999" oninput="saveEmpresa()">
+              </div>
+              <div class="field">
+                <div class="field-label">E-mail</div>
+                <input class="field-input" id="emp-email" type="email" placeholder="contato@empresa.com" oninput="saveEmpresa()">
+              </div>
+              <div class="field" style="grid-column:1/-1">
+                <div class="field-label">Site / Instagram</div>
+                <input class="field-input" id="emp-site" type="text" placeholder="Ex: www.impressoes3dpro.com.br ou @impressoes3d" oninput="saveEmpresa()">
+              </div>
+              <div class="field" style="grid-column:1/-1">
+                <div class="field-label">Endereço (opcional)</div>
+                <input class="field-input" id="emp-end" type="text" placeholder="Ex: Rua das Impressoras, 42 — Belo Horizonte, MG" oninput="saveEmpresa()">
+              </div>
+            </div>
+            <div style="margin-top:14px;padding:11px 14px;background:var(--lime-a);border:1px solid rgba(200,255,87,.2);border-radius:8px;font-size:12px;color:var(--tx2);display:flex;align-items:center;gap:8px">
+              <span style="color:var(--lime);font-size:14px">💾</span>
+              Dados salvos automaticamente no navegador — não precisam ser preenchidos a cada acesso.
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: PDF preview card -->
+        <div class="card" data-accent="sky" style="position:sticky;top:76px">
+          <div class="card-head">
+            <div class="card-label">
+              <div class="cl-dot" style="background:var(--sky)"></div>
+              Preview do Cabeçalho PDF
+            </div>
+          </div>
+
+          <!-- Simulated PDF header -->
+          <div style="background:#0B0D14;border-radius:10px;overflow:hidden;border:1px solid var(--rim)">
+            <!-- Header band -->
+            <div style="background:#10131C;padding:14px 16px;border-bottom:2px solid #C8FF57;display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:12px">
+                <!-- Logo area -->
+                <div id="pdf-preview-logo-box" style="width:52px;height:36px;background:var(--ink4);border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--rim);flex-shrink:0">
+                  <img id="pdf-preview-logo" src="" alt="" style="max-width:50px;max-height:34px;object-fit:contain;display:none">
+                  <span id="pdf-preview-logo-placeholder" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);text-align:center;line-height:1.3">SEM<br>LOGO</span>
+                </div>
+                <div>
+                  <div id="pdf-preview-nome" style="font-weight:700;font-size:13px;color:#E4E8F5;letter-spacing:-.3px">Orça 3D Print</div>
+                  <div id="pdf-preview-slogan" style="font-family:'DM Mono',monospace;font-size:8px;color:#7B88A8;margin-top:1px">ORÇAMENTO PROFISSIONAL</div>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-family:'DM Mono',monospace;font-size:10px;font-weight:600;color:#C8FF57">ORC-XXXXXX</div>
+                <div id="pdf-preview-date" style="font-family:'DM Mono',monospace;font-size:8px;color:#7B88A8;margin-top:2px"></div>
+                <div style="font-family:'DM Mono',monospace;font-size:8px;color:#404B66;margin-top:1px">Validade: 30 dias</div>
+              </div>
+            </div>
+            <!-- Contact band -->
+            <div id="pdf-preview-contacts" style="padding:8px 16px;background:#0D101A;display:flex;gap:14px;flex-wrap:wrap;border-bottom:1px solid #1D2232">
+              <span style="font-family:'DM Mono',monospace;font-size:8px;color:#404B66" id="ppc-tel">📞 —</span>
+              <span style="font-family:'DM Mono',monospace;font-size:8px;color:#404B66" id="ppc-email">✉ —</span>
+              <span style="font-family:'DM Mono',monospace;font-size:8px;color:#404B66" id="ppc-site">🌐 —</span>
+            </div>
+            <!-- Body placeholder -->
+            <div style="padding:12px 16px">
+              <div style="height:6px;background:#1D2232;border-radius:3px;margin-bottom:6px;width:70%"></div>
+              <div style="height:6px;background:#161A26;border-radius:3px;margin-bottom:6px;width:50%"></div>
+              <div style="height:6px;background:#1D2232;border-radius:3px;width:85%"></div>
+            </div>
+            <div style="padding:6px 16px 12px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px">
+              <div style="background:#11151F;border-radius:5px;height:28px;border-top:1.5px solid #C8FF57"></div>
+              <div style="background:#11151F;border-radius:5px;height:28px;border-top:1.5px solid #57C8FF"></div>
+              <div style="background:#11151F;border-radius:5px;height:28px;border-top:1.5px solid #A78BFA"></div>
+              <div style="background:#11151F;border-radius:5px;height:28px;border-top:1.5px solid #FFB347"></div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);text-align:center;letter-spacing:.5px">
+            Preview em tempo real · PDF final pode variar levemente
+          </div>
+
+          <button onclick="switchTab('calc', document.querySelector('.nav-tab'))" style="margin-top:14px;width:100%;padding:11px;background:linear-gradient(135deg,var(--lime-a),rgba(87,200,255,.06));border:1px solid rgba(200,255,87,.4);border-radius:9px;color:var(--lime);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s" onmouseover="this.style.background='var(--lime)';this.style.color='var(--ink)'" onmouseout="this.style.background='linear-gradient(135deg,var(--lime-a),rgba(87,200,255,.06))';this.style.color='var(--lime)'">
+            ⚡ Ir para Calculadora
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- ════ PANEL: FEEDBACK ════ -->
+  <div class="panel" id="panel-feedback">
+    <div class="panel-inner">
+
+      <div class="hero" style="margin-bottom:28px">
+        <div class="hero-eyebrow">Comunidade</div>
+        <h1>Sua <span class="gr">opinião</span> importa</h1>
+        <p>Relate um bug, sugira uma melhoria ou deixe um elogio. Cada mensagem é lida pessoalmente.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start">
+
+        <!-- ── FORM CARD ── -->
+        <div class="card" data-accent="lime">
+          <div class="card-head">
+            <div class="card-label">
+              <div class="cl-dot" style="background:var(--lime)"></div>
+              Enviar Feedback
+            </div>
+          </div>
+
+          <!-- TIPO DE FEEDBACK -->
+          <div style="margin-bottom:22px">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:12px">Tipo de Feedback *</div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px" id="cat-row">
+              <button class="cat-tile" data-cat="bug"      onclick="setCat('bug')">
+                <span class="ct-ico">🐛</span>
+                <span class="ct-lbl">Bug / Erro</span>
+              </button>
+              <button class="cat-tile" data-cat="melhoria" onclick="setCat('melhoria')">
+                <span class="ct-ico">💡</span>
+                <span class="ct-lbl">Melhoria</span>
+              </button>
+              <button class="cat-tile" data-cat="elogio"   onclick="setCat('elogio')">
+                <span class="ct-ico">🎉</span>
+                <span class="ct-lbl">Elogio</span>
+              </button>
+              <button class="cat-tile" data-cat="duvida"   onclick="setCat('duvida')">
+                <span class="ct-ico">❓</span>
+                <span class="ct-lbl">Dúvida</span>
+              </button>
+              <button class="cat-tile" data-cat="outro"    onclick="setCat('outro')">
+                <span class="ct-ico">💬</span>
+                <span class="ct-lbl">Outro</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ASSUNTO -->
+          <div style="margin-bottom:14px">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">Assunto *</div>
+            <input class="field-input" id="fb-subject" type="text"
+              placeholder="Ex: O volume calculado parece errado para STL ASCII"
+              style="width:100%" oninput="updateFbPreview()">
+          </div>
+
+          <!-- MENSAGEM -->
+          <div style="margin-bottom:14px">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">Mensagem *</div>
+            <textarea id="fb-msg" rows="6" class="field-input"
+              placeholder="Descreva com detalhes. Para bugs: o que você fez, o que esperava e o que aconteceu."
+              style="width:100%;resize:vertical;min-height:120px;line-height:1.65;font-family:'DM Sans',sans-serif;font-size:13px"
+              oninput="updateFbPreview();updateFbCharCount()"></textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:4px">
+              <span id="fb-chars" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4)">0 / 1200</span>
+            </div>
+          </div>
+
+          <!-- NOME + EMAIL -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px">
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">Seu Nome</div>
+              <input class="field-input" id="fb-name" type="text"
+                placeholder="Ex: João Silva"
+                style="width:100%" oninput="updateFbPreview()">
+            </div>
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">E-mail para resposta</div>
+              <input class="field-input" id="fb-email" type="email"
+                placeholder="seu@email.com"
+                style="width:100%" oninput="updateFbPreview()">
+            </div>
+          </div>
+
+          <!-- ENVIAR -->
+          <button class="fb-send-btn" id="fb-send-btn" onclick="sendFbEmail()">
+            <span class="fsb-ico">✉</span>
+            <span class="fsb-text">Enviar Feedback por E-mail</span>
+            <span class="fsb-arrow">→</span>
+          </button>
+
+          <div style="margin-top:10px;display:flex;align-items:center;gap:8px;padding:10px 13px;background:var(--ink4);border-radius:8px;border:1px solid var(--rim)">
+            <span style="font-size:13px;color:var(--sky);flex-shrink:0">ℹ</span>
+            <span style="font-size:12px;color:var(--tx3);line-height:1.5">
+              Ao clicar, seu cliente de e-mail abrirá com a mensagem pré-preenchida.
+              O feedback também é salvo localmente.
+            </span>
+          </div>
+        </div>
+
+        <!-- ── SIDEBAR ── -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+
+          <!-- Preview card -->
+          <div class="card" data-accent="sky" style="position:sticky;top:76px">
+            <div class="card-head">
+              <div class="card-label">
+                <div class="cl-dot" style="background:var(--sky)"></div>
+                Preview do E-mail
+              </div>
+              <div id="fb-valid-indicator" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4)">
+                preencha os campos
+              </div>
+            </div>
+
+            <!-- Simulated email envelope -->
+            <div style="background:var(--ink4);border:1px solid var(--rim);border-radius:10px;overflow:hidden">
+              <!-- Email header bar -->
+              <div style="background:var(--ink);padding:10px 13px;border-bottom:1px solid var(--rim);display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;align-items:center;gap:7px">
+                  <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);width:28px;flex-shrink:0">Para:</span>
+                  <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lime)" id="fpe-to"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9cfdf0fdf5eef2f9e8f3adaeaddcfbf1fdf5f0b2fff3f1">[email&#160;protected]</a></span>
+                </div>
+                <div style="display:flex;align-items:baseline;gap:7px">
+                  <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);width:28px;flex-shrink:0">Assunto:</span>
+                  <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1" id="fpe-subj">—</span>
+                </div>
+              </div>
+              <!-- Email body preview -->
+              <div id="fb-preview" style="padding:13px;font-size:11px;color:var(--tx2);line-height:1.75;font-family:'DM Mono',monospace;white-space:pre-wrap;word-break:break-word;min-height:140px;max-height:280px;overflow-y:auto">
+                <span style="color:var(--tx4)">Preencha o formulário...</span>
+              </div>
+            </div>
+
+            <!-- 2-stat strip -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+              <div style="background:var(--ink4);border:1px solid var(--rim);border-radius:8px;padding:10px 12px;text-align:center">
+                <div style="font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--lime)" id="fs-total">0</div>
+                <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--tx4);margin-top:3px">Enviados</div>
+              </div>
+              <div style="background:var(--ink4);border:1px solid var(--rim);border-radius:8px;padding:10px 12px;text-align:center">
+                <div style="font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--violet)" id="fs-last">—</div>
+                <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--tx4);margin-top:3px">Último</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- History card -->
+          <div class="card" data-accent="violet">
+            <div class="card-head">
+              <div class="card-label">
+                <div class="cl-dot" style="background:var(--violet)"></div>
+                Histórico Local
+              </div>
+              <button class="btn-sm danger" onclick="clearFeedbacks()">🗑 Limpar</button>
+            </div>
+            <div id="fb-history-list">
+              <div style="text-align:center;padding:28px 0;color:var(--tx4);font-size:12px;font-family:'DM Mono',monospace">
+                nenhum feedback enviado ainda
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
 
 </main>
 
-<!-- TOAST -->
 <div class="toast" id="toast">
   <span class="toast-ico" id="toast-ico">✓</span>
   <span id="toast-msg">Mensagem</span>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ═══════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════
@@ -1117,6 +1650,191 @@ const S = {
   volume: 0, bounds: null, tris: 0,
   costs: null, selling: 0
 };
+
+// ═══════════════════════════════════════
+//  ████████████████████████████████████
+//  SMART DEBOUNCE ENGINE — v3.1
+//  ████████████████████████████████████
+//
+//  Delays per input type (ms):
+//    slider  → 80ms   (continuous, low cost to re-render)
+//    cost    → 320ms  (number fields, user still typing)
+//    select  → 0ms    (instant: discrete choice, no "in-between" state)
+//    mat     → 0ms    (instant: material switch)
+//
+//  Additional logic:
+//    • Tracks the last changed field to flash it
+//    • Shows a live countdown bar for pending recalcs
+//    • Marks KPI values with a shimmer while recalculating
+//    • Cancels pending timer if a faster-priority input arrives
+//    • Skips recalc entirely if values haven't changed (hash check)
+// ═══════════════════════════════════════
+const DEBOUNCE_DELAYS = {
+  slider: 80,
+  cost:   320,
+  select: 0,
+  mat:    0,
+};
+
+const DB = {
+  timer:       null,
+  countdownId: null,
+  lastHash:    null,
+  isCalcing:   false,
+  pendingType: null,
+};
+
+/**
+ * Compute a lightweight hash of all calculation inputs.
+ * Used to skip recalc when nothing actually changed.
+ */
+function inputHash() {
+  return [
+    selectedMatId,
+    document.getElementById('filprice').value,
+    document.getElementById('machcost').value,
+    document.getElementById('laborcost').value,
+    document.getElementById('energycost').value,
+    document.getElementById('infill').value,
+    document.getElementById('layerh').value,
+    document.getElementById('speed').value,
+    document.getElementById('support').value,
+    document.getElementById('postproc').value,
+    document.getElementById('qty').value,
+  ].join('|');
+}
+
+/**
+ * Main smart autoCalc entry point.
+ * @param {HTMLElement|null} el   - The element that changed (for visual feedback)
+ * @param {string}           type - 'slider' | 'cost' | 'select' | 'mat'
+ */
+function autoCalc(el, type = 'cost') {
+  if (!S.loaded || !S.volume) return;
+
+  const delay = DEBOUNCE_DELAYS[type] ?? 320;
+
+  // Flash the changed field
+  if (el) flashField(el);
+
+  // Cancel any existing pending debounce
+  if (DB.timer) {
+    clearTimeout(DB.timer);
+    DB.timer = null;
+  }
+  if (DB.countdownId) {
+    clearInterval(DB.countdownId);
+    DB.countdownId = null;
+  }
+
+  // Instant path: no delay needed
+  if (delay === 0) {
+    setCalcStatus('calculating');
+    requestAnimationFrame(() => {
+      doCalc();
+      setCalcStatus('idle');
+    });
+    return;
+  }
+
+  // Pending path: show countdown bar
+  DB.pendingType = type;
+  setCalcStatus('pending', delay);
+
+  // Animate countdown bar
+  const fill = document.getElementById('csb-fill');
+  if (fill) {
+    fill.style.transition = 'none';
+    fill.style.width = '100%';
+    // Force reflow then animate down
+    fill.getBoundingClientRect();
+    fill.style.transition = `width ${delay}ms linear`;
+    fill.style.width = '0%';
+  }
+
+  // Schedule the actual calc
+  DB.timer = setTimeout(() => {
+    DB.timer = null;
+    DB.pendingType = null;
+
+    // Skip if nothing actually changed
+    const hash = inputHash();
+    if (hash === DB.lastHash && S.costs) {
+      setCalcStatus('idle', 0, '✓ sem alterações');
+      setTimeout(() => hideCalcStatus(), 1200);
+      return;
+    }
+
+    DB.lastHash = hash;
+    setCalcStatus('calculating');
+    markKpisRecalc(true);
+
+    // Small RAF delay so the "calculating" state is visible
+    requestAnimationFrame(() => {
+      doCalc();
+      markKpisRecalc(false);
+      setCalcStatus('idle', 0, `✓ atualizado`);
+      setTimeout(() => hideCalcStatus(), 1800);
+      savePref();
+    });
+  }, delay);
+}
+
+/**
+ * Visual state of the status bar.
+ * @param {'idle'|'pending'|'calculating'|'error'} state
+ * @param {number} delay - used for messaging
+ * @param {string} customMsg
+ */
+function setCalcStatus(state, delay = 0, customMsg = null) {
+  const bar = document.getElementById('calc-status-bar');
+  const msg = document.getElementById('csb-msg');
+  const countdown = document.getElementById('csb-countdown');
+  if (!bar || !msg) return;
+
+  bar.className = `calc-status-bar visible ${state}`;
+
+  const messages = {
+    idle:        customMsg || '✓ Cálculo atualizado',
+    pending:     delay >= 200 ? `⏳ Aguardando… (${(delay/1000).toFixed(1)}s)` : '⏳ Aguardando…',
+    calculating: '⚡ Calculando…',
+    error:       '✕ Erro no cálculo',
+  };
+  msg.textContent = customMsg || messages[state] || '';
+
+  // Only show countdown bar for pending state
+  if (countdown) countdown.style.opacity = state === 'pending' ? '1' : '0';
+
+  // Sync btn-calc visual state
+  const btn = document.getElementById('btn-calc');
+  if (btn) {
+    btn.classList.toggle('calculating-state', state === 'calculating');
+  }
+}
+
+function hideCalcStatus() {
+  const bar = document.getElementById('calc-status-bar');
+  if (bar && !bar.classList.contains('pending') && !bar.classList.contains('calculating')) {
+    bar.classList.remove('visible');
+  }
+}
+
+/**
+ * Flash a field element briefly to show it changed.
+ */
+function flashField(el) {
+  el.classList.remove('changed');
+  void el.offsetWidth; // force reflow
+  el.classList.add('changed');
+  setTimeout(() => el.classList.remove('changed'), 600);
+}
+
+/**
+ * Add/remove shimmer on KPI values during recalc.
+ */
+function markKpisRecalc(on) {
+  document.querySelectorAll('.kpi').forEach(k => k.classList.toggle('recalc', on));
+}
 
 // ═══════════════════════════════════════
 //  TAB SWITCH
@@ -1158,24 +1876,11 @@ function initThree() {
   cv.addEventListener('mousedown', e => { mdown=true; mbtn=e.button; lmx=e.clientX; lmy=e.clientY; e.preventDefault(); });
   window.addEventListener('mousemove', e => {
     if (!mdown) return;
-    const dx = e.clientX - lmx;
-    const dy = e.clientY - lmy;
-
-    if (mbtn === 0) { 
-        // Rotação Horizontal (Theta)
-        theta -= dx * 0.4; 
-        // Rotação Vertical (Phi) - Agora sem travas para giro 360°
-        phi -= dy * 0.4; 
-    }
-    else if (mbtn === 2) { 
-        const ps = radius * 0.002; 
-        target.x -= dx * ps; 
-        target.y += dy * ps; 
-    }
-    lmx = e.clientX; 
-    lmy = e.clientY; 
-    updCam();
-});
+    const dx = e.clientX - lmx, dy = e.clientY - lmy;
+    if (mbtn === 0) { theta -= dx * 0.4; phi -= dy * 0.4; }
+    else if (mbtn === 2) { const ps = radius * 0.002; target.x -= dx * ps; target.y += dy * ps; }
+    lmx = e.clientX; lmy = e.clientY; updCam();
+  });
   window.addEventListener('mouseup', () => mdown=false);
   cv.addEventListener('wheel', e => { radius=Math.max(.5,Math.min(80,radius+e.deltaY*.01)); updCam(); e.preventDefault(); }, {passive:false});
   cv.addEventListener('contextmenu', e => e.preventDefault());
@@ -1188,15 +1893,10 @@ function initThree() {
 
 function updCam() {
   if (!camera) return;
-  // Converte os ângulos de graus para radianos
-  const p = phi * Math.PI / 180;
-  const t = theta * Math.PI / 180;
-
-  // Cálculo da posição da câmera em coordenadas esféricas para rotação 360°
+  const p = phi * Math.PI / 180, t = theta * Math.PI / 180;
   camera.position.x = target.x + radius * Math.sin(t) * Math.cos(p);
   camera.position.y = target.y + radius * Math.sin(p);
   camera.position.z = target.z + radius * Math.cos(t) * Math.cos(p);
-
   camera.lookAt(target.x, target.y, target.z);
 }
 function resetCam() { theta=45; phi=30; radius=S.bounds?Math.max(S.bounds.x,S.bounds.y,S.bounds.z)*2.5:5; target={x:0,y:S.bounds?S.bounds.y/2:0,z:0}; updCam(); }
@@ -1296,7 +1996,7 @@ function processFile(file) {
   const prog=document.getElementById('progress'), fill=document.getElementById('prog-fill'), pct=document.getElementById('prog-pct');
   prog.classList.add('show');
   const msgs=['Lendo arquivo...','Analisando geometria...','Calculando volume...','Renderizando...'];
-  let p=0, mi=0;
+  let p=0;
   const iv = setInterval(()=>{
     p = Math.min(85, p+11); fill.style.width=p+'%'; pct.textContent=p+'%';
     document.getElementById('prog-text').textContent = msgs[Math.min(Math.floor(p/22),3)];
@@ -1310,7 +2010,7 @@ function processFile(file) {
 }
 
 function removeFile() {
-  S.loaded=false; S.bounds=null; S.volume=0; S.costs=null;
+  S.loaded=false; S.bounds=null; S.volume=0; S.costs=null; DB.lastHash=null;
   if (mesh) { scene.remove(mesh); mesh=null; }
   document.getElementById('file-loaded').classList.remove('show');
   document.getElementById('v-empty').style.display='flex';
@@ -1321,10 +2021,11 @@ function removeFile() {
   document.getElementById('res-wrapper').classList.remove('show');
   document.getElementById('btn-calc').classList.remove('ready');
   document.getElementById('f-input').value='';
+  hideCalcStatus();
 }
 
 // ═══════════════════════════════════════
-//  MATERIALS — editable prices
+//  MATERIALS
 // ═══════════════════════════════════════
 const DEFAULT_MATS = [
   { id:'PLA',   color:'#C8FF57', density:1.24, price:80  },
@@ -1342,19 +2043,16 @@ function getMats() {
   } catch(e) {}
   return DEFAULT_MATS.map(m => ({ ...m }));
 }
-function saveMats(mats) {
-  localStorage.setItem('orca3d_mats', JSON.stringify(mats));
-}
+function saveMats(mats) { localStorage.setItem('orca3d_mats', JSON.stringify(mats)); }
 
 function resetMatPrices() {
   if (!confirm('Redefinir todos os preços para o padrão?')) return;
   MATS = DEFAULT_MATS.map(m => ({ ...m }));
   saveMats(MATS);
-  // update filprice if selected mat changed
   const mat = MATS.find(m => m.id === selectedMatId);
   if (mat) document.getElementById('filprice').value = mat.price;
   renderMatGrid();
-  autoCalc();
+  autoCalc(null, 'mat');
   toast('↺ Preços redefinidos', 'info');
 }
 
@@ -1367,8 +2065,6 @@ function renderMatGrid() {
     <div class="mat-chip${m.id===selectedMatId?' sel':''}"
       style="--mc:${m.color}"
       data-mat="${m.id}"
-      data-price="${m.price}"
-      data-density="${m.density}"
       onclick="pickMat(this)">
       <div class="edit-badge">✏ editar</div>
       <div class="mat-dot" style="background:${m.color}"></div>
@@ -1382,46 +2078,29 @@ function renderMatGrid() {
 }
 
 function openPriceEdit(e, matId) {
-  e.stopPropagation(); // don't trigger pickMat
+  e.stopPropagation();
   const mat = MATS.find(m => m.id === matId);
   if (!mat) return;
-
-  // Find the .mat-price el that was clicked
   const priceEl = e.currentTarget;
-  if (priceEl.querySelector('.mat-price-inp')) return; // already editing
-
+  if (priceEl.querySelector('.mat-price-inp')) return;
   const oldText = priceEl.querySelector('.price-text');
   oldText.style.display = 'none';
   priceEl.querySelector('.ep').style.display = 'none';
-
   const inp = document.createElement('input');
-  inp.type = 'number';
-  inp.className = 'mat-price-inp';
-  inp.value = mat.price;
-  inp.min = 1;
-  inp.step = 1;
-  priceEl.appendChild(inp);
-  inp.focus();
-  inp.select();
-
+  inp.type = 'number'; inp.className = 'mat-price-inp'; inp.value = mat.price; inp.min = 1; inp.step = 1;
+  priceEl.appendChild(inp); inp.focus(); inp.select();
   function commit() {
     const val = parseFloat(inp.value);
     if (!isNaN(val) && val > 0) {
-      mat.price = Math.round(val);
-      saveMats(MATS);
-      // if this mat is selected, update the filprice field too
-      if (selectedMatId === matId) {
-        document.getElementById('filprice').value = mat.price;
-        autoCalc();
-      }
-      toast(`✏ ${matId} atualizado para R$${mat.price}/kg`, 'ok');
+      mat.price = Math.round(val); saveMats(MATS);
+      if (selectedMatId === matId) { document.getElementById('filprice').value = mat.price; autoCalc(null,'mat'); }
+      toast(`✏ ${matId} → R$${mat.price}/kg`, 'ok');
     }
     renderMatGrid();
   }
-
   inp.addEventListener('blur', commit);
   inp.addEventListener('keydown', ev => {
-    if (ev.key === 'Enter') { inp.blur(); }
+    if (ev.key === 'Enter') inp.blur();
     if (ev.key === 'Escape') { inp.removeEventListener('blur', commit); renderMatGrid(); }
   });
 }
@@ -1431,9 +2110,12 @@ function pickMat(el) {
   const mat = MATS.find(m => m.id === selectedMatId);
   if (mat) document.getElementById('filprice').value = mat.price;
   renderMatGrid();
-  autoCalc();
+  autoCalc(null, 'mat');
 }
 
+// ═══════════════════════════════════════
+//  CORE CALCULATION
+// ═══════════════════════════════════════
 function doCalc() {
   if (!S.volume) { toast('Carregue um modelo primeiro!','err'); return; }
   const mat = MATS.find(m => m.id === selectedMatId);
@@ -1448,8 +2130,7 @@ function doCalc() {
   const sup  = +document.getElementById('support').value;
   const post = +document.getElementById('postproc').value;
   const qty  = Math.max(1, +document.getElementById('qty').value || 1);
-  const dens = mat.density;
-  const matN = mat.id;
+  const dens = mat.density, matN = mat.id;
 
   const effVol = S.volume * (inf/100) * 1.18;
   const grams  = effVol * dens;
@@ -1472,10 +2153,6 @@ function doCalc() {
   renderResults();
 }
 
-function autoCalc() {
-  if (S.loaded && S.volume) { savePref(); clearTimeout(window._acd); window._acd = setTimeout(doCalc, 280); }
-}
-
 // ═══════════════════════════════════════
 //  RENDER RESULTS
 // ═══════════════════════════════════════
@@ -1486,7 +2163,6 @@ function renderResults() {
   const ts = `${h}h${m>0?` ${m}m`:''}`;
   const qty = d.qty;
 
-  // KPIs
   const kpis = [
     {label:'Filamento', val:`${d.grams.toFixed(0)}g`, sub:d.matName,         kc:'var(--lime)'},
     {label:'Tempo/Unid',val:ts,                        sub:`${d.timeH.toFixed(2)}h`,kc:'var(--rose)'},
@@ -1501,7 +2177,6 @@ function renderResults() {
       <div class="kpi-sub">${k.sub}</div>
     </div>`).join('');
 
-  // Breakdown
   const rows = [
     {label:`Material (${d.grams.toFixed(1)}g)`, val:d.fil,   color:'var(--lime)'},
     {label:'Hora-máquina',                       val:d.mach,  color:'var(--rose)'},
@@ -1542,7 +2217,143 @@ function updateMonthly() {
 }
 
 // ═══════════════════════════════════════
-//  PDF EXPORT — design premium dark
+//  PDF EXPORT
+// ═══════════════════════════════════════
+// ═══════════════════════════════════════
+//  EMPRESA / LOGO
+// ═══════════════════════════════════════
+const EMP_KEY = 'orca3d_empresa';
+let LOGO_B64 = null; // base64 string of logo image
+
+function getEmpresa() {
+  try { return JSON.parse(localStorage.getItem(EMP_KEY) || '{}'); } catch { return {}; }
+}
+function saveEmpresa() {
+  const e = {
+    nome:   document.getElementById('emp-nome').value,
+    slogan: document.getElementById('emp-slogan').value,
+    doc:    document.getElementById('emp-doc').value,
+    tel:    document.getElementById('emp-tel').value,
+    email:  document.getElementById('emp-email').value,
+    site:   document.getElementById('emp-site').value,
+    end:    document.getElementById('emp-end').value,
+  };
+  localStorage.setItem(EMP_KEY, JSON.stringify(e));
+  updatePdfPreview();
+}
+function loadEmpresa() {
+  const e = getEmpresa();
+  if (e.nome)   document.getElementById('emp-nome').value   = e.nome;
+  if (e.slogan) document.getElementById('emp-slogan').value = e.slogan;
+  if (e.doc)    document.getElementById('emp-doc').value    = e.doc;
+  if (e.tel)    document.getElementById('emp-tel').value    = e.tel;
+  if (e.email)  document.getElementById('emp-email').value  = e.email;
+  if (e.site)   document.getElementById('emp-site').value   = e.site;
+  if (e.end)    document.getElementById('emp-end').value    = e.end;
+
+  // Restore logo from localStorage
+  const savedLogo = localStorage.getItem('orca3d_logo');
+  if (savedLogo) {
+    LOGO_B64 = savedLogo;
+    applyLogoPreview(savedLogo, localStorage.getItem('orca3d_logo_name') || 'logo', +(localStorage.getItem('orca3d_logo_size') || 0));
+  }
+  updateEmpresaBadge();
+  updatePdfPreview();
+}
+
+function updateEmpresaBadge() {
+  const e = getEmpresa();
+  const badge = document.getElementById('empresa-badge');
+  if (badge) badge.style.display = (e.nome || LOGO_B64) ? 'inline' : 'none';
+}
+
+function onLogoDragOver(e) { e.preventDefault(); document.getElementById('logo-drop-zone').classList.add('over'); }
+function onLogoDragLeave() { document.getElementById('logo-drop-zone').classList.remove('over'); }
+function onLogoDrop(e) { e.preventDefault(); onLogoDragLeave(); const f = e.dataTransfer.files[0]; if (f) processLogo(f); }
+function onLogoInput(e) { const f = e.target.files[0]; if (f) processLogo(f); }
+
+function processLogo(file) {
+  if (file.size > 2 * 1024 * 1024) { toast('Logo muito grande (máx 2MB)','err'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const b64 = ev.target.result;
+    LOGO_B64 = b64;
+    localStorage.setItem('orca3d_logo', b64);
+    localStorage.setItem('orca3d_logo_name', file.name);
+    localStorage.setItem('orca3d_logo_size', file.size);
+    applyLogoPreview(b64, file.name, file.size);
+    updateEmpresaBadge();
+    updatePdfPreview();
+    toast('✓ Logo carregada!', 'ok');
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyLogoPreview(b64, name, size) {
+  // Side panel preview
+  const img = document.getElementById('logo-preview-img');
+  if (img) { img.src = b64; img.style.display = 'block'; }
+  const loaded = document.getElementById('logo-loaded');
+  if (loaded) loaded.style.display = 'block';
+  const dz = document.getElementById('logo-drop-zone');
+  if (dz) dz.style.display = 'none';
+  const btn = document.getElementById('btn-remove-logo');
+  if (btn) btn.style.display = 'inline-flex';
+  const nm = document.getElementById('logo-preview-name');
+  if (nm) nm.textContent = name;
+  const sz = document.getElementById('logo-preview-size');
+  if (sz) sz.textContent = size ? `${(size/1024).toFixed(0)} KB · ${name.split('.').pop().toUpperCase()}` : name;
+}
+
+function removeLogo() {
+  LOGO_B64 = null;
+  localStorage.removeItem('orca3d_logo');
+  localStorage.removeItem('orca3d_logo_name');
+  localStorage.removeItem('orca3d_logo_size');
+  const img = document.getElementById('logo-preview-img');
+  if (img) { img.src = ''; img.style.display = 'none'; }
+  document.getElementById('logo-loaded').style.display = 'none';
+  document.getElementById('logo-drop-zone').style.display = 'block';
+  document.getElementById('btn-remove-logo').style.display = 'none';
+  document.getElementById('logo-input').value = '';
+  updateEmpresaBadge();
+  updatePdfPreview();
+  toast('Logo removida', 'info');
+}
+
+/** Update the live PDF preview in the "Minha Empresa" panel */
+function updatePdfPreview() {
+  const e = getEmpresa();
+  // Name
+  const pn = document.getElementById('pdf-preview-nome');
+  if (pn) pn.textContent = e.nome || 'Orça 3D Print';
+  // Slogan
+  const ps = document.getElementById('pdf-preview-slogan');
+  if (ps) ps.textContent = e.slogan || 'ORÇAMENTO PROFISSIONAL';
+  // Date
+  const pd = document.getElementById('pdf-preview-date');
+  if (pd) pd.textContent = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
+  // Logo
+  const pli = document.getElementById('pdf-preview-logo');
+  const plp = document.getElementById('pdf-preview-logo-placeholder');
+  if (LOGO_B64 && pli) {
+    pli.src = LOGO_B64; pli.style.display = 'block';
+    if (plp) plp.style.display = 'none';
+  } else if (pli) {
+    pli.style.display = 'none';
+    if (plp) plp.style.display = 'block';
+  }
+  // Contacts
+  const tel   = document.getElementById('ppc-tel');
+  const email = document.getElementById('ppc-email');
+  const site  = document.getElementById('ppc-site');
+  if (tel)   tel.textContent   = `📞 ${e.tel   || '—'}`;
+  if (email) email.textContent = `✉ ${e.email || '—'}`;
+  if (site)  site.textContent  = `🌐 ${e.site  || '—'}`;
+}
+
+// ═══════════════════════════════════════
+//  PDF EXPORT — with custom logo
 // ═══════════════════════════════════════
 function exportPDF() {
   if (!S.costs) { toast('Calcule primeiro!','err'); return; }
@@ -1555,37 +2366,83 @@ function exportPDF() {
   const company = document.getElementById('c-company').value;
   const desc = document.getElementById('c-desc').value;
   const dateStr = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  const emp = getEmpresa();
 
-  // ─── PAGE BG ───
   doc.setFillColor(11,13,20); doc.rect(0,0,W,297,'F');
 
   // ─── HEADER BAND ───
-  doc.setFillColor(16,19,28); doc.rect(0,0,W,42,'F');
-  // lime accent line
-  doc.setFillColor(200,255,87); doc.rect(0,42,W,1.5,'F');
+  // Taller header when logo present to give more breathing room
+  const hH = 48;
+  doc.setFillColor(16,19,28); doc.rect(0,0,W,hH,'F');
+  doc.setFillColor(200,255,87); doc.rect(0,hH,W,1.5,'F');
 
-  // Logo mark
-  doc.setFillColor(200,255,87); doc.roundedRect(P,10,22,22,4,4,'F');
-  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(11,13,20);
-  doc.text('O3', P+4, 25);
-
-  // Name
-  doc.setFontSize(20); doc.setTextColor(228,232,245); doc.setFont('helvetica','bold');
-  doc.text('Orça', P+28, 22);
-  doc.setTextColor(200,255,87);
-  doc.text(' 3D Print', P+28+doc.getTextWidth('Orça'), 22);
-  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(120,136,168);
-  doc.text('ORÇAMENTO PROFISSIONAL', P+28, 30);
-
-  // Right: date + number
   const docNum = 'ORC-' + Date.now().toString().slice(-6);
-  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(200,255,87);
-  doc.text(docNum, W-P, 20, {align:'right'});
-  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(120,136,168);
-  doc.text(dateStr, W-P, 28, {align:'right'});
-  doc.text('Validade: 30 dias', W-P, 35, {align:'right'});
+  const nameText   = emp.nome   || 'Orça 3D Print';
+  const sloganText = (emp.slogan || 'Orçamento Profissional').toUpperCase();
 
-  let y = 56;
+  // ── LEFT: logo OR default O3 badge ──
+  let textX = P; // X where company name starts
+
+  if (LOGO_B64) {
+    // Draw uploaded logo
+    const fmt = LOGO_B64.startsWith('data:image/png')  ? 'PNG'
+               : LOGO_B64.startsWith('data:image/svg')  ? 'SVG'
+               : LOGO_B64.startsWith('data:image/webp') ? 'WEBP'
+               : 'JPEG';
+    try {
+      const lW = 36, lH = 24;
+      const lX = P, lY = (hH - lH) / 2;
+      doc.addImage(LOGO_B64, fmt, lX, lY, lW, lH, undefined, 'FAST');
+      textX = lX + lW + 8;
+    } catch(e) {
+      textX = P; // fallback: no logo, text starts at margin
+    }
+  } else {
+    // Default lime O3 badge
+    doc.setFillColor(200, 255, 87);
+    doc.roundedRect(P, (hH - 22) / 2, 22, 22, 4, 4, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.setTextColor(11, 13, 20);
+    doc.text('O3', P + 3.5, hH / 2 + 2.5);
+    textX = P + 28;
+  }
+
+  // ── Company name + slogan (drawn exactly once) ──
+  const nameY   = hH * 0.42;
+  const sloganY = nameY + 7;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(15);
+  doc.setTextColor(228, 232, 245);
+  doc.text(nameText, textX, nameY);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(110, 126, 160);
+  doc.text(sloganText, textX, sloganY);
+
+  // ── RIGHT: doc number + date ──
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(200, 255, 87);
+  doc.text(docNum, W - P, 18, { align: 'right' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(120, 136, 168);
+  doc.text(dateStr, W - P, 26, { align: 'right' });
+  doc.text('Validade: 30 dias', W - P, 33, { align: 'right' });
+
+  // ── Contact strip (only if any contact info exists) ──
+  const contacts = [emp.tel, emp.email, emp.site, emp.end].filter(Boolean);
+  let y = hH + 1.5 + 6;
+  if (contacts.length > 0) {
+    doc.setFillColor(13,16,25); doc.rect(0, hH+1.5, W, 9, 'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(90,108,140);
+    const icons = ['📞','✉','🌐','📍'];
+    const labels = [emp.tel, emp.email, emp.site, emp.end].filter(Boolean);
+    let cx = P;
+    labels.forEach((l, i) => {
+      const icon = ['📞','✉','🌐','📍'][[emp.tel, emp.email, emp.site, emp.end].findIndex((v,idx) => v === l && !labels.slice(0,i).includes(v))];
+      doc.text(`${l}`, cx, hH+7.5);
+      cx += doc.getTextWidth(l) + 12;
+    });
+    y = hH + 10.5 + 4;
+  }
 
   // ─── CLIENT BLOCK ───
   if (client || company || desc) {
@@ -1595,22 +2452,12 @@ function exportPDF() {
     doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(123,136,168);
     doc.text('CLIENTE', P+8, y+7);
     let cy = y+14;
-    if (client) {
-      doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(228,232,245);
-      doc.text(client, P+8, cy); cy+=8;
-    }
-    if (company) {
-      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(123,136,168);
-      doc.text(company, P+8, cy); cy+=7;
-    }
-    if (desc) {
-      doc.setFontSize(9); doc.setTextColor(100,120,150);
-      doc.text('Peça: '+desc, P+8, cy);
-    }
+    if (client) { doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(228,232,245); doc.text(client, P+8, cy); cy+=8; }
+    if (company) { doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(123,136,168); doc.text(company, P+8, cy); cy+=7; }
+    if (desc) { doc.setFontSize(9); doc.setTextColor(100,120,150); doc.text('Peça: '+desc, P+8, cy); }
     y += bH + 10;
   }
 
-  // ─── MODEL BLOCK ───
   doc.setFillColor(22,26,38); doc.roundedRect(P, y, W-P*2, 26, 4,4,'F');
   doc.setFillColor(87,200,255); doc.rect(P, y, 2, 26, 'F');
   doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(123,136,168);
@@ -1623,7 +2470,6 @@ function exportPDF() {
   }
   y += 34;
 
-  // ─── KPI ROW ───
   const kpis2 = [
     {l:'Material', v:`${d.grams.toFixed(0)}g`, s:d.matName, c:[200,255,87]},
     {l:'Tempo',    v:`${Math.floor(d.timeH)}h ${Math.round((d.timeH%1)*60)}m`, s:'de impressão', c:[87,200,255]},
@@ -1644,7 +2490,6 @@ function exportPDF() {
   });
   y += 28;
 
-  // ─── BREAKDOWN ───
   doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(100,120,150);
   doc.text('DETALHAMENTO DE CUSTOS', P, y); y+=7;
 
@@ -1665,7 +2510,6 @@ function exportPDF() {
     doc.text(brl(r.v), W-P-4, y+5.5, {align:'right'});
     y += 8.5;
   });
-  // total row
   doc.setFillColor(20,30,22); doc.rect(P, y, W-P*2, 11,'F');
   doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(200,220,200);
   doc.text('Custo de Produção', P+5, y+7.5);
@@ -1673,7 +2517,6 @@ function exportPDF() {
   doc.text(brl(d.total), W-P-4, y+7.5, {align:'right'});
   y += 19;
 
-  // ─── SELL PRICE BOX ───
   doc.setFillColor(10,26,40); doc.roundedRect(P, y, W-P*2, 34, 5,5,'F');
   doc.setDrawColor(87,200,255,.8); doc.setLineWidth(.4);
   doc.roundedRect(P, y, W-P*2, 34, 5,5,'S');
@@ -1685,11 +2528,14 @@ function exportPDF() {
   doc.text(`Lucro líquido: ${brl(S.selling-d.total)}`, W-P-5, y+25, {align:'right'});
   y += 42;
 
-  // ─── FOOTER ───
   doc.setFillColor(14,17,26); doc.rect(0,277,W,20,'F');
   doc.setFillColor(200,255,87); doc.rect(0,277,W,.8,'F');
   doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(60,76,100);
-  doc.text('Gerado por Orça 3D Print', P, 286);
+  doc.text(emp.nome || 'Orça 3D Print', P, 286);
+  if (emp.tel || emp.email) {
+    doc.setTextColor(50,65,90);
+    doc.text([emp.tel, emp.email].filter(Boolean).join(' · '), P, 291);
+  }
   doc.text('Este documento é apenas uma estimativa e pode variar conforme o modelo final.', W-P, 286, {align:'right'});
   doc.setTextColor(80,100,130);
   doc.text(docNum + ' · ' + dateStr, W/2, 291, {align:'center'});
@@ -1800,11 +2646,11 @@ function clearHistory() {
 // ═══════════════════════════════════════
 function savePref() {
   localStorage.setItem('orca3d_pref', JSON.stringify({
-    filprice: document.getElementById('filprice').value,
-    machcost: document.getElementById('machcost').value,
+    filprice:  document.getElementById('filprice').value,
+    machcost:  document.getElementById('machcost').value,
     laborcost: document.getElementById('laborcost').value,
-    energycost: document.getElementById('energycost').value,
-    margin: document.getElementById('margin').value,
+    energycost:document.getElementById('energycost').value,
+    margin:    document.getElementById('margin').value,
   }));
 }
 function loadPref() {
@@ -1838,11 +2684,257 @@ function toast(msg, type='ok') {
 // ═══════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
+// ═══════════════════════════════════════
+// ═══════════════════════════════════════
+//  FEEDBACK ENGINE — v3.2 (email + tipo + nome/email)
+// ═══════════════════════════════════════
+const FB_KEY   = 'orca3d_feedbacks';
+const FB_EMAIL = 'alairneto121@gmail.com';
+
+const CAT_META = {
+  bug:      { label: '🐛 Bug / Erro',  color: '#FF6B8A', accent: 'var(--rose)'   },
+  melhoria: { label: '💡 Melhoria',    color: '#C8FF57', accent: 'var(--lime)'   },
+  elogio:   { label: '🎉 Elogio',      color: '#FFB347', accent: 'var(--amber)'  },
+  duvida:   { label: '❓ Dúvida',      color: '#57C8FF', accent: 'var(--sky)'    },
+  outro:    { label: '💬 Outro',       color: '#A78BFA', accent: 'var(--violet)' },
+};
+
+let FB_CAT = ''; // currently selected category
+
+// ── SELECT CATEGORY ──
+function setCat(cat) {
+  FB_CAT = cat;
+  const glowMap = {
+    bug:      'rgba(255,107,138,.10)',
+    melhoria: 'rgba(200,255,87,.10)',
+    elogio:   'rgba(255,179,71,.10)',
+    duvida:   'rgba(87,200,255,.10)',
+    outro:    'rgba(167,139,250,.10)',
+  };
+  document.querySelectorAll('.cat-tile').forEach(t => {
+    const isSel = t.dataset.cat === cat;
+    t.classList.toggle('cat-tile-sel', isSel);
+    if (isSel) {
+      t.style.setProperty('--ct-accent', CAT_META[cat].color);
+      t.style.setProperty('--ct-glow',   glowMap[cat] || 'rgba(200,255,87,.10)');
+    } else {
+      t.style.removeProperty('--ct-accent');
+      t.style.removeProperty('--ct-glow');
+    }
+  });
+  updateFbPreview();
+  checkFbReady();
+}
+
+// ── CHAR COUNT ──
+function updateFbCharCount() {
+  const msg = document.getElementById('fb-msg');
+  const cnt = document.getElementById('fb-chars');
+  if (!msg || !cnt) return;
+  const len = Math.min(msg.value.length, 1200);
+  if (msg.value.length > 1200) msg.value = msg.value.slice(0, 1200);
+  cnt.textContent = `${len} / 1200`;
+  cnt.style.color = len > 1100 ? 'var(--rose)' : len > 900 ? 'var(--amber)' : 'var(--tx4)';
+}
+
+// ── BUILD EMAIL TEXT ──
+function buildFbText() {
+  const subj  = v('fb-subject');
+  const msg   = v('fb-msg');
+  const name  = v('fb-name');
+  const email = v('fb-email');
+  const cat   = CAT_META[FB_CAT]?.label || '—';
+
+  const lines = [
+    `📬 FEEDBACK — Orça 3D Print v3.2`,
+    ``,
+    `Tipo    : ${cat}`,
+    `Assunto : ${subj || '—'}`,
+    ``,
+    `Mensagem:`,
+    msg || '—',
+  ];
+  if (name || email) {
+    lines.push('');
+    if (name)  lines.push(`Nome  : ${name}`);
+    if (email) lines.push(`Email : ${email}`);
+  }
+  lines.push('', `📅 ${new Date().toLocaleString('pt-BR')}`);
+  return lines.join('\n');
+}
+
+// Helper
+function v(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+// ── LIVE PREVIEW ──
+function updateFbPreview() {
+  const preview = document.getElementById('fb-preview');
+  const peSubj  = document.getElementById('fpe-subj');
+  const valid   = document.getElementById('fb-valid-indicator');
+  if (!preview) return;
+
+  const subj = v('fb-subject');
+  const msg  = v('fb-msg');
+
+  // Subject line in email envelope header
+  if (peSubj) {
+    const cat = CAT_META[FB_CAT]?.label || '';
+    peSubj.textContent = cat && subj ? `[Orça 3D] ${cat} — ${subj}` : subj || '—';
+  }
+
+  if (!FB_CAT && !subj && !msg) {
+    preview.innerHTML = `<span style="color:var(--tx4)">Preencha o formulário...</span>`;
+    if (valid) { valid.textContent = 'preencha os campos'; valid.style.color = 'var(--tx4)'; }
+    return;
+  }
+
+  preview.textContent = buildFbText();
+  checkFbReady();
+}
+
+// ── CHECK IF FORM IS READY ──
+function checkFbReady() {
+  const ready = FB_CAT && v('fb-subject') && v('fb-msg');
+  const btn   = document.getElementById('fb-send-btn');
+  const valid = document.getElementById('fb-valid-indicator');
+  if (btn) {
+    btn.classList.toggle('fb-send-ready', !!ready);
+    btn.disabled = false; // always clickable; validate on click
+  }
+  if (valid) {
+    valid.textContent = ready ? '✓ pronto para enviar' : 'campos obrigatórios faltando';
+    valid.style.color = ready ? 'var(--lime)' : 'var(--tx4)';
+  }
+}
+
+// ── VALIDATE ──
+function validateFb() {
+  if (!FB_CAT)         { toast('Selecione o tipo de feedback', 'err'); return false; }
+  if (!v('fb-subject')){ toast('Preencha o assunto', 'err');           return false; }
+  if (!v('fb-msg'))    { toast('Escreva sua mensagem', 'err');         return false; }
+  return true;
+}
+
+// ── SAVE LOCALLY ──
+function saveFbLocal() {
+  const list = getFbHistory();
+  list.unshift({
+    id:    Date.now(),
+    date:  new Date().toLocaleString('pt-BR'),
+    cat:   FB_CAT,
+    subj:  v('fb-subject'),
+    msg:   v('fb-msg'),
+    name:  v('fb-name'),
+    email: v('fb-email'),
+  });
+  if (list.length > 40) list.pop();
+  localStorage.setItem(FB_KEY, JSON.stringify(list));
+  renderFbHistory();
+  updateFbStats();
+}
+
+function getFbHistory() {
+  try { return JSON.parse(localStorage.getItem(FB_KEY) || '[]'); } catch { return []; }
+}
+
+// ── SEND EMAIL ──
+function sendFbEmail() {
+  if (!validateFb()) return;
+  const cat      = CAT_META[FB_CAT]?.label || '';
+  const mailSubj = encodeURIComponent(`[Orça 3D] ${cat} — ${v('fb-subject')}`);
+  const mailBody = encodeURIComponent(buildFbText());
+  window.open(`mailto:${FB_EMAIL}?subject=${mailSubj}&body=${mailBody}`, '_blank');
+  saveFbLocal();
+  resetFbForm();
+  toast('✉ E-mail aberto! Obrigado pelo feedback 🙏', 'ok');
+}
+
+// ── RESET FORM ──
+function resetFbForm() {
+  FB_CAT = '';
+  ['fb-subject','fb-msg','fb-name','fb-email'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.querySelectorAll('.cat-tile').forEach(t => {
+    t.classList.remove('cat-tile-sel');
+    t.style.removeProperty('--ct-accent');
+    t.style.removeProperty('--ct-glow');
+  });
+  const cnt = document.getElementById('fb-chars');
+  if (cnt) { cnt.textContent = '0 / 1200'; cnt.style.color = 'var(--tx4)'; }
+  updateFbPreview();
+  checkFbReady();
+}
+
+// ── RENDER HISTORY ──
+function renderFbHistory() {
+  const list = getFbHistory();
+  const el   = document.getElementById('fb-history-list');
+  if (!el) return;
+  if (!list.length) {
+    el.innerHTML = `<div style="text-align:center;padding:28px 0;color:var(--tx4);font-size:12px;font-family:'DM Mono',monospace">nenhum feedback enviado ainda</div>`;
+    return;
+  }
+  el.innerHTML = list.map(f => {
+    const meta = CAT_META[f.cat] || { label: '💬 Outro', color: '#A78BFA' };
+    return `<div class="fb-hist-item">
+      <div class="fb-cat-dot" style="background:${meta.color}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.subj || '—'}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3);margin-top:3px">${meta.label}${f.name ? ' · ' + f.name : ''}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);margin-top:2px">${f.date}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── STATS ──
+function updateFbStats() {
+  const list  = getFbHistory();
+  const total = document.getElementById('fs-total');
+  const last  = document.getElementById('fs-last');
+  if (total) total.textContent = list.length;
+  if (last) {
+    last.textContent = list.length
+      ? new Date(list[0].id).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})
+      : '—';
+  }
+}
+
+function clearFeedbacks() {
+  if (!confirm('Limpar histórico de feedbacks?')) return;
+  localStorage.removeItem(FB_KEY);
+  renderFbHistory();
+  updateFbStats();
+  toast('Histórico limpo', 'info');
+}
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
   initThree();
   loadPref();
+  loadEmpresa();
   updateHistBadge();
   renderMatGrid();
+  renderFbHistory();
+  updateFbStats();
+
+  // Expose all onclick-referenced functions to window
+  // Fixes "not defined" errors caused by Cloudflare injecting scripts
+  // that push our code into a non-global module-like scope.
+  [
+    switchTab, doCalc, autoCalc, exportPDF, copyQ,
+    saveToHistory, removeFile, onDragOver, onDragLeave, onDrop, onFileInput,
+    pickMat, openPriceEdit, resetMatPrices,
+    resetCam, toggleWF, setView,
+    onLogoDragOver, onLogoDragLeave, onLogoDrop, onLogoInput, removeLogo,
+    saveEmpresa, updatePdfPreview,
+    setCat, sendFbEmail, updateFbPreview, updateFbCharCount, clearFeedbacks,
+    renderHistory, clearHistory, delHistItem, updateSell, updateMonthly,
+  ].forEach(fn => { if (typeof fn === 'function') window[fn.name] = fn; });
 });
 </script>
 </body>
