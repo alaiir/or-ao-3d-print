@@ -1553,15 +1553,14 @@ input[type=range].changed {
           <!-- ENVIAR -->
           <button class="fb-send-btn" id="fb-send-btn" onclick="sendFbEmail()">
             <span class="fsb-ico">✉</span>
-            <span class="fsb-text">Enviar Feedback por E-mail</span>
+            <span class="fsb-text">Enviar Feedback</span>
             <span class="fsb-arrow">→</span>
           </button>
 
           <div style="margin-top:10px;display:flex;align-items:center;gap:8px;padding:10px 13px;background:var(--ink4);border-radius:8px;border:1px solid var(--rim)">
-            <span style="font-size:13px;color:var(--sky);flex-shrink:0">ℹ</span>
+            <span style="font-size:13px;color:var(--lime);flex-shrink:0">🔒</span>
             <span style="font-size:12px;color:var(--tx3);line-height:1.5">
-              Ao clicar, seu cliente de e-mail abrirá com a mensagem pré-preenchida.
-              O feedback também é salvo localmente.
+              Seu feedback é enviado diretamente e com segurança — sem abrir nenhum aplicativo externo.
             </span>
           </div>
         </div>
@@ -1587,7 +1586,7 @@ input[type=range].changed {
               <div style="background:var(--ink);padding:10px 13px;border-bottom:1px solid var(--rim);display:flex;flex-direction:column;gap:4px">
                 <div style="display:flex;align-items:center;gap:7px">
                   <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);width:28px;flex-shrink:0">Para:</span>
-                  <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lime)" id="fpe-to"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9cfdf0fdf5eef2f9e8f3adaeaddcfbf1fdf5f0b2fff3f1">[email&#160;protected]</a></span>
+                  <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lime)" id="fpe-to">🔒 destinatário protegido</span>
                 </div>
                 <div style="display:flex;align-items:baseline;gap:7px">
                   <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);width:28px;flex-shrink:0">Assunto:</span>
@@ -2688,8 +2687,7 @@ function toast(msg, type='ok') {
 // ═══════════════════════════════════════
 //  FEEDBACK ENGINE — v3.2 (email + tipo + nome/email)
 // ═══════════════════════════════════════
-const FB_KEY   = 'orca3d_feedbacks';
-const FB_EMAIL = 'alairneto121@gmail.com';
+const FB_KEY  = 'orca3d_feedbacks';
 
 const CAT_META = {
   bug:      { label: '🐛 Bug / Erro',  color: '#FF6B8A', accent: 'var(--rose)'   },
@@ -2838,15 +2836,52 @@ function getFbHistory() {
 }
 
 // ── SEND EMAIL ──
-function sendFbEmail() {
+// ── SEND VIA WEB3FORMS (email oculto, sem sair do site) ──
+async function sendFbEmail() {
   if (!validateFb()) return;
-  const cat      = CAT_META[FB_CAT]?.label || '';
-  const mailSubj = encodeURIComponent(`[Orça 3D] ${cat} — ${v('fb-subject')}`);
-  const mailBody = encodeURIComponent(buildFbText());
-  window.open(`mailto:${FB_EMAIL}?subject=${mailSubj}&body=${mailBody}`, '_blank');
-  saveFbLocal();
-  resetFbForm();
-  toast('✉ E-mail aberto! Obrigado pelo feedback 🙏', 'ok');
+
+  const btn = document.getElementById('fb-send-btn');
+  const txt = btn?.querySelector('.fsb-text');
+
+  // Loading state
+  if (btn)  btn.disabled = true;
+  if (txt)  txt.textContent = 'Enviando…';
+
+  const cat  = CAT_META[FB_CAT]?.label || '';
+  const name = v('fb-name') || 'Anônimo';
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: '1fe35f3a-4ca1-4d92-8348-c5e6fe3cb4ab',
+        subject:    `[Orça 3D] ${cat} — ${v('fb-subject')}`,
+        from_name:  name,
+        message:    buildFbText(),
+        // campos extras ficam no corpo do e-mail mas não revelam o destino
+        botcheck:   '',
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      saveFbLocal();
+      resetFbForm();
+      toast('✉ Feedback enviado! Obrigado 🙏', 'ok');
+      // Show success state on button momentarily
+      if (btn)  { btn.classList.add('fb-send-ready'); btn.disabled = false; }
+      if (txt)  txt.textContent = 'Enviar Feedback';
+    } else {
+      throw new Error(data.message || 'Erro desconhecido');
+    }
+  } catch (err) {
+    toast('Erro ao enviar. Tente novamente.', 'err');
+    if (btn)  btn.disabled = false;
+    if (txt)  txt.textContent = 'Enviar Feedback';
+    console.error('Web3Forms error:', err);
+  }
 }
 
 // ── RESET FORM ──
