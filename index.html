@@ -2432,14 +2432,38 @@ function exportPDF() {
   const nameText   = emp.nome   || 'Orça 3D Print';
   const sloganText = (emp.slogan || 'Orçamento Profissional').toUpperCase();
 
-  // ── LEFT: O3 badge + company name ──
-  let textX = P + 28;
+  // ── LEFT: Logo hexagon + company name ──
+  let textX = P + 34;
+  const lx = P, ly = (hH - 26) / 2, lw = 26, lh = 26, lr = 5;
+
+  // Draw hexagon shape (6 points)
+  const cx = lx + lw/2, cy = ly + lh/2, hr = lw/2;
+  const hexPts = [];
+  for (let i = 0; i < 6; i++) {
+    const angle = (Math.PI / 180) * (60 * i - 30);
+    hexPts.push([cx + hr * Math.cos(angle), cy + hr * Math.sin(angle)]);
+  }
+  // Fill lime hexagon
   doc.setFillColor(200, 255, 87);
-  doc.roundedRect(P, (hH - 22) / 2, 22, 22, 4, 4, 'F');
+  doc.lines(
+    hexPts.slice(1).map((p,i) => [p[0]-hexPts[i][0], p[1]-hexPts[i][1]]),
+    hexPts[0][0], hexPts[0][1], [1,1], 'F', true
+  );
+  // Outer ring (stroke)
+  doc.setDrawColor(11, 13, 20);
+  doc.setLineWidth(0.8);
+  doc.lines(
+    hexPts.slice(1).map((p,i) => [p[0]-hexPts[i][0], p[1]-hexPts[i][1]]),
+    hexPts[0][0], hexPts[0][1], [1,1], 'S', true
+  );
+  // Inner circle dot
+  doc.setFillColor(11, 13, 20);
+  doc.circle(cx, cy, 2.8, 'F');
+  // "O3" text inside hexagon
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(13);
+  doc.setFontSize(8);
   doc.setTextColor(11, 13, 20);
-  doc.text('O3', P + 3.5, hH / 2 + 2.5);
+  doc.text('O3', cx - 3.2, cy + 3);
 
   // ── Company name + slogan (drawn exactly once) ──
   const nameY   = hH * 0.42;
