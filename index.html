@@ -3,6 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Segurança: Content Security Policy -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://api.web3forms.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com;
+  img-src 'self' data: https://api.qrserver.com;
+  connect-src 'self' https://api.web3forms.com https://www.google-analytics.com https://*.vercel-insights.com;
+  frame-src 'none';
+  object-src 'none';
+  base-uri 'self';
+">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <title>Orça 3D Print — Calculadora Profissional</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'><polygon points='9,1 16,5 16,13 9,17 2,13 2,5' stroke='%230B0D14' stroke-width='1.5' fill='%23C8FF57' stroke-linejoin='round'/><circle cx='9' cy='9' r='2' fill='%230B0D14'/></svg>">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WSDGZFKC63"></script>
@@ -114,106 +128,6 @@ header{
 }
 .h-chip.on::before{content:'● ';animation:pulse-dot 1.6s ease infinite}
 @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* Botão de ajuda no cabeçalho */
-.h-help{
-  width:28px;height:28px;
-  border-radius:50%;
-  background:var(--ink4);
-  border:1px solid var(--rim2);
-  color:var(--tx3);
-  font-family:'DM Sans',sans-serif;
-  font-size:15px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  transition:all .2s;
-}
-.h-help:hover{
-  border-color:var(--lime);
-  color:var(--lime);
-  background:var(--lime-a);
-}
-
-/* Modal de ajuda */
-.help-modal{
-  display:none;
-  position:fixed;
-  top:0; left:0; width:100%; height:100%;
-  background:rgba(0,0,0,.7);
-  backdrop-filter:blur(4px);
-  z-index:1000;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-.help-modal.show{display:flex}
-.help-modal-content{
-  background:var(--ink3);
-  border:1px solid var(--rim);
-  border-radius:var(--r-card);
-  max-width:500px;
-  width:100%;
-  max-height:80vh;
-  overflow-y:auto;
-  box-shadow:var(--shadow-lg);
-  animation:rise .3s ease;
-}
-.help-modal-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:18px 22px;
-  border-bottom:1px solid var(--rim);
-}
-.help-title{
-  font-family:'DM Mono',monospace;
-  font-size:14px;
-  font-weight:600;
-  color:var(--lime);
-  letter-spacing:-.2px;
-}
-.help-close{
-  background:none;
-  border:none;
-  color:var(--tx3);
-  font-size:16px;
-  cursor:pointer;
-  padding:5px;
-  border-radius:5px;
-  transition:all .2s;
-}
-.help-close:hover{
-  color:var(--rose);
-  background:var(--rose-a);
-}
-.help-modal-body{
-  padding:20px 22px 28px;
-  color:var(--tx2);
-  font-size:13px;
-  line-height:1.7;
-}
-.help-modal-body h3{
-  color:var(--tx);
-  font-size:15px;
-  font-weight:600;
-  margin:22px 0 8px;
-  letter-spacing:-.2px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-.help-modal-body h3:first-of-type{margin-top:0}
-.help-modal-body p{
-  margin:6px 0 6px 18px;
-  position:relative;
-}
-.help-modal-body p::before{
-  content:'•';
-  color:var(--lime);
-  font-weight:700;
-  position:absolute;
-  left:-12px;
-}
 
 .nav-bar{
   position:relative;z-index:1;
@@ -1183,6 +1097,17 @@ input[type=range].changed {
   opacity: .5; cursor: not-allowed; transform: none;
 }
 </style>
+<!-- Vercel Speed Insights -->
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+
+<!-- Vercel Web Analytics -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
@@ -1200,7 +1125,6 @@ input[type=range].changed {
     <span class="h-chip on">Online</span>
     <span class="h-chip">Grátis</span>
     <span class="h-chip">v3.3</span>
-    <button class="h-help" onclick="toggleHelp()" title="Ajuda">?</button>
   </div>
 </header>
 
@@ -1895,33 +1819,6 @@ input[type=range].changed {
     </div>
   </div>
 </main>
-
-<!-- Modal de ajuda -->
-<div class="help-modal" id="help-modal">
-  <div class="help-modal-content">
-    <div class="help-modal-header">
-      <span class="help-title">Como usar o Orça 3D Print</span>
-      <button class="help-close" onclick="toggleHelp()">✕</button>
-    </div>
-    <div class="help-modal-body">
-      <h3>📋 Calculadora</h3>
-      <p>1. Preencha os dados do cliente (opcional).</p>
-      <p>2. Arraste ou selecione um modelo 3D (STL, OBJ, 3MF, PLY).</p>
-      <p>3. Escolha o material e ajuste os parâmetros de impressão.</p>
-      <p>4. Clique em "Calcular Custo" ou aguarde o cálculo automático.</p>
-      <p>5. Veja os resultados detalhados, ajuste a margem e projeção mensal.</p>
-      <p>6. Gere PDF, copie ou salve no histórico.</p>
-      <h3>🕐 Histórico</h3>
-      <p>Gerencie orçamentos salvos.</p>
-      <h3>💬 Feedback</h3>
-      <p>Envie sugestões ou reporte problemas.</p>
-      <h3>📋 Orçamento</h3>
-      <p>Preencha para enviar pedido via WhatsApp ao prestador.</p>
-      <h3>⚙️ Configurações</h3>
-      <p>Configure seus dados de contato para receber orçamentos.</p>
-    </div>
-  </div>
-</div>
 
 <div class="toast" id="toast">
   <span class="toast-ico" id="toast-ico">✓</span>
@@ -2818,14 +2715,6 @@ function toast(msg, type='ok') {
 }
 
 // ═══════════════════════════════════════
-//  HELP MODAL
-// ═══════════════════════════════════════
-function toggleHelp() {
-  const modal = document.getElementById('help-modal');
-  modal.classList.toggle('show');
-}
-
-// ═══════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════
 // ═══════════════════════════════════════
@@ -3188,6 +3077,26 @@ function updateOrcPreview() {
   el.textContent = buildOrcMsg();
 }
 
+// ── SANITIZAÇÃO ANTI-XSS ──
+// Remove qualquer HTML/script de strings vindas de fontes externas (URL, localStorage)
+function sanitizeStr(str, maxLen = 120) {
+  if (typeof str !== 'string') return '';
+  return str
+    .slice(0, maxLen)                          // limita tamanho
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;')
+    .replace(/[^\x20-\x7E\u00C0-\u024F\u0400-\u04FF\u4e00-\u9fff\uAC00-\uD7AF]/g, ''); // só chars legíveis
+}
+
+// Sanitiza número de WhatsApp: apenas dígitos, 10-15 chars
+function sanitizeWhats(str) {
+  if (typeof str !== 'string') return '';
+  return str.replace(/\D/g, '').slice(0, 15);
+}
 
 function getUrlParam(key) {
   return new URLSearchParams(window.location.search).get(key);
@@ -3204,7 +3113,15 @@ function buildShareLink() {
 function getSharedData() {
   const d = getUrlParam('d');
   if (!d) return null;
-  try { return JSON.parse(atob(decodeURIComponent(d))); } catch { return null; }
+  try {
+    const parsed = JSON.parse(atob(decodeURIComponent(d)));
+    // Sanitiza cada campo antes de retornar
+    return {
+      w:  sanitizeWhats(parsed.w  || ''),
+      n:  sanitizeStr(parsed.n   || '', 80),
+      bv: sanitizeStr(parsed.bv  || '', 200),
+    };
+  } catch { return null; }
 }
 
 function getEffectiveCfg() {
@@ -3216,7 +3133,7 @@ function getEffectiveCfg() {
 function updateOrcDest() {
   const c  = getEffectiveCfg();
   const el = document.getElementById('orc-preview-dest');
-  if (el && c.nome) el.textContent = c.nome;
+  if (el && c.nome) el.textContent = c.nome; // textContent — seguro, nunca innerHTML
   const warn = document.getElementById('orc-no-num');
   if (warn) warn.style.display = c.whats ? 'none' : 'flex';
 }
@@ -3318,10 +3235,22 @@ window.addEventListener('DOMContentLoaded', () => {
       if (warn) warn.style.display = 'none';
     }
 
-    // Atualiza título do header com nome do prestador
+    // Atualiza título do header com nome do prestador (sem innerHTML — anti-XSS)
     const nomeNegocio = shared?.n || 'Orça 3D Print';
     const logoName = document.querySelector('.logo-name');
-    if (logoName) logoName.innerHTML = nomeNegocio.replace(' ', '<em> ') + '</em>';
+    if (logoName) {
+      // reconstrói com nós de texto seguros, sem innerHTML
+      logoName.textContent = '';
+      const parts = nomeNegocio.split(' ');
+      if (parts.length > 1) {
+        logoName.appendChild(document.createTextNode(parts[0] + ' '));
+        const em = document.createElement('em');
+        em.textContent = parts.slice(1).join(' ');
+        logoName.appendChild(em);
+      } else {
+        logoName.textContent = nomeNegocio;
+      }
+    }
   }
 
   [
@@ -3334,7 +3263,6 @@ window.addEventListener('DOMContentLoaded', () => {
     saveCfg, testWhatsApp,
     sendOrcamento, updateOrcPreview, setOrcArq,
     copiarLink, compartilharWhatsApp, renderShareLink,
-    toggleHelp, // nova função de ajuda
   ].forEach(fn => { if (typeof fn === 'function') window[fn.name] = fn; });
 });
 </script>
