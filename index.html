@@ -139,7 +139,6 @@ header{
   color:var(--lime);padding:1px 6px;border-radius:10px;
   display:none;
 }
-#empresa-badge { display: none; }
 .tab-divider{flex:1;border-bottom:1px solid var(--rim)}
 
 main{
@@ -959,7 +958,7 @@ input[type=range].changed {
   <div class="h-right">
     <span class="h-chip on">Online</span>
     <span class="h-chip">Grátis</span>
-    <span class="h-chip">v3.2</span>
+    <span class="h-chip">v3.3</span>
   </div>
 </header>
 
@@ -970,10 +969,6 @@ input[type=range].changed {
   <button class="nav-tab" onclick="switchTab('history',this)">
     <span class="n-ico">🕐</span> Histórico
     <span class="nav-badge" id="hist-badge"></span>
-  </button>
-  <button class="nav-tab" onclick="switchTab('empresa',this)" id="tab-empresa">
-    <span class="n-ico">🏢</span> Minha Empresa
-    <span class="nav-badge" id="empresa-badge" style="background:var(--lime-a);border-color:rgba(200,255,87,.25);color:var(--lime)">✓</span>
   </button>
   <button class="nav-tab" onclick="switchTab('feedback',this)" id="tab-feedback">
     <span class="n-ico">💬</span> Feedback
@@ -1296,176 +1291,6 @@ input[type=range].changed {
     </div>
   </div>
   <!-- ════ PANEL: MINHA EMPRESA ════ -->
-  <div class="panel" id="panel-empresa">
-    <div class="panel-inner">
-      <div class="hero" style="margin-bottom:24px">
-        <div class="hero-eyebrow">Identidade Visual</div>
-        <h1>Minha <span class="gr">Empresa</span></h1>
-        <p>Configure os dados do seu negócio. Eles aparecerão no cabeçalho de todos os PDFs gerados.</p>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 420px;gap:18px;align-items:start">
-
-        <!-- LEFT: form -->
-        <div style="display:flex;flex-direction:column;gap:14px">
-
-          <!-- Logo upload card -->
-          <div class="card" data-accent="lime">
-            <div class="card-head">
-              <div class="card-label">
-                <div class="cl-dot" style="background:var(--lime)"></div>
-                Logo da Empresa
-              </div>
-              <button class="btn-sm" onclick="removeLogo()" id="btn-remove-logo" style="display:none">✕ Remover</button>
-            </div>
-
-            <!-- Preview when loaded -->
-            <div id="logo-loaded" style="display:none;margin-bottom:14px">
-              <div style="background:var(--ink4);border:1px solid var(--rim);border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px">
-                <div style="width:72px;height:72px;background:var(--ink);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid var(--rim2)">
-                  <img id="logo-preview-img" src="" alt="Logo" style="max-width:68px;max-height:68px;object-fit:contain;border-radius:6px">
-                </div>
-                <div>
-                  <div id="logo-preview-name" style="font-weight:600;font-size:13px;margin-bottom:4px">logo.png</div>
-                  <div id="logo-preview-size" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--tx2)">—</div>
-                  <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lime);margin-top:4px">✓ Pronta para o PDF</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Drop zone -->
-            <div class="drop-zone" id="logo-drop-zone"
-              onclick="document.getElementById('logo-input').click()"
-              ondragover="onLogoDragOver(event)" ondrop="onLogoDrop(event)" ondragleave="onLogoDragLeave()"
-              style="padding:28px 20px">
-              <div style="font-size:36px;margin-bottom:10px;opacity:.5">🏢</div>
-              <div class="dz-title" style="font-size:14px">Arraste sua logo aqui</div>
-              <div class="dz-sub" style="margin-bottom:12px">PNG, JPG, SVG, WebP — até 2MB<br>Fundo transparente recomendado</div>
-              <button class="btn-choose" style="font-size:11px;padding:8px 16px" onclick="event.stopPropagation();document.getElementById('logo-input').click()">
-                ↑ Selecionar Logo
-              </button>
-              <div class="ext-pills" style="margin-top:10px">
-                <span class="ext-pill">.PNG</span>
-                <span class="ext-pill">.JPG</span>
-                <span class="ext-pill">.SVG</span>
-                <span class="ext-pill">.WEBP</span>
-              </div>
-            </div>
-            <input type="file" id="logo-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none" onchange="onLogoInput(event)">
-
-            <div style="margin-top:10px;padding:10px 12px;background:var(--ink4);border-radius:8px;border:1px solid var(--rim)">
-              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">Dica de uso</div>
-              <div style="font-size:12px;color:var(--tx2);line-height:1.6">Use imagens em PNG com fundo transparente para melhor resultado no PDF escuro. Tamanho ideal: <span style="color:var(--lime);font-family:'DM Mono',monospace">200×80px</span> ou proporcional.</div>
-            </div>
-          </div>
-
-          <!-- Company info card -->
-          <div class="card" data-accent="violet">
-            <div class="card-head">
-              <div class="card-label">
-                <div class="cl-dot" style="background:var(--violet)"></div>
-                Dados da Empresa
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-              <div class="field" style="grid-column:1/-1">
-                <div class="field-label">Nome da Empresa *</div>
-                <input class="field-input" id="emp-nome" type="text" placeholder="Ex: Impressões 3D Pro" oninput="saveEmpresa();updateEmpresaBadge()">
-              </div>
-              <div class="field">
-                <div class="field-label">Slogan / Especialidade</div>
-                <input class="field-input" id="emp-slogan" type="text" placeholder="Ex: Impressão 3D de alta precisão" oninput="saveEmpresa()">
-              </div>
-              <div class="field">
-                <div class="field-label">CNPJ / CPF</div>
-                <input class="field-input" id="emp-doc" type="text" placeholder="Ex: 12.345.678/0001-99" oninput="saveEmpresa()">
-              </div>
-              <div class="field">
-                <div class="field-label">Telefone / WhatsApp</div>
-                <input class="field-input" id="emp-tel" type="text" placeholder="Ex: (31) 99999-9999" oninput="saveEmpresa()">
-              </div>
-              <div class="field">
-                <div class="field-label">E-mail</div>
-                <input class="field-input" id="emp-email" type="email" placeholder="contato@empresa.com" oninput="saveEmpresa()">
-              </div>
-              <div class="field" style="grid-column:1/-1">
-                <div class="field-label">Site / Instagram</div>
-                <input class="field-input" id="emp-site" type="text" placeholder="Ex: www.impressoes3dpro.com.br ou @impressoes3d" oninput="saveEmpresa()">
-              </div>
-              <div class="field" style="grid-column:1/-1">
-                <div class="field-label">Endereço (opcional)</div>
-                <input class="field-input" id="emp-end" type="text" placeholder="Ex: Rua das Impressoras, 42 — Belo Horizonte, MG" oninput="saveEmpresa()">
-              </div>
-            </div>
-            <div style="margin-top:14px;padding:11px 14px;background:var(--lime-a);border:1px solid rgba(200,255,87,.2);border-radius:8px;font-size:12px;color:var(--tx2);display:flex;align-items:center;gap:8px">
-              <span style="color:var(--lime);font-size:14px">💾</span>
-              Dados salvos automaticamente no navegador — não precisam ser preenchidos a cada acesso.
-            </div>
-          </div>
-        </div>
-
-        <!-- RIGHT: PDF preview card -->
-        <div class="card" data-accent="sky" style="position:sticky;top:76px">
-          <div class="card-head">
-            <div class="card-label">
-              <div class="cl-dot" style="background:var(--sky)"></div>
-              Preview do Cabeçalho PDF
-            </div>
-          </div>
-
-          <!-- Simulated PDF header -->
-          <div style="background:#0B0D14;border-radius:10px;overflow:hidden;border:1px solid var(--rim)">
-            <!-- Header band -->
-            <div style="background:#10131C;padding:14px 16px;border-bottom:2px solid #C8FF57;display:flex;align-items:center;justify-content:space-between">
-              <div style="display:flex;align-items:center;gap:12px">
-                <!-- Logo area -->
-                <div id="pdf-preview-logo-box" style="width:52px;height:36px;background:var(--ink4);border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--rim);flex-shrink:0">
-                  <img id="pdf-preview-logo" src="" alt="" style="max-width:50px;max-height:34px;object-fit:contain;display:none">
-                  <span id="pdf-preview-logo-placeholder" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);text-align:center;line-height:1.3">SEM<br>LOGO</span>
-                </div>
-                <div>
-                  <div id="pdf-preview-nome" style="font-weight:700;font-size:13px;color:#E4E8F5;letter-spacing:-.3px">Orça 3D Print</div>
-                  <div id="pdf-preview-slogan" style="font-family:'DM Mono',monospace;font-size:8px;color:#7B88A8;margin-top:1px">ORÇAMENTO PROFISSIONAL</div>
-                </div>
-              </div>
-              <div style="text-align:right">
-                <div style="font-family:'DM Mono',monospace;font-size:10px;font-weight:600;color:#C8FF57">ORC-XXXXXX</div>
-                <div id="pdf-preview-date" style="font-family:'DM Mono',monospace;font-size:8px;color:#7B88A8;margin-top:2px"></div>
-                <div style="font-family:'DM Mono',monospace;font-size:8px;color:#404B66;margin-top:1px">Validade: 30 dias</div>
-              </div>
-            </div>
-            <!-- Contact band -->
-            <div id="pdf-preview-contacts" style="padding:8px 16px;background:#0D101A;display:flex;gap:14px;flex-wrap:wrap;border-bottom:1px solid #1D2232">
-              <span style="font-family:'DM Mono',monospace;font-size:8px;color:#404B66" id="ppc-tel">📞 —</span>
-              <span style="font-family:'DM Mono',monospace;font-size:8px;color:#404B66" id="ppc-email">✉ —</span>
-              <span style="font-family:'DM Mono',monospace;font-size:8px;color:#404B66" id="ppc-site">🌐 —</span>
-            </div>
-            <!-- Body placeholder -->
-            <div style="padding:12px 16px">
-              <div style="height:6px;background:#1D2232;border-radius:3px;margin-bottom:6px;width:70%"></div>
-              <div style="height:6px;background:#161A26;border-radius:3px;margin-bottom:6px;width:50%"></div>
-              <div style="height:6px;background:#1D2232;border-radius:3px;width:85%"></div>
-            </div>
-            <div style="padding:6px 16px 12px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px">
-              <div style="background:#11151F;border-radius:5px;height:28px;border-top:1.5px solid #C8FF57"></div>
-              <div style="background:#11151F;border-radius:5px;height:28px;border-top:1.5px solid #57C8FF"></div>
-              <div style="background:#11151F;border-radius:5px;height:28px;border-top:1.5px solid #A78BFA"></div>
-              <div style="background:#11151F;border-radius:5px;height:28px;border-top:1.5px solid #FFB347"></div>
-            </div>
-          </div>
-
-          <div style="margin-top:14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);text-align:center;letter-spacing:.5px">
-            Preview em tempo real · PDF final pode variar levemente
-          </div>
-
-          <button onclick="switchTab('calc', document.querySelector('.nav-tab'))" style="margin-top:14px;width:100%;padding:11px;background:linear-gradient(135deg,var(--lime-a),rgba(87,200,255,.06));border:1px solid rgba(200,255,87,.4);border-radius:9px;color:var(--lime);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s" onmouseover="this.style.background='var(--lime)';this.style.color='var(--ink)'" onmouseout="this.style.background='linear-gradient(135deg,var(--lime-a),rgba(87,200,255,.06))';this.style.color='var(--lime)'">
-            ⚡ Ir para Calculadora
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
   <!-- ════ PANEL: FEEDBACK ════ -->
   <div class="panel" id="panel-feedback">
     <div class="panel-inner">
@@ -1586,7 +1411,7 @@ input[type=range].changed {
               <div style="background:var(--ink);padding:10px 13px;border-bottom:1px solid var(--rim);display:flex;flex-direction:column;gap:4px">
                 <div style="display:flex;align-items:center;gap:7px">
                   <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);width:28px;flex-shrink:0">Para:</span>
-                  <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lime)" id="fpe-to">🔒 destinatário protegido</span>
+                  <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lime)" id="fpe-to">orca3dprint@gmail.com</span>
                 </div>
                 <div style="display:flex;align-items:baseline;gap:7px">
                   <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);width:28px;flex-shrink:0">Assunto:</span>
@@ -2218,138 +2043,6 @@ function updateMonthly() {
 // ═══════════════════════════════════════
 //  PDF EXPORT
 // ═══════════════════════════════════════
-// ═══════════════════════════════════════
-//  EMPRESA / LOGO
-// ═══════════════════════════════════════
-const EMP_KEY = 'orca3d_empresa';
-let LOGO_B64 = null; // base64 string of logo image
-
-function getEmpresa() {
-  try { return JSON.parse(localStorage.getItem(EMP_KEY) || '{}'); } catch { return {}; }
-}
-function saveEmpresa() {
-  const e = {
-    nome:   document.getElementById('emp-nome').value,
-    slogan: document.getElementById('emp-slogan').value,
-    doc:    document.getElementById('emp-doc').value,
-    tel:    document.getElementById('emp-tel').value,
-    email:  document.getElementById('emp-email').value,
-    site:   document.getElementById('emp-site').value,
-    end:    document.getElementById('emp-end').value,
-  };
-  localStorage.setItem(EMP_KEY, JSON.stringify(e));
-  updatePdfPreview();
-}
-function loadEmpresa() {
-  const e = getEmpresa();
-  if (e.nome)   document.getElementById('emp-nome').value   = e.nome;
-  if (e.slogan) document.getElementById('emp-slogan').value = e.slogan;
-  if (e.doc)    document.getElementById('emp-doc').value    = e.doc;
-  if (e.tel)    document.getElementById('emp-tel').value    = e.tel;
-  if (e.email)  document.getElementById('emp-email').value  = e.email;
-  if (e.site)   document.getElementById('emp-site').value   = e.site;
-  if (e.end)    document.getElementById('emp-end').value    = e.end;
-
-  // Restore logo from localStorage
-  const savedLogo = localStorage.getItem('orca3d_logo');
-  if (savedLogo) {
-    LOGO_B64 = savedLogo;
-    applyLogoPreview(savedLogo, localStorage.getItem('orca3d_logo_name') || 'logo', +(localStorage.getItem('orca3d_logo_size') || 0));
-  }
-  updateEmpresaBadge();
-  updatePdfPreview();
-}
-
-function updateEmpresaBadge() {
-  const e = getEmpresa();
-  const badge = document.getElementById('empresa-badge');
-  if (badge) badge.style.display = (e.nome || LOGO_B64) ? 'inline' : 'none';
-}
-
-function onLogoDragOver(e) { e.preventDefault(); document.getElementById('logo-drop-zone').classList.add('over'); }
-function onLogoDragLeave() { document.getElementById('logo-drop-zone').classList.remove('over'); }
-function onLogoDrop(e) { e.preventDefault(); onLogoDragLeave(); const f = e.dataTransfer.files[0]; if (f) processLogo(f); }
-function onLogoInput(e) { const f = e.target.files[0]; if (f) processLogo(f); }
-
-function processLogo(file) {
-  if (file.size > 2 * 1024 * 1024) { toast('Logo muito grande (máx 2MB)','err'); return; }
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const b64 = ev.target.result;
-    LOGO_B64 = b64;
-    localStorage.setItem('orca3d_logo', b64);
-    localStorage.setItem('orca3d_logo_name', file.name);
-    localStorage.setItem('orca3d_logo_size', file.size);
-    applyLogoPreview(b64, file.name, file.size);
-    updateEmpresaBadge();
-    updatePdfPreview();
-    toast('✓ Logo carregada!', 'ok');
-  };
-  reader.readAsDataURL(file);
-}
-
-function applyLogoPreview(b64, name, size) {
-  // Side panel preview
-  const img = document.getElementById('logo-preview-img');
-  if (img) { img.src = b64; img.style.display = 'block'; }
-  const loaded = document.getElementById('logo-loaded');
-  if (loaded) loaded.style.display = 'block';
-  const dz = document.getElementById('logo-drop-zone');
-  if (dz) dz.style.display = 'none';
-  const btn = document.getElementById('btn-remove-logo');
-  if (btn) btn.style.display = 'inline-flex';
-  const nm = document.getElementById('logo-preview-name');
-  if (nm) nm.textContent = name;
-  const sz = document.getElementById('logo-preview-size');
-  if (sz) sz.textContent = size ? `${(size/1024).toFixed(0)} KB · ${name.split('.').pop().toUpperCase()}` : name;
-}
-
-function removeLogo() {
-  LOGO_B64 = null;
-  localStorage.removeItem('orca3d_logo');
-  localStorage.removeItem('orca3d_logo_name');
-  localStorage.removeItem('orca3d_logo_size');
-  const img = document.getElementById('logo-preview-img');
-  if (img) { img.src = ''; img.style.display = 'none'; }
-  document.getElementById('logo-loaded').style.display = 'none';
-  document.getElementById('logo-drop-zone').style.display = 'block';
-  document.getElementById('btn-remove-logo').style.display = 'none';
-  document.getElementById('logo-input').value = '';
-  updateEmpresaBadge();
-  updatePdfPreview();
-  toast('Logo removida', 'info');
-}
-
-/** Update the live PDF preview in the "Minha Empresa" panel */
-function updatePdfPreview() {
-  const e = getEmpresa();
-  // Name
-  const pn = document.getElementById('pdf-preview-nome');
-  if (pn) pn.textContent = e.nome || 'Orça 3D Print';
-  // Slogan
-  const ps = document.getElementById('pdf-preview-slogan');
-  if (ps) ps.textContent = e.slogan || 'ORÇAMENTO PROFISSIONAL';
-  // Date
-  const pd = document.getElementById('pdf-preview-date');
-  if (pd) pd.textContent = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
-  // Logo
-  const pli = document.getElementById('pdf-preview-logo');
-  const plp = document.getElementById('pdf-preview-logo-placeholder');
-  if (LOGO_B64 && pli) {
-    pli.src = LOGO_B64; pli.style.display = 'block';
-    if (plp) plp.style.display = 'none';
-  } else if (pli) {
-    pli.style.display = 'none';
-    if (plp) plp.style.display = 'block';
-  }
-  // Contacts
-  const tel   = document.getElementById('ppc-tel');
-  const email = document.getElementById('ppc-email');
-  const site  = document.getElementById('ppc-site');
-  if (tel)   tel.textContent   = `📞 ${e.tel   || '—'}`;
-  if (email) email.textContent = `✉ ${e.email || '—'}`;
-  if (site)  site.textContent  = `🌐 ${e.site  || '—'}`;
-}
 
 // ═══════════════════════════════════════
 //  PDF EXPORT — with custom logo
@@ -2365,7 +2058,7 @@ function exportPDF() {
   const company = document.getElementById('c-company').value;
   const desc = document.getElementById('c-desc').value;
   const dateStr = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-  const emp = getEmpresa();
+  const emp = { nome: 'Orça 3D Print', slogan: 'Orçamento Profissional', tel: '', email: 'orca3dprint@gmail.com', site: '', end: '' };
 
   doc.setFillColor(11,13,20); doc.rect(0,0,W,297,'F');
 
@@ -2379,33 +2072,14 @@ function exportPDF() {
   const nameText   = emp.nome   || 'Orça 3D Print';
   const sloganText = (emp.slogan || 'Orçamento Profissional').toUpperCase();
 
-  // ── LEFT: logo OR default O3 badge ──
-  let textX = P; // X where company name starts
-
-  if (LOGO_B64) {
-    // Draw uploaded logo
-    const fmt = LOGO_B64.startsWith('data:image/png')  ? 'PNG'
-               : LOGO_B64.startsWith('data:image/svg')  ? 'SVG'
-               : LOGO_B64.startsWith('data:image/webp') ? 'WEBP'
-               : 'JPEG';
-    try {
-      const lW = 36, lH = 24;
-      const lX = P, lY = (hH - lH) / 2;
-      doc.addImage(LOGO_B64, fmt, lX, lY, lW, lH, undefined, 'FAST');
-      textX = lX + lW + 8;
-    } catch(e) {
-      textX = P; // fallback: no logo, text starts at margin
-    }
-  } else {
-    // Default lime O3 badge
-    doc.setFillColor(200, 255, 87);
-    doc.roundedRect(P, (hH - 22) / 2, 22, 22, 4, 4, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(13);
-    doc.setTextColor(11, 13, 20);
-    doc.text('O3', P + 3.5, hH / 2 + 2.5);
-    textX = P + 28;
-  }
+  // ── LEFT: O3 badge + company name ──
+  let textX = P + 28;
+  doc.setFillColor(200, 255, 87);
+  doc.roundedRect(P, (hH - 22) / 2, 22, 22, 4, 4, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.setTextColor(11, 13, 20);
+  doc.text('O3', P + 3.5, hH / 2 + 2.5);
 
   // ── Company name + slogan (drawn exactly once) ──
   const nameY   = hH * 0.42;
@@ -2951,7 +2625,6 @@ function clearFeedbacks() {
 window.addEventListener('DOMContentLoaded', () => {
   initThree();
   loadPref();
-  loadEmpresa();
   updateHistBadge();
   renderMatGrid();
   renderFbHistory();
@@ -2965,8 +2638,6 @@ window.addEventListener('DOMContentLoaded', () => {
     saveToHistory, removeFile, onDragOver, onDragLeave, onDrop, onFileInput,
     pickMat, openPriceEdit, resetMatPrices,
     resetCam, toggleWF, setView,
-    onLogoDragOver, onLogoDragLeave, onLogoDrop, onLogoInput, removeLogo,
-    saveEmpresa, updatePdfPreview,
     setCat, sendFbEmail, updateFbPreview, updateFbCharCount, clearFeedbacks,
     renderHistory, clearHistory, delHistItem, updateSell, updateMonthly,
   ].forEach(fn => { if (typeof fn === 'function') window[fn.name] = fn; });
