@@ -2459,11 +2459,7 @@ function exportPDF() {
   // Inner circle dot
   doc.setFillColor(11, 13, 20);
   doc.circle(cx, cy, 2.8, 'F');
-  // "O3" text inside hexagon
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
-  doc.setTextColor(11, 13, 20);
-  doc.text('O3', cx - 3.2, cy + 3);
+  // "O3" text inside hexagon — removed
 
   // ── Company name + slogan (drawn exactly once) ──
   const nameY   = hH * 0.42;
