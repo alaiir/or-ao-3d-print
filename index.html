@@ -115,6 +115,106 @@ header{
 .h-chip.on::before{content:'● ';animation:pulse-dot 1.6s ease infinite}
 @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
 
+/* Botão de ajuda no cabeçalho */
+.h-help{
+  width:28px;height:28px;
+  border-radius:50%;
+  background:var(--ink4);
+  border:1px solid var(--rim2);
+  color:var(--tx3);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:all .2s;
+}
+.h-help:hover{
+  border-color:var(--lime);
+  color:var(--lime);
+  background:var(--lime-a);
+}
+
+/* Modal de ajuda */
+.help-modal{
+  display:none;
+  position:fixed;
+  top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(4px);
+  z-index:1000;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.help-modal.show{display:flex}
+.help-modal-content{
+  background:var(--ink3);
+  border:1px solid var(--rim);
+  border-radius:var(--r-card);
+  max-width:500px;
+  width:100%;
+  max-height:80vh;
+  overflow-y:auto;
+  box-shadow:var(--shadow-lg);
+  animation:rise .3s ease;
+}
+.help-modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 22px;
+  border-bottom:1px solid var(--rim);
+}
+.help-title{
+  font-family:'DM Mono',monospace;
+  font-size:14px;
+  font-weight:600;
+  color:var(--lime);
+  letter-spacing:-.2px;
+}
+.help-close{
+  background:none;
+  border:none;
+  color:var(--tx3);
+  font-size:16px;
+  cursor:pointer;
+  padding:5px;
+  border-radius:5px;
+  transition:all .2s;
+}
+.help-close:hover{
+  color:var(--rose);
+  background:var(--rose-a);
+}
+.help-modal-body{
+  padding:20px 22px 28px;
+  color:var(--tx2);
+  font-size:13px;
+  line-height:1.7;
+}
+.help-modal-body h3{
+  color:var(--tx);
+  font-size:15px;
+  font-weight:600;
+  margin:22px 0 8px;
+  letter-spacing:-.2px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.help-modal-body h3:first-of-type{margin-top:0}
+.help-modal-body p{
+  margin:6px 0 6px 18px;
+  position:relative;
+}
+.help-modal-body p::before{
+  content:'•';
+  color:var(--lime);
+  font-weight:700;
+  position:absolute;
+  left:-12px;
+}
+
 .nav-bar{
   position:relative;z-index:1;
   display:flex;align-items:center;gap:2px;
@@ -1100,6 +1200,7 @@ input[type=range].changed {
     <span class="h-chip on">Online</span>
     <span class="h-chip">Grátis</span>
     <span class="h-chip">v3.3</span>
+    <button class="h-help" onclick="toggleHelp()" title="Ajuda">?</button>
   </div>
 </header>
 
@@ -1794,6 +1895,33 @@ input[type=range].changed {
     </div>
   </div>
 </main>
+
+<!-- Modal de ajuda -->
+<div class="help-modal" id="help-modal">
+  <div class="help-modal-content">
+    <div class="help-modal-header">
+      <span class="help-title">Como usar o Orça 3D Print</span>
+      <button class="help-close" onclick="toggleHelp()">✕</button>
+    </div>
+    <div class="help-modal-body">
+      <h3>📋 Calculadora</h3>
+      <p>1. Preencha os dados do cliente (opcional).</p>
+      <p>2. Arraste ou selecione um modelo 3D (STL, OBJ, 3MF, PLY).</p>
+      <p>3. Escolha o material e ajuste os parâmetros de impressão.</p>
+      <p>4. Clique em "Calcular Custo" ou aguarde o cálculo automático.</p>
+      <p>5. Veja os resultados detalhados, ajuste a margem e projeção mensal.</p>
+      <p>6. Gere PDF, copie ou salve no histórico.</p>
+      <h3>🕐 Histórico</h3>
+      <p>Gerencie orçamentos salvos.</p>
+      <h3>💬 Feedback</h3>
+      <p>Envie sugestões ou reporte problemas.</p>
+      <h3>📋 Orçamento</h3>
+      <p>Preencha para enviar pedido via WhatsApp ao prestador.</p>
+      <h3>⚙️ Configurações</h3>
+      <p>Configure seus dados de contato para receber orçamentos.</p>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast">
   <span class="toast-ico" id="toast-ico">✓</span>
@@ -2690,6 +2818,14 @@ function toast(msg, type='ok') {
 }
 
 // ═══════════════════════════════════════
+//  HELP MODAL
+// ═══════════════════════════════════════
+function toggleHelp() {
+  const modal = document.getElementById('help-modal');
+  modal.classList.toggle('show');
+}
+
+// ═══════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════
 // ═══════════════════════════════════════
@@ -3198,6 +3334,7 @@ window.addEventListener('DOMContentLoaded', () => {
     saveCfg, testWhatsApp,
     sendOrcamento, updateOrcPreview, setOrcArq,
     copiarLink, compartilharWhatsApp, renderShareLink,
+    toggleHelp, // nova função de ajuda
   ].forEach(fn => { if (typeof fn === 'function') window[fn.name] = fn; });
 });
 </script>
