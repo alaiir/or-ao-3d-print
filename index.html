@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orça 3D Print — Calculadora Profissional</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'><polygon points='9,1 16,5 16,13 9,17 2,13 2,5' stroke='%230B0D14' stroke-width='1.5' fill='%23C8FF57' stroke-linejoin='round'/><circle cx='9' cy='9' r='2' fill='%230B0D14'/></svg>">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WSDGZFKC63"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-WSDGZFKC63');
+</script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -941,18 +948,54 @@ input[type=range].changed {
 @media(max-width:700px){
   #cat-row { grid-template-columns: repeat(3,1fr) !important; }
 }
+/* ═══════════════════════════════════════
+   ORÇAMENTO & CONFIGURAÇÕES
+═══════════════════════════════════════ */
+.orc-radio {
+  padding: 9px 8px;
+  background: var(--ink4);
+  border: 1.5px solid var(--rim);
+  border-radius: 9px;
+  color: var(--tx3);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: center;
+  line-height: 1.4;
+}
+.orc-radio:hover { border-color: var(--rim2); color: var(--tx2); background: var(--ink3); }
+.orc-radio.sel {
+  border-color: var(--lime);
+  background: var(--lime-a);
+  color: var(--lime);
+}
+
+.orc-send-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  transition: all .25s;
+  border: 1.5px solid rgba(37,211,102,.4);
+  background: rgba(37,211,102,.08);
+  color: #25D366;
+  position: relative; overflow: hidden;
+}
+.orc-send-btn:hover {
+  background: #25D366;
+  color: #0a1a0a;
+  border-color: transparent;
+  box-shadow: 0 6px 28px rgba(37,211,102,.3);
+  transform: translateY(-1px);
+}
+.orc-send-btn:disabled {
+  opacity: .5; cursor: not-allowed; transform: none;
+}
 </style>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WSDGZFKC63"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-WSDGZFKC63');
-</script>
-
 </head>
 <body>
 
@@ -983,6 +1026,12 @@ input[type=range].changed {
   </button>
   <button class="nav-tab" onclick="switchTab('feedback',this)" id="tab-feedback">
     <span class="n-ico">💬</span> Feedback
+  </button>
+  <button class="nav-tab" onclick="switchTab('orcamento',this)" id="tab-orcamento">
+    <span class="n-ico">📋</span> Orçamento
+  </button>
+  <button class="nav-tab" id="tab-config" onclick="switchTab('config',this)">
+    <span class="n-ico">⚙️</span> Configurações
   </button>
   <div class="tab-divider"></div>
 </div>
@@ -1422,7 +1471,7 @@ input[type=range].changed {
               <div style="background:var(--ink);padding:10px 13px;border-bottom:1px solid var(--rim);display:flex;flex-direction:column;gap:4px">
                 <div style="display:flex;align-items:center;gap:7px">
                   <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);width:28px;flex-shrink:0">Para:</span>
-                  <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lime)" id="fpe-to">orca3dprint@gmail.com</span>
+                  <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lime)" id="fpe-to"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d3bca1b0b2e0b7a3a1babda793b4beb2babffdb0bcbe">[email&#160;protected]</a></span>
                 </div>
                 <div style="display:flex;align-items:baseline;gap:7px">
                   <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx4);width:28px;flex-shrink:0">Assunto:</span>
@@ -1468,7 +1517,195 @@ input[type=range].changed {
       </div>
     </div>
   </div>
+  <!-- ════ PANEL: ORÇAMENTO ════ -->
+  <div class="panel" id="panel-orcamento">
+    <div class="panel-inner">
+      <div class="hero" style="margin-bottom:28px">
+        <div class="hero-eyebrow">Solicitar Serviço</div>
+        <h1>Pedido de <span class="gr">Orçamento</span></h1>
+        <p>Preencha os dados abaixo e envie direto para o WhatsApp do prestador. Rápido e sem complicação.</p>
+      </div>
 
+      <div style="display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start">
+
+        <!-- FORM -->
+        <div class="card" data-accent="lime">
+          <div class="card-head">
+            <div class="card-label">
+              <div class="cl-dot" style="background:var(--lime)"></div>
+              Seus Dados
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+            <div>
+              <div class="field-label" style="margin-bottom:6px">Seu Nome *</div>
+              <input class="field-input" id="orc-nome" type="text" placeholder="Ex: João Silva" style="width:100%" oninput="updateOrcPreview()">
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:6px">Seu WhatsApp</div>
+              <input class="field-input" id="orc-tel" type="tel" placeholder="(31) 99999-9999" style="width:100%" oninput="updateOrcPreview()">
+            </div>
+          </div>
+
+          <div style="margin-bottom:14px">
+            <div class="field-label" style="margin-bottom:6px">Descrição da Peça *</div>
+            <input class="field-input" id="orc-peca" type="text" placeholder="Ex: Suporte para câmera GoPro, escala 1:1" style="width:100%" oninput="updateOrcPreview()">
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+            <div>
+              <div class="field-label" style="margin-bottom:6px">Material</div>
+              <select class="field-input" id="orc-mat" style="width:100%" onchange="updateOrcPreview()">
+                <option value="Não definido">Não sei / Qualquer</option>
+                <option value="PLA">PLA</option>
+                <option value="ABS">ABS</option>
+                <option value="PETG">PETG</option>
+                <option value="TPU (Flexível)">TPU (Flexível)</option>
+                <option value="Resina">Resina</option>
+                <option value="Nylon">Nylon</option>
+              </select>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:6px">Quantidade</div>
+              <input class="field-input" id="orc-qty" type="number" value="1" min="1" style="width:100%" oninput="updateOrcPreview()">
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:6px">Prazo desejado</div>
+              <select class="field-input" id="orc-prazo" style="width:100%" onchange="updateOrcPreview()">
+                <option value="Sem pressa">Sem pressa</option>
+                <option value="Até 1 semana">Até 1 semana</option>
+                <option value="Até 3 dias">Até 3 dias</option>
+                <option value="Urgente">Urgente</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom:14px">
+            <div class="field-label" style="margin-bottom:6px">Tem arquivo STL/3D?</div>
+            <div style="display:flex;gap:8px">
+              <button class="orc-radio" data-val="Sim, tenho o arquivo STL" onclick="setOrcArq(this)" style="flex:1">✅ Sim, tenho o arquivo</button>
+              <button class="orc-radio" data-val="Preciso de modelagem 3D também" onclick="setOrcArq(this)" style="flex:1">✏️ Preciso de modelagem</button>
+              <button class="orc-radio" data-val="Ainda não tenho arquivo" onclick="setOrcArq(this)" style="flex:1">❓ Ainda não tenho</button>
+            </div>
+          </div>
+
+          <div style="margin-bottom:22px">
+            <div class="field-label" style="margin-bottom:6px">Observações adicionais</div>
+            <textarea class="field-input" id="orc-obs" rows="3"
+              placeholder="Cor, acabamento, referências, links de imagem, etc."
+              style="width:100%;resize:vertical;min-height:80px;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6"
+              oninput="updateOrcPreview()"></textarea>
+          </div>
+
+          <!-- SEND BTN -->
+          <button class="orc-send-btn" id="orc-send-btn" onclick="sendOrcamento()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+            <span id="orc-btn-txt">Enviar pelo WhatsApp</span>
+          </button>
+
+          <div id="orc-no-num" style="display:none;margin-top:10px;padding:11px 14px;background:var(--rose-a);border:1px solid rgba(255,107,138,.3);border-radius:8px;font-size:12px;color:var(--rose);display:flex;align-items:center;gap:8px">
+            ⚠️ Número de WhatsApp não configurado. Vá em <strong>⚙️ Configurações</strong> e adicione o número.
+          </div>
+        </div>
+
+        <!-- PREVIEW -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card" data-accent="sky" style="position:sticky;top:76px">
+            <div class="card-head">
+              <div class="card-label">
+                <div class="cl-dot" style="background:var(--sky)"></div>
+                Preview da Mensagem
+              </div>
+            </div>
+
+            <!-- WhatsApp mock -->
+            <div style="background:#0d1117;border-radius:10px;overflow:hidden;border:1px solid var(--rim)">
+              <div style="background:#1a2b1a;padding:10px 13px;border-bottom:1px solid #1f3a1f;display:flex;align-items:center;gap:9px">
+                <div style="width:32px;height:32px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🖨</div>
+                <div>
+                  <div id="orc-preview-dest" style="font-size:12px;font-weight:700;color:#e8f5e9">Orça 3D Print</div>
+                  <div style="font-size:10px;color:#4caf50;font-family:'DM Mono',monospace">online</div>
+                </div>
+              </div>
+              <div style="padding:12px;background:#0a0f0a;min-height:160px;max-height:300px;overflow-y:auto">
+                <div style="background:#1a2b1a;border-radius:8px 8px 8px 2px;padding:10px 13px;max-width:92%;display:inline-block">
+                  <div id="orc-preview" style="font-size:11px;color:#c8e6c9;line-height:1.7;font-family:'DM Mono',monospace;white-space:pre-wrap;word-break:break-word">
+                    <span style="color:#4a5a4a">Preencha o formulário...</span>
+                  </div>
+                  <div style="font-size:9px;color:#4a6a4a;text-align:right;margin-top:4px;font-family:'DM Mono',monospace">agora ✓✓</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:12px;padding:10px 13px;background:var(--ink4);border-radius:8px;border:1px solid var(--rim);font-size:12px;color:var(--tx3);display:flex;align-items:center;gap:8px">
+              <span style="color:#25D366;font-size:14px">📱</span>
+              O WhatsApp abrirá com esta mensagem já escrita. O cliente só precisa clicar em <strong style="color:var(--tx2)">Enviar</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ PANEL: CONFIGURAÇÕES ════ -->
+  <div class="panel" id="panel-config">
+    <div class="panel-inner" style="max-width:720px">
+
+      <div class="hero" style="margin-bottom:28px">
+        <div class="hero-eyebrow">Prestador de Serviço</div>
+        <h1>Con<span class="gr">figurações</span></h1>
+        <p>Configure os dados do seu negócio. O número de WhatsApp é usado para receber os pedidos de orçamento.</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+
+        <!-- Dados do negócio -->
+        <div class="card" data-accent="lime">
+          <div class="card-head">
+            <div class="card-label"><div class="cl-dot" style="background:var(--lime)"></div>Dados do Negócio</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+            <div>
+              <div class="field-label" style="margin-bottom:6px">Nome do Negócio</div>
+              <input class="field-input" id="cfg-negocio" type="text" placeholder="Ex: Impressões 3D Pro" style="width:100%" oninput="updateOrcDest()">
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:6px">WhatsApp * <span style="color:var(--tx4);font-size:9px;letter-spacing:0;text-transform:none">(DDI+DDD, só números)</span></div>
+              <input class="field-input" id="cfg-whats" type="tel" placeholder="5531999999999" style="width:100%;font-family:'DM Mono',monospace;font-size:14px;letter-spacing:1px">
+            </div>
+          </div>
+          <div style="margin-bottom:18px">
+            <div class="field-label" style="margin-bottom:6px">Mensagem de boas-vindas</div>
+            <input class="field-input" id="cfg-boasvindas" type="text" placeholder="Ex: Olá! Recebemos seu pedido e retornaremos em breve 😊" style="width:100%">
+          </div>
+          <div style="display:flex;gap:10px">
+            <button onclick="saveCfg()" style="flex:1;padding:13px;background:var(--lime);color:var(--ink);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s" onmouseover="this.style.filter='brightness(1.08)'" onmouseout="this.style.filter=''">
+              💾 Salvar Configurações
+            </button>
+            <button onclick="testWhatsApp()" style="padding:13px 18px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.3);border-radius:9px;color:#25D366;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(37,211,102,.2)'" onmouseout="this.style.background='rgba(37,211,102,.08)'">
+              📱 Testar
+            </button>
+          </div>
+        </div>
+
+        <!-- Link de orçamento -->
+        <div class="card" data-accent="sky">
+          <div class="card-head">
+            <div class="card-label"><div class="cl-dot" style="background:var(--sky)"></div>🔗 Link de Orçamento para Clientes</div>
+          </div>
+          <p style="font-size:13px;color:var(--tx3);margin-bottom:14px;line-height:1.6">
+            Compartilhe este link com seus clientes. Ao abrir, eles verão o formulário de orçamento e o pedido chega direto no seu WhatsApp.
+          </p>
+          <div id="cfg-share-block">
+            <p style="color:var(--tx4);font-size:12px;font-family:'DM Mono',monospace">Salve as configurações para gerar o link.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </main>
 
 <div class="toast" id="toast">
@@ -1476,7 +1713,7 @@ input[type=range].changed {
   <span id="toast-msg">Mensagem</span>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ═══════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════
@@ -2631,19 +2868,239 @@ function clearFeedbacks() {
 }
 
 // ═══════════════════════════════════════
-//  INIT
+//  CONFIGURAÇÕES ENGINE
 // ═══════════════════════════════════════
+const CFG_KEY = 'orca3d_config';
+
+function getCfg() {
+  try { return JSON.parse(localStorage.getItem(CFG_KEY) || '{}'); } catch { return {}; }
+}
+
+function saveCfg() {
+  const whats = document.getElementById('cfg-whats')?.value.replace(/\D/g,'').trim();
+  const nome  = document.getElementById('cfg-negocio')?.value.trim();
+  const bv    = document.getElementById('cfg-boasvindas')?.value.trim();
+  if (!whats || whats.length < 10) { toast('Número de WhatsApp inválido', 'err'); return; }
+  localStorage.setItem(CFG_KEY, JSON.stringify({ whats, nome, boasvindas: bv }));
+  updateOrcDest();
+  renderShareLink();
+  toast('✓ Configurações salvas!', 'ok');
+}
+
+function loadCfg() {
+  const c = getCfg();
+  if (c.whats)      { const el = document.getElementById('cfg-whats');      if (el) el.value = c.whats; }
+  if (c.nome)       { const el = document.getElementById('cfg-negocio');    if (el) el.value = c.nome; }
+  if (c.boasvindas) { const el = document.getElementById('cfg-boasvindas'); if (el) el.value = c.boasvindas; }
+}
+
+function testWhatsApp() {
+  const c = getCfg();
+  if (!c.whats) { toast('Salve as configurações primeiro', 'err'); return; }
+  const msg = encodeURIComponent('Teste — Orca 3D Print\n\nSe recebeu esta mensagem, esta tudo configurado corretamente!');
+  window.open('https://wa.me/' + c.whats + '?text=' + msg, '_blank');
+}
+
+// switchTab — simple, no auth check needed
+function switchTabBase(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'history') renderHistory();
+  if (id === 'config') setTimeout(renderShareLink, 50);
+}
+function switchTab(id, btn) { switchTabBase(id, btn); }
+
+
+// ═══════════════════════════════════════
+//  ORÇAMENTO ENGINE
+// ═══════════════════════════════════════
+let ORC_ARQ = '';
+
+function setOrcArq(btn) {
+  ORC_ARQ = btn.dataset.val;
+  document.querySelectorAll('.orc-radio').forEach(b => b.classList.toggle('sel', b === btn));
+  updateOrcPreview();
+}
+
+function buildOrcMsg() {
+  const c     = getEffectiveCfg();
+  const bv    = c.boasvindas || '';
+  const nome  = document.getElementById('orc-nome')?.value.trim()  || '';
+  const tel   = document.getElementById('orc-tel')?.value.trim()   || '';
+  const peca  = document.getElementById('orc-peca')?.value.trim()  || '';
+  const mat   = document.getElementById('orc-mat')?.value          || '';
+  const qty   = document.getElementById('orc-qty')?.value          || '1';
+  const prazo = document.getElementById('orc-prazo')?.value        || '';
+  const obs   = document.getElementById('orc-obs')?.value.trim()   || '';
+
+  const lines = ['🖨 *PEDIDO DE ORÇAMENTO — Orça 3D Print*', ''];
+  if (bv) lines.push(bv, '');
+  lines.push(
+    '👤 *Cliente:* ' + (nome || '—'),
+    tel   ? '📱 *WhatsApp:* ' + tel : null,
+    '',
+    '📦 *Peça:* ' + (peca || '—'),
+    '🧱 *Material:* ' + mat,
+    '🔢 *Quantidade:* ' + qty + ' unidade(s)',
+    '⏰ *Prazo:* ' + prazo,
+    ORC_ARQ ? '📁 *Arquivo 3D:* ' + ORC_ARQ : null,
+    obs     ? '\n💬 *Observações:*\n' + obs   : null,
+    '',
+    '📅 ' + new Date().toLocaleString('pt-BR'),
+  );
+  return lines.filter(l => l !== null).join('\n');
+}
+
+function updateOrcPreview() {
+  const el   = document.getElementById('orc-preview');
+  if (!el) return;
+  const nome = document.getElementById('orc-nome')?.value.trim();
+  const peca = document.getElementById('orc-peca')?.value.trim();
+  if (!nome && !peca) {
+    el.innerHTML = '<span style="color:#4a5a4a">Preencha o formulário...</span>';
+    return;
+  }
+  el.textContent = buildOrcMsg();
+}
+
+
+function getUrlParam(key) {
+  return new URLSearchParams(window.location.search).get(key);
+}
+
+function buildShareLink() {
+  const c = getCfg();
+  if (!c.whats) return null;
+  const payload = btoa(JSON.stringify({ w: c.whats, n: c.nome || 'Orca 3D Print', bv: c.boasvindas || '' }));
+  const base = window.location.href.split('?')[0];
+  return base + '?para=' + encodeURIComponent(c.nome || 'prestador') + '&d=' + encodeURIComponent(payload);
+}
+
+function getSharedData() {
+  const d = getUrlParam('d');
+  if (!d) return null;
+  try { return JSON.parse(atob(decodeURIComponent(d))); } catch { return null; }
+}
+
+function getEffectiveCfg() {
+  const shared = getSharedData();
+  if (shared) return { whats: shared.w, nome: shared.n, boasvindas: shared.bv };
+  return getCfg();
+}
+
+function updateOrcDest() {
+  const c  = getEffectiveCfg();
+  const el = document.getElementById('orc-preview-dest');
+  if (el && c.nome) el.textContent = c.nome;
+  const warn = document.getElementById('orc-no-num');
+  if (warn) warn.style.display = c.whats ? 'none' : 'flex';
+}
+
+function sendOrcamento() {
+  const c = getEffectiveCfg();
+  if (!c.whats) {
+    toast('Numero nao configurado. Entre em contato com o prestador.', 'err');
+    const warn = document.getElementById('orc-no-num');
+    if (warn) warn.style.display = 'flex';
+    return;
+  }
+  const nome = document.getElementById('orc-nome')?.value.trim();
+  const peca = document.getElementById('orc-peca')?.value.trim();
+  if (!nome) { toast('Informe seu nome', 'err'); return; }
+  if (!peca) { toast('Descreva a peca', 'err'); return; }
+  const msg = encodeURIComponent(buildOrcMsg());
+  window.open('https://wa.me/' + c.whats + '?text=' + msg, '_blank');
+  toast('WhatsApp aberto! Clique em Enviar para finalizar', 'ok');
+}
+
+function renderShareLink() {
+  const el = document.getElementById('cfg-share-block');
+  if (!el) return;
+  const link = buildShareLink();
+  if (!link) {
+    el.innerHTML = '<p style="color:var(--tx4);font-size:12px;font-family:\'DM Mono\',monospace">Salve as configuracoes para gerar o link.</p>';
+    return;
+  }
+  el.innerHTML =
+    '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--lime);word-break:break-all;line-height:1.7;background:var(--ink);padding:12px;border-radius:8px;border:1px solid var(--rim);margin-bottom:10px">' + link + '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">' +
+      '<button onclick="copiarLink()" style="padding:10px;background:var(--lime-a);border:1px solid rgba(200,255,87,.3);border-radius:8px;color:var(--lime);font-family:\'DM Sans\',sans-serif;font-weight:700;font-size:12px;cursor:pointer">📋 Copiar Link</button>' +
+      '<button onclick="compartilharWhatsApp()" style="padding:10px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#25D366;font-family:\'DM Sans\',sans-serif;font-weight:700;font-size:12px;cursor:pointer">📱 Enviar pelo WhatsApp</button>' +
+    '</div>' +
+    '<div id="cfg-qr" style="text-align:center"></div>';
+  renderQR(link);
+}
+
+function copiarLink() {
+  const link = buildShareLink();
+  if (!link) return;
+  navigator.clipboard.writeText(link).then(() => toast('Link copiado!', 'ok'));
+}
+
+function compartilharWhatsApp() {
+  const link = buildShareLink();
+  const c    = getCfg();
+  if (!link) return;
+  const msg = encodeURIComponent(
+    'Orcamento Online — ' + (c.nome || 'Orca 3D Print') + '\n\n' +
+    'Acesse o link para solicitar seu orcamento:\n\n' + link + '\n\nPreencha e envie!'
+  );
+  window.open('https://wa.me/?text=' + msg, '_blank');
+}
+
+function renderQR(url) {
+  const el = document.getElementById('cfg-qr');
+  if (!el) return;
+  const enc = encodeURIComponent(url);
+  el.innerHTML =
+    '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--tx4);margin-bottom:6px;letter-spacing:1px">QR CODE</div>' +
+    '<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + enc + '&bgcolor=0B0D14&color=C8FF57&margin=10" ' +
+    'style="border-radius:8px;border:1px solid var(--rim)" width="150" height="150" ' +
+    'onerror="this.parentElement.style.display=\'none\'" alt="QR Code">' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--tx4);margin-top:6px">Escaneie para abrir</div>';
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   initThree();
   loadPref();
+  loadCfg();
   updateHistBadge();
   renderMatGrid();
   renderFbHistory();
   updateFbStats();
+  updateOrcDest();
+  renderShareLink();
 
-  // Expose all onclick-referenced functions to window
-  // Fixes "not defined" errors caused by Cloudflare injecting scripts
-  // that push our code into a non-global module-like scope.
+  if (getUrlParam('para')) {
+    // Cliente abrindo link de orçamento — mostrar SÓ a aba de orçamento
+    document.querySelectorAll('.nav-tab').forEach(b => b.style.display = 'none');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-divider').forEach(d => d.style.display = 'none');
+
+    const orcTab = document.getElementById('tab-orcamento');
+    if (orcTab) {
+      orcTab.style.display = '';
+      orcTab.classList.add('active');
+    }
+    document.getElementById('panel-orcamento').classList.add('active');
+
+    // Atualiza nome do prestador e esconde aviso
+    const shared = getSharedData();
+    if (shared) {
+      const dest = document.getElementById('orc-preview-dest');
+      if (dest) dest.textContent = shared.n;
+      const warn = document.getElementById('orc-no-num');
+      if (warn) warn.style.display = 'none';
+    }
+
+    // Atualiza título do header com nome do prestador
+    const nomeNegocio = shared?.n || 'Orça 3D Print';
+    const logoName = document.querySelector('.logo-name');
+    if (logoName) logoName.innerHTML = nomeNegocio.replace(' ', '<em> ') + '</em>';
+  }
+
   [
     switchTab, doCalc, autoCalc, exportPDF, copyQ,
     saveToHistory, removeFile, onDragOver, onDragLeave, onDrop, onFileInput,
@@ -2651,6 +3108,9 @@ window.addEventListener('DOMContentLoaded', () => {
     resetCam, toggleWF, setView,
     setCat, sendFbEmail, updateFbPreview, updateFbCharCount, clearFeedbacks,
     renderHistory, clearHistory, delHistItem, updateSell, updateMonthly,
+    saveCfg, testWhatsApp,
+    sendOrcamento, updateOrcPreview, setOrcArq,
+    copiarLink, compartilharWhatsApp, renderShareLink,
   ].forEach(fn => { if (typeof fn === 'function') window[fn.name] = fn; });
 });
 </script>
