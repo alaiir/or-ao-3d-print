@@ -236,7 +236,7 @@ main{
 .card-label{
   font-family:'DM Mono',monospace;
   font-size:9.5px;letter-spacing:2px;text-transform:uppercase;
-  color:var(--tx3);
+  color:var(--tx2);
   display:flex;align-items:center;gap:7px;
 }
 .cl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
@@ -246,7 +246,7 @@ main{
 .field{display:flex;flex-direction:column;gap:5px}
 .field-label{
   font-family:'DM Mono',monospace;font-size:9px;
-  letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);
+  letter-spacing:1.8px;text-transform:uppercase;color:var(--tx2);
 }
 .field-input{
   background:var(--ink4);border:1px solid var(--rim);
@@ -336,7 +336,7 @@ main{
 .section-title{
   font-family:'DM Mono',monospace;font-size:9px;
   letter-spacing:2px;text-transform:uppercase;
-  color:var(--tx4);margin-bottom:10px;padding-bottom:7px;
+  color:var(--tx2);margin-bottom:10px;padding-bottom:7px;
   border-bottom:1px solid var(--rim);
 }
 .params-sect{margin-bottom:16px}
@@ -361,7 +361,7 @@ main{
 .mat-dot{width:11px;height:11px;border-radius:50%;background:var(--mc,var(--lime))}
 .mat-name{font-size:11px;font-weight:700;letter-spacing:.2px}
 .mat-price{
-  font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3);
+  font-family:'DM Mono',monospace;font-size:9px;color:var(--tx2);
   display:flex;align-items:center;gap:3px;
   border-radius:4px;padding:1px 5px;transition:background .2s,color .2s;
   cursor:text;
@@ -391,7 +391,7 @@ main{
 .form-group{display:flex;flex-direction:column;gap:5px}
 .form-group label{
   font-family:'DM Mono',monospace;font-size:9px;
-  letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);
+  letter-spacing:1.8px;text-transform:uppercase;color:var(--tx2);
 }
 .inp{
   background:var(--ink4);border:1px solid var(--rim);
@@ -1050,8 +1050,90 @@ input[type=range].changed {
   }
 }
 /* ═══════════════════════════════════════
-   ORÇAMENTO & CONFIGURAÇÕES
+   COMPARADOR DE MATERIAIS
 ═══════════════════════════════════════ */
+.cmp-sort-btn{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.5px;
+  padding:5px 13px;border-radius:20px;
+  background:var(--ink4);border:1px solid var(--rim);
+  color:var(--tx3);cursor:pointer;transition:all .2s;
+}
+.cmp-sort-btn:hover{border-color:var(--rim2);color:var(--tx2)}
+.cmp-sort-btn.active{background:var(--lime-a);border-color:rgba(200,255,87,.35);color:var(--lime)}
+
+.mat-card{
+  background:var(--ink3);border:1px solid var(--rim);
+  border-radius:var(--r-card);padding:20px;
+  position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s;
+  cursor:default;
+}
+.mat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--mc);
+}
+.mat-card:hover{transform:translateY(-3px);border-color:var(--mc-dim)}
+
+.mat-card-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.mat-badge{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:13px;font-family:'DM Mono',monospace;
+  flex-shrink:0;
+}
+.mat-card-name{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.mat-card-full{font-size:11px;color:var(--tx2);margin-top:2px}
+
+.mat-bar-group{margin-bottom:12px}
+.mat-bar-label{
+  display:flex;justify-content:space-between;
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:1px;text-transform:uppercase;
+  color:var(--tx2);margin-bottom:5px;
+}
+.mat-bar-track{height:6px;background:var(--rim);border-radius:3px;overflow:hidden}
+.mat-bar-fill{
+  height:100%;border-radius:3px;
+  background:var(--mc);
+  transition:width .8s cubic-bezier(.4,0,.2,1);
+}
+
+.mat-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px}
+.mat-tag{
+  font-family:'DM Mono',monospace;font-size:9px;
+  padding:3px 8px;border-radius:4px;
+  background:var(--ink4);border:1px solid var(--rim);
+  color:var(--tx2);
+}
+
+/* Tabela */
+.cmp-th{
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--tx2);padding:10px 12px;
+  border-bottom:1px solid var(--rim);
+  text-align:left;white-space:nowrap;
+}
+.cmp-td{
+  padding:10px 12px;
+  border-bottom:1px solid rgba(37,43,62,.5);
+  font-size:12px;vertical-align:middle;
+}
+tr:last-child .cmp-td{border-bottom:none}
+tr:hover .cmp-td{background:rgba(255,255,255,.015)}
+.cmp-dot{
+  display:inline-block;width:8px;height:8px;
+  border-radius:50%;margin-right:7px;vertical-align:middle;
+}
+.cmp-bar-inline{
+  display:inline-flex;align-items:center;gap:8px;width:100%;
+}
+.cmp-bar-sm{
+  flex:1;height:4px;background:var(--rim);border-radius:2px;overflow:hidden;
+  max-width:80px;
+}
+.cmp-bar-sm-fill{height:100%;border-radius:2px;transition:width .6s}
+
 .orc-radio {
   padding: 9px 8px;
   background: var(--ink4);
@@ -1145,6 +1227,9 @@ input[type=range].changed {
   <button class="nav-tab" id="tab-config" onclick="switchTab('config',this)">
     <span class="n-ico">⚙️</span> Configurações
   </button>
+  <button class="nav-tab" id="tab-comparador" onclick="switchTab('comparador',this)">
+    <span class="n-ico">🧪</span> Materiais
+  </button>
   <div class="tab-divider"></div>
 </div>
 
@@ -1171,7 +1256,7 @@ input[type=range].changed {
             <div class="field-grid">
               <div class="field">
                 <div class="field-label">Nome</div>
-                <input class="field-input" id="c-name" type="text" placeholder="Ex: João Silva">
+                <input class="field-input" id="c-name" type="text" placeholder="Ex: João Silva" oninput="onlyLetters(this)">
               </div>
               <div class="field">
                 <div class="field-label">Empresa</div>
@@ -1486,7 +1571,7 @@ input[type=range].changed {
 
           <!-- TIPO DE FEEDBACK -->
           <div style="margin-bottom:22px">
-            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:12px">Tipo de Feedback *</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx2);margin-bottom:12px">Tipo de Feedback *</div>
             <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px" id="cat-row">
               <button class="cat-tile" data-cat="bug"      onclick="setCat('bug')">
                 <span class="ct-ico">🐛</span>
@@ -1513,7 +1598,7 @@ input[type=range].changed {
 
           <!-- ASSUNTO -->
           <div style="margin-bottom:14px">
-            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">Assunto *</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx2);margin-bottom:6px">Assunto *</div>
             <input class="field-input" id="fb-subject" type="text"
               placeholder="Ex: O volume calculado parece errado para STL ASCII"
               style="width:100%" oninput="updateFbPreview()">
@@ -1521,7 +1606,7 @@ input[type=range].changed {
 
           <!-- MENSAGEM -->
           <div style="margin-bottom:14px">
-            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">Mensagem *</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx2);margin-bottom:6px">Mensagem *</div>
             <textarea id="fb-msg" rows="6" class="field-input"
               placeholder="Descreva com detalhes. Para bugs: o que você fez, o que esperava e o que aconteceu."
               style="width:100%;resize:vertical;min-height:120px;line-height:1.65;font-family:'DM Sans',sans-serif;font-size:13px"
@@ -1534,13 +1619,13 @@ input[type=range].changed {
           <!-- NOME + EMAIL -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px">
             <div>
-              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">Seu Nome</div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx2);margin-bottom:6px">Seu Nome</div>
               <input class="field-input" id="fb-name" type="text"
                 placeholder="Ex: João Silva"
-                style="width:100%" oninput="updateFbPreview()">
+                style="width:100%" oninput="onlyLetters(this);updateFbPreview()">
             </div>
             <div>
-              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">E-mail para resposta</div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;color:var(--tx2);margin-bottom:6px">E-mail para resposta</div>
               <input class="field-input" id="fb-email" type="email"
                 placeholder="seu@email.com"
                 style="width:100%" oninput="updateFbPreview()">
@@ -1652,11 +1737,11 @@ input[type=range].changed {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
             <div>
               <div class="field-label" style="margin-bottom:6px">Seu Nome *</div>
-              <input class="field-input" id="orc-nome" type="text" placeholder="Ex: João Silva" style="width:100%" oninput="updateOrcPreview()">
+              <input class="field-input" id="orc-nome" type="text" placeholder="Ex: João Silva" style="width:100%" oninput="onlyLetters(this);updateOrcPreview()">
             </div>
             <div>
               <div class="field-label" style="margin-bottom:6px">Seu WhatsApp</div>
-              <input class="field-input" id="orc-tel" type="tel" placeholder="(31) 99999-9999" style="width:100%" oninput="updateOrcPreview()">
+              <input class="field-input" id="orc-tel" type="tel" placeholder="(31) 99999-9999" style="width:100%" oninput="onlyNumbers(this);updateOrcPreview()">
             </div>
           </div>
 
@@ -1781,11 +1866,11 @@ input[type=range].changed {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
             <div>
               <div class="field-label" style="margin-bottom:6px">Nome do Negócio</div>
-              <input class="field-input" id="cfg-negocio" type="text" placeholder="Ex: Impressões 3D Pro" style="width:100%" oninput="updateOrcDest()">
+              <input class="field-input" id="cfg-negocio" type="text" placeholder="Ex: Impressões 3D Pro" style="width:100%" oninput="onlyLetters(this);updateOrcDest()">
             </div>
             <div>
               <div class="field-label" style="margin-bottom:6px">WhatsApp * <span style="color:var(--tx4);font-size:9px;letter-spacing:0;text-transform:none">(DDI+DDD, só números)</span></div>
-              <input class="field-input" id="cfg-whats" type="tel" placeholder="5531999999999" style="width:100%;font-family:'DM Mono',monospace;font-size:14px;letter-spacing:1px">
+              <input class="field-input" id="cfg-whats" type="tel" placeholder="5531999999999" style="width:100%;font-family:'DM Mono',monospace;font-size:14px;letter-spacing:1px" oninput="onlyNumbers(this)">
             </div>
           </div>
           <div style="margin-bottom:18px">
@@ -1816,6 +1901,46 @@ input[type=range].changed {
         </div>
 
       </div>
+    </div>
+  </div>
+  <!-- ════ PANEL: COMPARADOR DE MATERIAIS ════ -->
+  <div class="panel" id="panel-comparador">
+    <div class="panel-inner">
+
+      <div class="hero" style="margin-bottom:28px">
+        <div class="hero-eyebrow">Guia de Filamentos</div>
+        <h1>Comparador de <span class="gr">Materiais</span></h1>
+        <p>Compare custo e resistência dos principais filamentos para escolher o ideal para cada peça.</p>
+      </div>
+
+      <!-- FILTRO / ORDENAÇÃO -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3)">Ordenar por</div>
+        <button class="cmp-sort-btn active" data-sort="nome"    onclick="sortMat('nome',this)">Nome</button>
+        <button class="cmp-sort-btn"        data-sort="custo"   onclick="sortMat('custo',this)">Custo ↑</button>
+        <button class="cmp-sort-btn"        data-sort="resist"  onclick="sortMat('resist',this)">Resistência ↑</button>
+        <div style="flex:1"></div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3)" id="cmp-count"></div>
+      </div>
+
+      <!-- CARDS GRID -->
+      <div id="cmp-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
+
+      <!-- TABELA COMPARATIVA -->
+      <div class="card" data-accent="sky" style="margin-top:24px">
+        <div class="card-head">
+          <div class="card-label"><div class="cl-dot" style="background:var(--sky)"></div>Tabela Comparativa</div>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="cmp-table" style="width:100%;border-collapse:collapse;font-size:12px"></table>
+        </div>
+      </div>
+
+      <!-- DICA FINAL -->
+      <div style="margin-top:14px;padding:14px 18px;background:var(--lime-b);border:1px solid rgba(200,255,87,.15);border-radius:12px;font-size:12px;color:var(--tx2);line-height:1.7">
+        💡 <strong style="color:var(--lime)">Dica:</strong> Os preços refletem os valores configurados na calculadora. Edite-os na aba <strong>⚡ Calculadora → Material</strong> e eles atualizam aqui automaticamente.
+      </div>
+
     </div>
   </div>
 </main>
@@ -3000,8 +3125,175 @@ function clearFeedbacks() {
 }
 
 // ═══════════════════════════════════════
-//  CONFIGURAÇÕES ENGINE
+//  COMPARADOR DE MATERIAIS
 // ═══════════════════════════════════════
+const MAT_DATA = [
+  {
+    id:'PLA', nome:'PLA', full:'Ácido Polilático',
+    color:'#C8FF57', colorDim:'rgba(200,255,87,.25)',
+    resist: 72,   // MPa tensile (normalizado 0-100 para exibição)
+    resistLabel:'52 MPa',
+    tags:['Fácil impressão','Biodegradável','Baixo warping','Rígido'],
+    usos:'Protótipos, decoração, miniaturas, peças leves',
+  },
+  {
+    id:'ABS', nome:'ABS', full:'Acrilonitrila Butadieno Estireno',
+    color:'#FF6B8A', colorDim:'rgba(255,107,138,.25)',
+    resist: 80,
+    resistLabel:'40 MPa',
+    tags:['Resistente ao calor','Impacto','Requer enclosure','Acabamento químico'],
+    usos:'Peças técnicas, automotivo, eletrônicos',
+  },
+  {
+    id:'PETG', nome:'PETG', full:'Politereftalato de Etileno Glicol',
+    color:'#A78BFA', colorDim:'rgba(167,139,250,.25)',
+    resist: 78,
+    resistLabel:'53 MPa',
+    tags:['Resistente à umidade','Transparente','Semi-flexível','Fácil impressão'],
+    usos:'Recipientes, peças funcionais, mecânicas leves',
+  },
+  {
+    id:'TPU', nome:'TPU', full:'Poliuretano Termoplástico',
+    color:'#FFB347', colorDim:'rgba(255,179,71,.25)',
+    resist: 45,
+    resistLabel:'Flexível',
+    tags:['Flexível','Borrachoso','Resistente abrasão','Impacto'],
+    usos:'Capas, juntas, solas, peças com vibração',
+  },
+  {
+    id:'Resina', nome:'Resina', full:'Resina Fotopolimerizável (MSLA/SLA)',
+    color:'#F472B6', colorDim:'rgba(244,114,182,.25)',
+    resist: 65,
+    resistLabel:'65 MPa',
+    tags:['Alta resolução','Detalhes finos','Frágil','UV sensível'],
+    usos:'Miniaturas, joias, odontologia, protótipos detalhados',
+  },
+  {
+    id:'Nylon', nome:'Nylon', full:'Poliamida (PA)',
+    color:'#34D399', colorDim:'rgba(52,211,153,.25)',
+    resist: 95,
+    resistLabel:'85 MPa',
+    tags:['Alta resistência','Flexível','Absorve umidade','Durável'],
+    usos:'Engrenagens, peças mecânicas, ferramentas',
+  },
+];
+
+let cmpSortKey = 'nome';
+
+function getMATPrice(id) {
+  const m = MATS.find(m => m.id === id);
+  return m ? m.price : 0;
+}
+
+function renderComparador() {
+  const data = [...MAT_DATA].map(m => ({ ...m, preco: getMATPrice(m.id) }));
+
+  if (cmpSortKey === 'nome')   data.sort((a,b) => a.nome.localeCompare(b.nome));
+  if (cmpSortKey === 'custo')  data.sort((a,b) => a.preco - b.preco);
+  if (cmpSortKey === 'resist') data.sort((a,b) => b.resist - a.resist);
+
+  const maxPreco  = Math.max(...data.map(d => d.preco));
+
+  // ── CARDS ──
+  document.getElementById('cmp-count').textContent = data.length + ' materiais';
+  document.getElementById('cmp-grid').innerHTML = data.map(m => `
+    <div class="mat-card" style="--mc:${m.color};--mc-dim:${m.colorDim}">
+      <div class="mat-card-top">
+        <div class="mat-badge" style="background:${m.colorDim};color:${m.color};border:1px solid ${m.color}33">${m.id.slice(0,3)}</div>
+        <div>
+          <div class="mat-card-name" style="color:${m.color}">${m.nome}</div>
+          <div class="mat-card-full">${m.full}</div>
+        </div>
+      </div>
+
+      <div class="mat-bar-group">
+        <div class="mat-bar-label">
+          <span>Custo / kg</span>
+          <span style="color:${m.color}">R$ ${m.preco}</span>
+        </div>
+        <div class="mat-bar-track">
+          <div class="mat-bar-fill" style="width:${maxPreco>0?(m.preco/maxPreco*100).toFixed(1):0}%;background:${m.color}"></div>
+        </div>
+      </div>
+
+      <div class="mat-bar-group">
+        <div class="mat-bar-label">
+          <span>Resistência</span>
+          <span style="color:${m.color}">${m.resistLabel}</span>
+        </div>
+        <div class="mat-bar-track">
+          <div class="mat-bar-fill" style="width:${m.resist}%;background:${m.color}"></div>
+        </div>
+      </div>
+
+      <div style="font-size:11px;color:var(--tx2);margin-top:10px;line-height:1.5">
+        <span style="color:var(--tx3);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase">Usos típicos</span><br>
+        ${m.usos}
+      </div>
+
+      <div class="mat-tags">
+        ${m.tags.map(t=>`<span class="mat-tag">${t}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // ── TABELA ──
+  const table = document.getElementById('cmp-table');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th class="cmp-th">Material</th>
+        <th class="cmp-th">Custo/kg</th>
+        <th class="cmp-th">Resistência</th>
+        <th class="cmp-th" style="min-width:120px">Barra</th>
+        <th class="cmp-th">Melhor para</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${data.map(m => `
+        <tr>
+          <td class="cmp-td">
+            <span class="cmp-dot" style="background:${m.color}"></span>
+            <strong>${m.nome}</strong>
+            <div style="font-size:10px;color:var(--tx3);margin-top:2px;margin-left:15px">${m.full}</div>
+          </td>
+          <td class="cmp-td">
+            <span style="font-family:'DM Mono',monospace;color:${m.color};font-weight:600">R$ ${m.preco}</span>
+          </td>
+          <td class="cmp-td">
+            <span style="font-family:'DM Mono',monospace;font-size:11px">${m.resistLabel}</span>
+          </td>
+          <td class="cmp-td">
+            <div class="cmp-bar-inline">
+              <div class="cmp-bar-sm">
+                <div class="cmp-bar-sm-fill" style="width:${m.resist}%;background:${m.color}"></div>
+              </div>
+              <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx2)">${m.resist}%</span>
+            </div>
+          </td>
+          <td class="cmp-td" style="color:var(--tx2);font-size:11px;max-width:160px">${m.usos}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+
+  // Animate bars after render
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.mat-bar-fill, .cmp-bar-sm-fill').forEach(el => {
+      const w = el.style.width; el.style.width='0'; 
+      requestAnimationFrame(() => el.style.width = w);
+    });
+  });
+}
+
+function sortMat(key, btn) {
+  cmpSortKey = key;
+  document.querySelectorAll('.cmp-sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderComparador();
+}
+
+
 const CFG_KEY = 'orca3d_config';
 
 function getCfg() {
@@ -3041,6 +3333,7 @@ function switchTabBase(id, btn) {
   btn.classList.add('active');
   if (id === 'history') renderHistory();
   if (id === 'config') setTimeout(renderShareLink, 50);
+  if (id === 'comparador') renderComparador();
 }
 function switchTab(id, btn) { switchTabBase(id, btn); }
 
@@ -3095,6 +3388,24 @@ function updateOrcPreview() {
     return;
   }
   el.textContent = buildOrcMsg();
+}
+
+// ── FILTROS DE INPUT ──
+function onlyLetters(el) {
+  const pos = el.selectionStart;
+  const clean = el.value.replace(/[^a-zA-ZÀ-ÖØ-öø-ÿ\s'-]/g, '');
+  if (clean !== el.value) {
+    el.value = clean;
+    el.setSelectionRange(pos - 1, pos - 1);
+  }
+}
+function onlyNumbers(el) {
+  const pos = el.selectionStart;
+  const clean = el.value.replace(/\D/g, '');
+  if (clean !== el.value) {
+    el.value = clean;
+    el.setSelectionRange(pos - 1, pos - 1);
+  }
 }
 
 // ── SANITIZAÇÃO ANTI-XSS ──
@@ -3283,6 +3594,7 @@ window.addEventListener('DOMContentLoaded', () => {
     saveCfg, testWhatsApp,
     sendOrcamento, updateOrcPreview, setOrcArq,
     copiarLink, compartilharWhatsApp, renderShareLink,
+    sortMat, renderComparador,
   ].forEach(fn => { if (typeof fn === 'function') window[fn.name] = fn; });
 });
 </script>
