@@ -215,6 +215,41 @@ header{
 .h-chip.on::before{content:'● ';animation:pulse-dot 1.6s ease infinite}
 @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
 
+.h-help{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--ink4);border:1px solid var(--rim2);
+  color:var(--tx3);font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+}
+.h-help:hover{border-color:var(--lime);color:var(--lime);background:var(--lime-a)}
+
+.help-modal{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+  z-index:1000;align-items:center;justify-content:center;padding:20px;
+}
+.help-modal.show{display:flex}
+.help-modal-content{
+  background:var(--ink3);border:1px solid var(--rim);
+  border-radius:var(--r-card);max-width:500px;width:100%;
+  max-height:80vh;overflow-y:auto;
+  box-shadow:var(--shadow-lg);animation:rise .3s ease;
+}
+.help-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--rim);
+}
+.help-title{font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:var(--lime);letter-spacing:-.2px}
+.help-close{background:none;border:none;color:var(--tx3);font-size:16px;cursor:pointer;padding:5px;border-radius:5px;transition:all .2s}
+.help-close:hover{color:var(--rose);background:var(--rose-a)}
+.help-modal-body{padding:20px 22px 28px;color:var(--tx2);font-size:13px;line-height:1.7}
+.help-modal-body h3{color:var(--tx);font-size:15px;font-weight:600;margin:22px 0 8px;letter-spacing:-.2px;display:flex;align-items:center;gap:6px}
+.help-modal-body h3:first-of-type{margin-top:0}
+.help-modal-body p{margin:6px 0 6px 18px;position:relative}
+.help-modal-body p::before{content:'•';color:var(--lime);font-weight:700;position:absolute;left:-12px}
+
 .nav-bar{
   position:relative;z-index:1;
   display:flex;align-items:center;gap:2px;
@@ -1293,6 +1328,7 @@ tr:hover .cmp-td{background:rgba(255,255,255,.015)}
     <span class="h-chip on">Online</span>
     <span class="h-chip">Grátis</span>
     <span class="h-chip">v3.3</span>
+    <button class="h-help" onclick="toggleHelp()" title="Ajuda">?</button>
   </div>
 </header>
 
@@ -1409,6 +1445,90 @@ tr:hover .cmp-td{background:rgba(255,255,255,.015)}
             </div>
 
             <input type="file" id="f-input" accept=".stl,.obj,.3mf,.ply" style="display:none" onchange="onFileInput(event)">
+
+            <!-- ── G-CODE IMPORT ── -->
+            <div style="margin-top:12px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                <div style="flex:1;height:1px;background:var(--rim)"></div>
+                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--tx3);text-transform:uppercase">ou importe o G-code para dados exatos</span>
+                <div style="flex:1;height:1px;background:var(--rim)"></div>
+              </div>
+
+              <!-- gcode loaded indicator -->
+              <div class="file-loaded" id="gcode-loaded" style="display:none;background:rgba(87,200,255,.06);border-color:rgba(87,200,255,.2)">
+                <div class="fl-icon" style="background:rgba(87,200,255,.1);font-size:14px">⚙️</div>
+                <div class="fl-info">
+                  <div class="fl-name" id="gc-name">—</div>
+                  <div class="fl-meta" id="gc-meta">—</div>
+                </div>
+                <button class="fl-remove" onclick="removeGcode()">✕</button>
+              </div>
+
+              <!-- gcode drop zone -->
+              <div id="gcode-zone" style="border:1.5px dashed var(--rim2);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .25s;background:var(--ink4)"
+                onclick="document.getElementById('gc-input').click()"
+                ondragover="onGcDragOver(event)" ondrop="onGcDrop(event)" ondragleave="onGcDragLeave()">
+                <span style="font-size:20px">⚙️</span>
+                <div style="flex:1">
+                  <div style="font-size:12px;font-weight:600;margin-bottom:2px">Importar G-code do fatiador</div>
+                  <div style="font-size:11px;color:var(--tx3)">Cura, PrusaSlicer, Bambu, OrcaSlicer — extrai tempo e filamento reais</div>
+                </div>
+                <span class="ext-pill">.GCODE</span>
+              </div>
+              <input type="file" id="gc-input" accept=".gcode,.gco,.nc" style="display:none" onchange="onGcInput(event)">
+
+              <!-- gcode parsed values -->
+              <div id="gcode-vals" style="display:none;margin-top:10px;display:none">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+                  <div style="background:var(--ink4);border:1px solid rgba(87,200,255,.2);border-radius:8px;padding:10px;text-align:center">
+                    <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:var(--sky)" id="gc-time-disp">—</div>
+                    <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--tx3);margin-top:4px">Tempo real</div>
+                  </div>
+                  <div style="background:var(--ink4);border:1px solid rgba(200,255,87,.2);border-radius:8px;padding:10px;text-align:center">
+                    <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:var(--lime)" id="gc-fil-disp">—</div>
+                    <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--tx3);margin-top:4px">Filamento</div>
+                  </div>
+                  <div style="background:var(--ink4);border:1px solid rgba(255,179,71,.2);border-radius:8px;padding:10px;text-align:center">
+                    <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:var(--amber)" id="gc-lay-disp">—</div>
+                    <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--tx3);margin-top:4px">Camadas</div>
+                  </div>
+                </div>
+                <div style="margin-top:8px;padding:8px 12px;background:rgba(87,200,255,.05);border:1px solid rgba(87,200,255,.15);border-radius:7px;font-size:11px;color:var(--sky);display:flex;align-items:center;gap:6px">
+                  ✓ Cálculo usando dados reais do G-code
+                </div>
+              </div>
+            </div>
+
+            <!-- ── CAMPOS MANUAIS DO FATIADOR ── -->
+            <div style="margin-top:12px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                <div style="flex:1;height:1px;background:var(--rim)"></div>
+                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--tx3);text-transform:uppercase">ou digite os valores do fatiador</span>
+                <div style="flex:1;height:1px;background:var(--rim)"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div>
+                  <div class="field-label" style="margin-bottom:6px">Tempo de impressão</div>
+                  <div style="display:flex;gap:6px">
+                    <input class="inp" id="man-horas" type="number" min="0" placeholder="0" style="width:60px;text-align:center" oninput="onlyNumbers(this);applyManual()">
+                    <span style="display:flex;align-items:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--tx3)">h</span>
+                    <input class="inp" id="man-min" type="number" min="0" max="59" placeholder="00" style="width:60px;text-align:center" oninput="onlyNumbers(this);applyManual()">
+                    <span style="display:flex;align-items:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--tx3)">min</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="field-label" style="margin-bottom:6px">Filamento usado</div>
+                  <div style="display:flex;gap:6px;align-items:center">
+                    <input class="inp" id="man-gramas" type="number" min="0" step="0.1" placeholder="0.0" style="flex:1;text-align:center" oninput="onlyNumbers(this);applyManual()">
+                    <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--tx3)">g</span>
+                  </div>
+                </div>
+              </div>
+              <div id="manual-active" style="display:none;margin-top:8px;padding:8px 12px;background:rgba(200,255,87,.05);border:1px solid rgba(200,255,87,.15);border-radius:7px;font-size:11px;color:var(--lime);display:none">
+                ✓ Cálculo usando valores manuais do fatiador
+              </div>
+            </div>
+
           </div>
 
           <div class="card" data-accent="sky" style="animation-delay:.15s">
@@ -2031,6 +2151,35 @@ tr:hover .cmp-td{background:rgba(255,255,255,.015)}
   </div>
 </main>
 
+<!-- Modal de ajuda -->
+<div class="help-modal" id="help-modal">
+  <div class="help-modal-content">
+    <div class="help-modal-header">
+      <span class="help-title">Como usar o Orça 3D Print</span>
+      <button class="help-close" onclick="toggleHelp()">✕</button>
+    </div>
+    <div class="help-modal-body">
+      <h3>⚡ Calculadora</h3>
+      <p>Carregue um modelo 3D (STL, OBJ, 3MF, PLY) ou importe o G-code do fatiador.</p>
+      <p>Escolha o material, ajuste os parâmetros e clique em Calcular.</p>
+      <p>Use os campos manuais para digitar tempo e gramas direto do fatiador.</p>
+      <p>Ajuste a margem de lucro e veja o preço de venda sugerido.</p>
+      <p>Exporte em PDF ou salve no Histórico.</p>
+      <h3>🕐 Histórico</h3>
+      <p>Todos os orçamentos salvos ficam aqui para consulta e reemissão em PDF.</p>
+      <h3>💬 Feedback</h3>
+      <p>Envie sugestões, reporte bugs ou deixe um elogio diretamente ao desenvolvedor.</p>
+      <h3>📋 Orçamento</h3>
+      <p>Formulário para o cliente preencher e enviar o pedido direto pelo WhatsApp.</p>
+      <h3>⚙️ Configurações</h3>
+      <p>Configure seu WhatsApp e nome do negócio para receber pedidos de orçamento.</p>
+      <p>Gere o link personalizado para compartilhar com seus clientes.</p>
+      <h3>🧪 Materiais</h3>
+      <p>Compare custo e resistência dos principais filamentos. Dados sincronizados com a calculadora.</p>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">
   <span class="toast-ico" id="toast-ico">✓</span>
   <span id="toast-msg">Mensagem</span>
@@ -2508,6 +2657,183 @@ function pickMat(el) {
   autoCalc(null, 'mat');
 }
 
+// ── VALORES MANUAIS DO FATIADOR ──
+const MAN = { active: false, timeH: null, grams: null };
+
+function applyManual() {
+  const h = parseFloat(document.getElementById('man-horas')?.value) || 0;
+  const m = parseFloat(document.getElementById('man-min')?.value)   || 0;
+  const g = parseFloat(document.getElementById('man-gramas')?.value)|| 0;
+
+  const timeH = h + m / 60;
+  MAN.timeH  = timeH > 0 ? timeH : null;
+  MAN.grams  = g > 0 ? g : null;
+  MAN.active = MAN.timeH !== null || MAN.grams !== null;
+
+  const indicator = document.getElementById('manual-active');
+  if (indicator) indicator.style.display = MAN.active ? 'block' : 'none';
+
+  if (S.volume || GC.loaded) doCalc();
+}
+
+
+// ═══════════════════════════════════════
+const GC = { loaded: false, timeH: null, grams: null, layers: null, slicer: '' };
+
+function onGcDragOver(e) {
+  e.preventDefault();
+  document.getElementById('gcode-zone').style.borderColor = 'var(--sky)';
+  document.getElementById('gcode-zone').style.background  = 'rgba(87,200,255,.05)';
+}
+function onGcDragLeave() {
+  document.getElementById('gcode-zone').style.borderColor = '';
+  document.getElementById('gcode-zone').style.background  = '';
+}
+function onGcDrop(e) {
+  e.preventDefault(); onGcDragLeave();
+  const f = e.dataTransfer.files[0]; if (f) processGcode(f);
+}
+function onGcInput(e) { const f = e.target.files[0]; if (f) processGcode(f); }
+
+function processGcode(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['gcode','gco','nc'].includes(ext)) { toast('Selecione um arquivo .gcode','err'); return; }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const txt = e.target.result;
+    parseGcode(txt, file.name);
+  };
+  // Read first 200KB — headers and footers have the data, no need for full file
+  const blob = file.slice(0, 1024 * 200);
+  reader.readAsText(blob);
+}
+
+function parseGcode(txt, filename) {
+  const lines = txt.split('\n');
+  let timeH  = null;
+  let grams  = null;
+  let meters = null;
+  let layers = null;
+  let slicer = 'Desconhecido';
+
+  // ── detect slicer ──
+  if (/PrusaSlicer|Slic3r/i.test(txt))    slicer = 'PrusaSlicer';
+  else if (/Cura/i.test(txt))             slicer = 'Ultimaker Cura';
+  else if (/BambuStudio/i.test(txt))      slicer = 'Bambu Studio';
+  else if (/OrcaSlicer/i.test(txt))       slicer = 'OrcaSlicer';
+  else if (/ideaMaker/i.test(txt))        slicer = 'ideaMaker';
+  else if (/Simplify3D/i.test(txt))       slicer = 'Simplify3D';
+  else if (/KISSlicer/i.test(txt))        slicer = 'KISSlicer';
+
+  for (const line of lines) {
+    const l = line.trim();
+
+    // ── TIME ──
+    // Cura: ;TIME:3600
+    const mCuraTime = l.match(/^;TIME:(\d+)/i);
+    if (mCuraTime) { timeH = parseInt(mCuraTime[1]) / 3600; continue; }
+
+    // PrusaSlicer/OrcaSlicer: ; estimated printing time (normal mode) = 1h 23m 45s
+    const mPrusaTime = l.match(/estimated printing time.*?=\s*(?:(\d+)d\s*)?(?:(\d+)h\s*)?(?:(\d+)m\s*)?(?:(\d+)s)?/i);
+    if (mPrusaTime) {
+      const d = parseInt(mPrusaTime[1]||0), h = parseInt(mPrusaTime[2]||0),
+            m = parseInt(mPrusaTime[3]||0), s = parseInt(mPrusaTime[4]||0);
+      timeH = d*24 + h + m/60 + s/3600; continue;
+    }
+
+    // Bambu Studio: ; total estimated time: 1h23m
+    const mBambu = l.match(/total estimated time.*?(\d+)h(\d+)m/i);
+    if (mBambu) { timeH = parseInt(mBambu[1]) + parseInt(mBambu[2])/60; continue; }
+
+    // Simplify3D: ; Build time: 1 hours 23 minutes
+    const mS3D = l.match(/Build time:\s*(?:(\d+)\s*hours?)?\s*(?:(\d+)\s*minutes?)?/i);
+    if (mS3D && (mS3D[1]||mS3D[2])) { timeH = (parseInt(mS3D[1]||0)) + (parseInt(mS3D[2]||0))/60; continue; }
+
+    // ── FILAMENT WEIGHT (grams) ──
+    // Cura: ;Filament used: 1.23m  or  ;filament used [g] = 4.56
+    const mCuraM = l.match(/^;Filament used:\s*([\d.]+)m/i);
+    if (mCuraM) { meters = parseFloat(mCuraM[1]); continue; }
+
+    const mCuraG = l.match(/filament used \[g\]\s*=\s*([\d.]+)/i);
+    if (mCuraG) { grams = parseFloat(mCuraG[1]); continue; }
+
+    // PrusaSlicer: ; filament used [mm] = 1234.56  or  ; filament used [g] = 4.56
+    const mPrusaMM = l.match(/filament used \[mm\]\s*=\s*([\d.]+)/i);
+    if (mPrusaMM) { meters = parseFloat(mPrusaMM[1]) / 1000; continue; }
+
+    const mPrusaG = l.match(/filament used \[g\]\s*=\s*([\d.]+)/i);
+    if (mPrusaG) { grams = parseFloat(mPrusaG[1]); continue; }
+
+    // Bambu: ; filament used [g]: 4.56
+    const mBambuG = l.match(/filament used \[g\]:\s*([\d.]+)/i);
+    if (mBambuG) { grams = parseFloat(mBambuG[1]); continue; }
+
+    // Generic weight comment
+    const mWeight = l.match(/(?:total\s+)?(?:material|filament)\s+(?:weight|mass|used).*?([\d.]+)\s*g/i);
+    if (mWeight) { grams = parseFloat(mWeight[1]); continue; }
+
+    // ── LAYERS ──
+    const mLayers = l.match(/(?:total\s+)?(?:layer count|layers|LAYER_COUNT)\s*[=:]\s*(\d+)/i);
+    if (mLayers) { layers = parseInt(mLayers[1]); continue; }
+  }
+
+  // Convert meters to grams if needed (assume 1.75mm PLA ~2.4g/m)
+  if (!grams && meters) {
+    const mat = MATS.find(m => m.id === selectedMatId) || MATS[0];
+    const r   = 0.00175 / 2; // 1.75mm radius in meters
+    grams = meters * Math.PI * r * r * 1e6 * mat.density; // cm³ * g/cm³
+  }
+
+  if (!timeH && !grams) {
+    toast('Não foi possível ler os dados do G-code. Verifique se o fatiador inclui comentários de tempo/filamento.', 'err');
+    return;
+  }
+
+  // Store parsed values
+  GC.loaded = true;
+  GC.timeH  = timeH;
+  GC.grams  = grams;
+  GC.layers = layers;
+  GC.slicer = slicer;
+
+  // Update UI
+  document.getElementById('gcode-zone').style.display   = 'none';
+  document.getElementById('gcode-loaded').style.display = 'flex';
+  document.getElementById('gc-name').textContent = filename;
+  document.getElementById('gc-meta').textContent =
+    slicer + (timeH ? ` · ${fmtTime(timeH)}` : '') + (grams ? ` · ${grams.toFixed(1)}g` : '');
+
+  const valsEl = document.getElementById('gcode-vals');
+  valsEl.style.display = 'block';
+  document.getElementById('gc-time-disp').textContent = timeH  ? fmtTime(timeH)          : '—';
+  document.getElementById('gc-fil-disp').textContent  = grams  ? grams.toFixed(1) + 'g'  : '—';
+  document.getElementById('gc-lay-disp').textContent  = layers ? layers.toString()        : '—';
+
+  toast('✓ G-code lido! Cálculo usa dados reais.', 'ok');
+
+  // Recalculate if model already loaded
+  if (S.loaded || !S.volume) {
+    S.volume = S.volume || 1; // ensure calc runs
+    doCalc();
+  }
+}
+
+function fmtTime(h) {
+  const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+  return hh + 'h' + (mm > 0 ? ` ${mm}m` : '');
+}
+
+function removeGcode() {
+  GC.loaded = false; GC.timeH = null; GC.grams = null; GC.layers = null;
+  document.getElementById('gcode-zone').style.display   = '';
+  document.getElementById('gcode-loaded').style.display = 'none';
+  document.getElementById('gcode-vals').style.display   = 'none';
+  document.getElementById('gc-input').value = '';
+  if (S.loaded) doCalc();
+  toast('G-code removido — usando estimativa', 'info');
+}
+
 // ═══════════════════════════════════════
 //  CORE CALCULATION
 // ═══════════════════════════════════════
@@ -2527,15 +2853,25 @@ function doCalc() {
   const qty  = Math.max(1, +document.getElementById('qty').value || 1);
   const dens = mat.density, matN = mat.id;
 
-  const effVol = S.volume * (inf/100) * 1.18;
-  const grams  = effVol * dens;
+  // ── prioridade: G-code > Manual > Estimativa ──
+  const effVol  = S.volume * (inf/100) * 1.18;
+  const grams   = GC.loaded && GC.grams   ? GC.grams
+                : MAN.active && MAN.grams  ? MAN.grams
+                : effVol * dens;
   const filCost = (grams/1000) * fp;
 
-  const b = S.bounds;
-  const layers = b.y / lh;
-  const travel = (b.x + b.z) * 2 * 2;
-  let timeH = (layers * travel / spd) / 3600 * 1.25;
-  if (sup > 0) timeH *= (1 + sup/100);
+  const b = S.bounds || {x:10,y:10,z:10};
+  let timeH;
+  if (GC.loaded && GC.timeH) {
+    timeH = GC.timeH;
+  } else if (MAN.active && MAN.timeH) {
+    timeH = MAN.timeH;
+  } else {
+    const layers = b.y / lh;
+    const travel = (b.x + b.z) * 2 * 2;
+    timeH = (layers * travel / spd) / 3600 * 1.25;
+    if (sup > 0) timeH *= (1 + sup/100);
+  }
 
   const machCost  = timeH * mc;
   const laborCost = .25*lc + timeH*.1*lc;
@@ -3476,6 +3812,12 @@ function updateOrcPreview() {
   el.textContent = buildOrcMsg();
 }
 
+// ── MODAL DE AJUDA ──
+function toggleHelp() {
+  const modal = document.getElementById('help-modal');
+  if (modal) modal.classList.toggle('show');
+}
+
 // ── FILTROS DE INPUT ──
 function onlyLetters(el) {
   const pos = el.selectionStart;
@@ -3681,6 +4023,8 @@ window.addEventListener('DOMContentLoaded', () => {
     sendOrcamento, updateOrcPreview, setOrcArq,
     copiarLink, compartilharWhatsApp, renderShareLink,
     sortMat, renderComparador,
+    onGcDragOver, onGcDragLeave, onGcDrop, onGcInput, removeGcode,
+    applyManual, toggleHelp,
   ].forEach(fn => { if (typeof fn === 'function') window[fn.name] = fn; });
 });
 </script>
