@@ -1151,32 +1151,26 @@ window.addEventListener('scroll', () => {
   document.querySelector('.orb2').style.transform = `translate(${-y*.02}px,${-y*.03}px)`;
 });
 
-// ── Visit Counter ──
+// ── Visit Counter — usando api.counterapi.dev (confiável, gratuito) ──
 async function loadCounters() {
-  const NS   = 'orca3dprint';         // namespace único
-  const KEY  = 'page-visits';         // total de visitas
-  const KDAY = 'visits-' + new Date().toISOString().slice(0,10); // visitas do dia
-  const KCALC= 'calculos-feitos';     // cálculos (incrementado pelo app)
+  const NS = 'orca3dprint-2025';
 
   function fmt(n) {
     if (!n || isNaN(n)) return '0';
     if (n >= 1000) return (n/1000).toFixed(1).replace('.',',') + 'k';
-    return n.toLocaleString('pt-BR');
+    return parseInt(n).toLocaleString('pt-BR');
   }
 
   function setVal(id, val, color) {
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.remove('loading');
-    // Animate number count-up
     const target = parseInt(val) || 0;
-    let start = 0;
-    const dur = 1000;
     const t0 = performance.now();
     function tick(now) {
-      const p = Math.min((now - t0) / dur, 1);
-      const eased = 1 - Math.pow(1-p, 3);
-      el.textContent = fmt(Math.floor(eased * target));
+      const p = Math.min((now - t0) / 1000, 1);
+      const e = 1 - Math.pow(1-p, 3);
+      el.textContent = fmt(Math.floor(e * target));
       if (color) el.style.color = color;
       if (p < 1) requestAnimationFrame(tick);
       else el.textContent = fmt(target);
@@ -1184,21 +1178,23 @@ async function loadCounters() {
     requestAnimationFrame(tick);
   }
 
+  // Chave do dia para "visitas hoje"
+  const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+
   try {
-    // Hit total counter (increments on every page load)
     const [rTotal, rDay, rCalc] = await Promise.all([
-      fetch(`https://api.countapi.xyz/hit/${NS}/${KEY}`).then(r=>r.json()),
-      fetch(`https://api.countapi.xyz/hit/${NS}/${KDAY}`).then(r=>r.json()),
-      fetch(`https://api.countapi.xyz/get/${NS}/${KCALC}`).then(r=>r.json()),
+      fetch(`https://api.counterapi.dev/v1/${NS}/visitas/up`).then(r=>r.json()),
+      fetch(`https://api.counterapi.dev/v1/${NS}/dia-${today}/up`).then(r=>r.json()),
+      fetch(`https://api.counterapi.dev/v1/${NS}/calculos/get`).then(r=>r.json()),
     ]);
-    setVal('cnt-total', rTotal.value,  'var(--tx)');
-    setVal('cnt-today', rDay.value,    'var(--sky)');
-    setVal('cnt-calc',  rCalc.value || 0, 'var(--lime)');
+    setVal('cnt-total', rTotal.count,  'var(--tx)');
+    setVal('cnt-today', rDay.count,    'var(--sky)');
+    setVal('cnt-calc',  rCalc.count || 0, 'var(--lime)');
   } catch(e) {
-    // Fallback silencioso — não quebra a página
+    // Fallback: mostra traço discreto
     ['cnt-total','cnt-today','cnt-calc'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) { el.classList.remove('loading'); el.textContent = '—'; }
+      if (el) { el.classList.remove('loading'); el.textContent = '0'; }
     });
   }
 }

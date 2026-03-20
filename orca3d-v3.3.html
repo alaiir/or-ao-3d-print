@@ -10,7 +10,7 @@
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src https://fonts.gstatic.com;
   img-src 'self' data: https://api.qrserver.com;
-  connect-src 'self' https://api.web3forms.com https://www.google-analytics.com https://*.vercel-insights.com https://api.countapi.xyz;
+  connect-src 'self' https://api.web3forms.com https://www.google-analytics.com https://*.vercel-insights.com https://api.counterapi.dev;
   frame-src 'none';
   object-src 'none';
   base-uri 'self';
@@ -1210,21 +1210,21 @@ input[type=range].changed {
 
 ═══════════════════════════════════════ */
 .cmp-sort-btn{
-  font-family:'DM Mono',monospace !important;
+  font-family:'DM Mono',monospace;
   font-size:10px;letter-spacing:1.2px;text-transform:uppercase;
   padding:4px 11px;border-radius:20px;
-  border:1px solid var(--rim2) !important;
-  color:var(--tx3) !important;
-  background:var(--ink3) !important;
+  border:1px solid var(--rim2);
+  color:var(--tx2);
+  background:var(--ink3);
   cursor:pointer;transition:all .2s;
-  -webkit-appearance:none;appearance:none;outline:none;
   display:inline-flex;align-items:center;
+  user-select:none;
 }
-.cmp-sort-btn:hover{color:var(--tx2) !important;border-color:var(--rim2) !important}
+.cmp-sort-btn:hover{color:var(--tx);border-color:var(--rim2)}
 .cmp-sort-btn.active{
-  border-color:rgba(200,255,87,.3) !important;
-  color:var(--lime) !important;
-  background:var(--lime-a) !important;
+  border-color:rgba(200,255,87,.3);
+  color:var(--lime);
+  background:var(--lime-a);
 }
 
 .mat-card{
@@ -2166,9 +2166,9 @@ tr:hover .cmp-td{background:rgba(255,255,255,.015)}
       <!-- FILTRO / ORDENAÇÃO -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap">
         <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3)">Ordenar por</div>
-        <button class="cmp-sort-btn active" data-sort="nome"   onclick="sortMat('nome',this)">Nome</button>
-        <button class="cmp-sort-btn"        data-sort="custo"  onclick="sortMat('custo',this)">Custo ↑</button>
-        <button class="cmp-sort-btn"        data-sort="resist" onclick="sortMat('resist',this)">Resistência ↑</button>
+        <span class="cmp-sort-btn active" data-sort="nome"   onclick="sortMat('nome',this)">Nome</span>
+        <span class="cmp-sort-btn"        data-sort="custo"  onclick="sortMat('custo',this)">Custo ↑</span>
+        <span class="cmp-sort-btn"        data-sort="resist" onclick="sortMat('resist',this)">Resistência ↑</span>
         <div style="flex:1"></div>
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3)" id="cmp-count"></div>
       </div>
@@ -2928,7 +2928,7 @@ function doCalc() {
 
   // ── Incrementa contador de cálculos na landing page ──
   try {
-    fetch('https://api.countapi.xyz/hit/orca3dprint/calculos-feitos', { method: 'GET' }).catch(()=>{});
+    fetch('https://api.counterapi.dev/v1/orca3dprint-2025/calculos/up').catch(()=>{});
   } catch(e) {}
 
   renderResults();
