@@ -188,7 +188,7 @@ header{
   border-bottom:1px solid var(--rim);
   display:flex;align-items:center;justify-content:space-between;
 }
-.logo{display:flex;align-items:center;gap:10px;cursor:default;user-select:none}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;text-decoration:none}
 .logo-mark{
   width:32px;height:32px;
   background:var(--lime);
@@ -196,10 +196,16 @@ header{
   display:grid;place-items:center;
   box-shadow:0 0 20px rgba(200,255,87,.3);
   flex-shrink:0;
+  transition:transform .2s, box-shadow .2s;
+}
+.logo:hover .logo-mark{
+  transform:rotate(10deg) scale(1.08);
+  box-shadow:0 0 36px rgba(200,255,87,.55);
 }
 .logo-mark svg{width:18px;height:18px}
-.logo-name{font-size:17px;font-weight:700;letter-spacing:-.4px;color:var(--tx)}
+.logo-name{font-size:17px;font-weight:700;letter-spacing:-.4px;color:var(--tx);transition:color .2s}
 .logo-name em{font-style:normal;color:var(--lime)}
+.logo:hover .logo-name{color:var(--lime)}
 .h-right{display:flex;align-items:center;gap:8px}
 .h-chip{
   font-family:'DM Mono',monospace;
@@ -1360,7 +1366,7 @@ tr:hover .cmp-td{background:rgba(255,255,255,.015)}
 <body>
 
 <header>
-  <div class="logo">
+  <a href="index.html" class="logo" title="Voltar à página inicial">
     <div class="logo-mark">
       <svg viewBox="0 0 18 18" fill="none">
         <polygon points="9,1 16,5 16,13 9,17 2,13 2,5" stroke="#0B0D14" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
@@ -1368,7 +1374,7 @@ tr:hover .cmp-td{background:rgba(255,255,255,.015)}
       </svg>
     </div>
     <div class="logo-name">Orça<em> 3D Print</em></div>
-  </div>
+  </a>
   <div class="h-right">
     <span class="h-chip on">Online</span>
     <span class="h-chip">Grátis</span>
