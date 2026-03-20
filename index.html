@@ -818,16 +818,16 @@ footer {
 
     <div class="hero-stats">
       <div class="stat">
+        <div class="stat-val">568</div>
+        <div class="stat-label">Makers<br>já usaram</div>
+      </div>
+      <div class="stat">
         <div class="stat-val">6</div>
         <div class="stat-label">Materiais<br>suportados</div>
       </div>
       <div class="stat">
         <div class="stat-val">5</div>
         <div class="stat-label">Fatiadores<br>compatíveis</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val">4</div>
-        <div class="stat-label">Formatos<br>3D aceitos</div>
       </div>
       <div class="stat">
         <div class="stat-val">0</div>
@@ -1151,7 +1151,12 @@ window.addEventListener('scroll', () => {
   document.querySelector('.orb2').style.transform = `translate(${-y*.02}px,${-y*.03}px)`;
 });
 
-// ── Visit Counter — usando api.counterapi.dev (confiável, gratuito) ──
+// ── Visit Counter ──
+// Base histórica (GA4: 20/02/2026 → 19/03/2026)
+// 738 sessões + 568 usuários + ~800 cálculos estimados
+const HIST_TOTAL = 738;   // sessões totais antes do contador
+const HIST_CALC  = 800;   // estimativa de cálculos (40% das 2367 interações)
+
 async function loadCounters() {
   const NS = 'orca3dprint-2025';
 
@@ -1178,7 +1183,6 @@ async function loadCounters() {
     requestAnimationFrame(tick);
   }
 
-  // Chave do dia para "visitas hoje"
   const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
 
   try {
@@ -1187,15 +1191,15 @@ async function loadCounters() {
       fetch(`https://api.counterapi.dev/v1/${NS}/dia-${today}/up`).then(r=>r.json()),
       fetch(`https://api.counterapi.dev/v1/${NS}/calculos/get`).then(r=>r.json()),
     ]);
-    setVal('cnt-total', rTotal.count,  'var(--tx)');
-    setVal('cnt-today', rDay.count,    'var(--sky)');
-    setVal('cnt-calc',  rCalc.count || 0, 'var(--lime)');
+    // Soma o histórico do GA4 com os novos acessos
+    setVal('cnt-total', HIST_TOTAL + (rTotal.count || 0), 'var(--tx)');
+    setVal('cnt-today', rDay.count || 0,                  'var(--sky)');
+    setVal('cnt-calc',  HIST_CALC  + (rCalc.count || 0),  'var(--lime)');
   } catch(e) {
-    // Fallback: mostra traço discreto
-    ['cnt-total','cnt-today','cnt-calc'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.classList.remove('loading'); el.textContent = '0'; }
-    });
+    // Fallback: mostra valores históricos fixos
+    setVal('cnt-total', HIST_TOTAL, 'var(--tx)');
+    setVal('cnt-today', 0,          'var(--sky)');
+    setVal('cnt-calc',  HIST_CALC,  'var(--lime)');
   }
 }
 
@@ -1219,7 +1223,7 @@ const statsObs = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       const vals = entry.target.querySelectorAll('.stat-val');
-      const targets = [6, 5, 4, 0];
+      const targets = [568, 6, 5, 0]; // GA4: 568 usuários reais
       vals.forEach((el, i) => animateCounter(el, targets[i]));
       statsObs.disconnect();
     }
