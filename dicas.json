@@ -1,0 +1,39 @@
+{
+  "tooltips": {
+
+    "calc-nome":        "Nome do cliente para identificar o orçamento no histórico e no PDF exportado.",
+    "calc-empresa":     "Empresa ou projeto do cliente. Aparece no cabeçalho do PDF.",
+    "calc-desc":        "Descreva a peça brevemente. Ex: suporte para câmera, escala 1:1. Aparece no PDF.",
+
+    "man-horas":        "Tempo de impressão em horas, retirado diretamente do fatiador (Cura, PrusaSlicer, etc).",
+    "man-min":          "Minutos complementares do tempo de impressão. Ex: 1h 23min → horas=1, min=23.",
+    "man-gramas":       "Peso do filamento em gramas, conforme exibido pelo fatiador após o fatiamento.",
+
+    "filprice":         "Preço pago pelo filamento por quilo. Consulte a nota fiscal ou o site do fornecedor.",
+    "machcost":         "Custo de operação da impressora por hora: energia + manutenção + depreciação.",
+    "laborcost":        "Sua hora de trabalho. Inclui preparação, monitoramento e pós-processamento.",
+    "energycost":       "Tarifa de energia elétrica em R$/kWh. Consulte sua conta de luz.",
+
+    "infill":           "Porcentagem de preenchimento interno da peça. Mais infill = mais resistência e mais filamento.",
+    "layerh":           "Espessura de cada camada impressa. Camadas finas = melhor acabamento, mais tempo.",
+    "speed":            "Velocidade de impressão em mm/s. Velocidades altas podem reduzir qualidade.",
+    "support":          "Suporte para partes da peça que ficam no ar. Aumenta tempo e uso de filamento.",
+    "postproc":         "Acabamento manual após a impressão. Lixamento, pintura ou tratamento especial.",
+    "qty":              "Quantidade de cópias da mesma peça. O custo total é multiplicado por este valor.",
+
+    "margin":           "Percentual de lucro sobre o custo de produção. Ex: 50% sobre R$10 = venda por R$15.",
+    "qty-proj":         "Estimativa de peças vendidas por mês para calcular o faturamento e lucro projetados.",
+
+    "orc-nome":         "Seu nome completo para o prestador identificar o pedido.",
+    "orc-tel":          "Seu WhatsApp para o prestador entrar em contato. Opcional, mas recomendado.",
+    "orc-peca":         "Descreva a peça que precisa imprimir com o máximo de detalhes possível.",
+    "orc-mat":          "Material desejado para a peça. Se não souber, escolha 'Não sei / Qualquer'.",
+    "orc-qty":          "Quantas unidades da mesma peça você precisa.",
+    "orc-prazo":        "Quando você precisa da peça pronta.",
+    "orc-obs":          "Informações extras: cor, acabamento, referências, links de imagem, etc.",
+
+    "cfg-negocio":      "Nome do seu negócio. Aparece no link compartilhado e na tela do cliente.",
+    "cfg-whats":        "Seu número com DDI e DDD, só números. Ex: 5531999999999.",
+    "cfg-boasvindas":   "Mensagem que aparece no topo do pedido recebido pelo WhatsApp. Opcional."
+  }
+}
