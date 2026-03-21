@@ -1293,7 +1293,10 @@ window.addEventListener('scroll', () => {
   document.querySelector('.orb2').style.transform = `translate(${-y*.02}px,${-y*.03}px)`;
 });
 
-// ── Visit Counter — API própria no Vercel ──
+// ── Visit Counter — API própria + fallback CounterAPI ──
+const HIST_TOTAL = 738;
+const HIST_CALC  = 800;
+
 async function loadCounters() {
   function fmt(n) {
     if (!n || isNaN(n)) return '0';
@@ -1318,18 +1321,37 @@ async function loadCounters() {
     requestAnimationFrame(tick);
   }
 
+  // ── Tenta API própria primeiro ──
   try {
-    // Chama a própria API — /api/counter?action=hit
-    const r = await fetch('/api/counter?action=hit').then(r => r.json());
+    const r = await fetch('/api/counter?action=hit', { signal: AbortSignal.timeout(3000) })
+              .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+
+    // Se veio com fallback:true significa que o KV ainda não está configurado
+    if (r.fallback) throw new Error('KV not configured');
+
     setVal('cnt-total', r.total,    'var(--tx)');
     setVal('cnt-today', r.today,    'var(--sky)');
     setVal('cnt-calc',  r.calculos, 'var(--lime)');
+    return;
+  } catch(e) { /* segue para fallback */ }
+
+  // ── Fallback: CounterAPI externo ──
+  try {
+    const NS    = 'orca3dprint-2025';
+    const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+    const [rT, rD, rC] = await Promise.all([
+      fetch(`https://api.counterapi.dev/v1/${NS}/visitas/up`).then(r=>r.json()),
+      fetch(`https://api.counterapi.dev/v1/${NS}/dia-${today}/up`).then(r=>r.json()),
+      fetch(`https://api.counterapi.dev/v1/${NS}/calculos/get`).then(r=>r.json()),
+    ]);
+    setVal('cnt-total', HIST_TOTAL + (rT.count || 0), 'var(--tx)');
+    setVal('cnt-today', rD.count || 0,                'var(--sky)');
+    setVal('cnt-calc',  HIST_CALC  + (rC.count || 0), 'var(--lime)');
   } catch(e) {
-    // Fallback silencioso
-    ['cnt-total','cnt-today','cnt-calc'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.classList.remove('loading'); el.textContent = '—'; }
-    });
+    // Último recurso: mostra histórico fixo
+    setVal('cnt-total', HIST_TOTAL, 'var(--tx)');
+    setVal('cnt-today', 0,          'var(--sky)');
+    setVal('cnt-calc',  HIST_CALC,  'var(--lime)');
   }
 }
 
