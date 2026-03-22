@@ -1350,6 +1350,200 @@ tr:hover .cmp-td{background:rgba(255,255,255,.015)}
 .orc-send-btn:disabled {
   opacity: .5; cursor: not-allowed; transform: none;
 }
+
+/* ═══════════════════════════════════════
+   IMPRESSORAS
+═══════════════════════════════════════ */
+.printer-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:14px;
+  margin-top:4px;
+}
+.printer-card {
+  background:var(--ink3);border:1px solid var(--rim);
+  border-radius:var(--r-card);padding:20px;
+  position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s;
+  cursor:default;
+}
+.printer-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--lime),var(--sky));
+}
+.printer-card:hover { transform:translateY(-2px);border-color:var(--rim2); }
+.printer-card.active-printer {
+  border-color:rgba(200,255,87,.4);
+  background:var(--ink4);
+}
+.printer-card.active-printer::before {
+  background:linear-gradient(90deg,var(--lime),var(--lime));
+}
+.pc-head {
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:14px;gap:10px;
+}
+.pc-icon {
+  width:42px;height:42px;border-radius:10px;
+  background:var(--lime-a);border:1px solid rgba(200,255,87,.2);
+  display:grid;place-items:center;font-size:20px;flex-shrink:0;
+}
+.pc-info { flex:1;min-width:0; }
+.pc-name {
+  font-size:15px;font-weight:700;letter-spacing:-.3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.pc-model {
+  font-family:'DM Mono',monospace;font-size:9px;
+  color:var(--tx3);letter-spacing:.5px;margin-top:2px;
+}
+.pc-active-badge {
+  font-family:'DM Mono',monospace;font-size:8px;
+  letter-spacing:1px;text-transform:uppercase;
+  background:var(--lime-a);border:1px solid rgba(200,255,87,.3);
+  color:var(--lime);padding:2px 8px;border-radius:10px;
+  white-space:nowrap;display:none;
+}
+.printer-card.active-printer .pc-active-badge { display:inline; }
+
+.pc-kpis {
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:7px;margin-bottom:14px;
+}
+.pc-kpi {
+  background:var(--ink4);border:1px solid var(--rim);
+  border-radius:8px;padding:8px 10px;text-align:center;
+}
+.pc-kpi-val {
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:500;
+  color:var(--kc,var(--lime));line-height:1;margin-bottom:3px;
+}
+.pc-kpi-label {
+  font-family:'DM Mono',monospace;font-size:7.5px;
+  letter-spacing:1px;text-transform:uppercase;color:var(--tx4);
+}
+.pc-actions {
+  display:flex;gap:7px;
+}
+.pc-btn {
+  flex:1;padding:8px;border-radius:7px;
+  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  border:1px solid var(--rim2);background:var(--ink4);color:var(--tx3);
+}
+.pc-btn:hover { border-color:var(--rim);color:var(--tx2); }
+.pc-btn.pc-use {
+  background:var(--lime-a);border-color:rgba(200,255,87,.3);color:var(--lime);
+}
+.pc-btn.pc-use:hover {
+  background:var(--lime);color:var(--ink);border-color:transparent;
+}
+.printer-card.active-printer .pc-btn.pc-use {
+  background:var(--lime);color:var(--ink);border-color:transparent;
+}
+.pc-btn.pc-del:hover { border-color:var(--rose);color:var(--rose);background:var(--rose-a); }
+
+/* Modal de cadastro */
+.printer-modal {
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  z-index:800;align-items:center;justify-content:center;padding:20px;
+}
+.printer-modal.show { display:flex; }
+.pm-box {
+  background:var(--ink3);border:1px solid var(--rim);
+  border-radius:var(--r-card);width:100%;max-width:540px;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:var(--shadow-lg);animation:rise .3s ease;
+}
+.pm-head {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--rim);position:sticky;top:0;
+  background:var(--ink3);z-index:1;
+}
+.pm-title {
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--lime);letter-spacing:-.2px;
+}
+.pm-close {
+  background:none;border:none;color:var(--tx3);
+  font-size:16px;cursor:pointer;padding:5px;
+  border-radius:5px;transition:all .2s;
+}
+.pm-close:hover { color:var(--rose);background:var(--rose-a); }
+.pm-body { padding:20px 22px 28px; }
+.pm-section {
+  font-family:'DM Mono',monospace;font-size:8.5px;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--tx3);margin:18px 0 10px;
+  padding-bottom:6px;border-bottom:1px solid var(--rim);
+}
+.pm-section:first-of-type { margin-top:0; }
+.pm-row { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px; }
+.pm-row.full { grid-template-columns:1fr; }
+.pm-group { display:flex;flex-direction:column;gap:5px; }
+.pm-label {
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--tx2);
+}
+.pm-hint {
+  font-family:'DM Mono',monospace;font-size:8px;
+  color:var(--tx4);margin-top:2px;
+}
+.pm-result {
+  margin-top:16px;padding:14px;
+  background:var(--ink4);border:1px solid var(--rim);
+  border-radius:10px;
+}
+.pm-result-title {
+  font-family:'DM Mono',monospace;font-size:8.5px;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--tx3);margin-bottom:10px;
+}
+.pm-result-grid {
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+}
+.pm-res-item {
+  background:var(--ink);border:1px solid var(--rim);
+  border-radius:7px;padding:8px 10px;text-align:center;
+}
+.pm-res-val {
+  font-family:'DM Mono',monospace;font-size:15px;font-weight:500;
+  color:var(--lime);line-height:1;margin-bottom:3px;
+}
+.pm-res-label {
+  font-family:'DM Mono',monospace;font-size:7px;
+  letter-spacing:1px;text-transform:uppercase;color:var(--tx4);
+}
+.pm-save-btn {
+  width:100%;margin-top:16px;padding:13px;
+  background:var(--lime);color:var(--ink);
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;
+  border:none;border-radius:10px;cursor:pointer;
+  transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.pm-save-btn:hover {
+  filter:brightness(1.08);transform:translateY(-1px);
+  box-shadow:0 6px 24px rgba(200,255,87,.3);
+}
+
+/* Empty state */
+.printer-empty {
+  text-align:center;padding:60px 20px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.printer-empty-ico { font-size:48px;opacity:.1;animation:bob 5s ease-in-out infinite; }
+.printer-empty-txt { font-size:14px;font-weight:600;color:var(--tx3); }
+.printer-empty-sub { font-size:12px;color:var(--tx4); }
+
+@media(max-width:600px){
+  .printer-grid { grid-template-columns:1fr; }
+  .pm-row { grid-template-columns:1fr; }
+  .pc-kpis { grid-template-columns:repeat(3,1fr); }
+}
+
 </style>
 <!-- Vercel Speed Insights -->
 <script>
@@ -1402,6 +1596,10 @@ tr:hover .cmp-td{background:rgba(255,255,255,.015)}
   </button>
   <button class="nav-tab" id="tab-comparador" onclick="switchTab('comparador',this)">
     <span class="n-ico">🧪</span> Materiais
+  </button>
+  <button class="nav-tab" id="tab-impressoras" onclick="switchTab('impressoras',this)">
+    <span class="n-ico">🖨️</span> Impressoras
+    <span class="nav-badge" id="imp-badge"></span>
   </button>
   <div class="tab-divider"></div>
 </div>
@@ -1671,6 +1869,32 @@ tr:hover .cmp-td{background:rgba(255,255,255,.015)}
                   <input type="number" id="qty" class="inp" value="1" min="1" max="999" oninput="autoCalc(this,'cost')">
                 </div>
               </div>
+
+              <!-- ── TAXA DE FALHA + MANUTENÇÃO ── -->
+              <div style="margin-top:4px">
+                <div class="section-title" style="display:flex;align-items:center;justify-content:space-between">
+                  Riscos & Manutenção
+                  <span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--tx4);letter-spacing:.5px">afeta o custo final</span>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label data-tip="falha-pct">Taxa de Falha (%)</label>
+                    <input type="number" id="falha-pct" class="inp" value="5" min="0" max="100" step="1"
+                      oninput="autoCalc(this,'cost')"
+                      title="Percentual de impressões que falham. Ex: 5% = a cada 20 peças, 1 falha">
+                  </div>
+                  <div class="form-group">
+                    <label data-tip="manut-hora">Manutenção (R$/h)</label>
+                    <input type="number" id="manut-hora" class="inp" value="1.50" min="0" step="0.5"
+                      oninput="autoCalc(this,'cost')"
+                      title="Custo médio de manutenção por hora: bico, cama, correia, lubrificação">
+                  </div>
+                </div>
+                <div style="padding:9px 12px;background:var(--ink4);border:1px solid var(--rim);border-radius:8px;font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3);line-height:1.6">
+                  💡 <span id="risco-info">Falha 5% · Manutenção R$1,50/h · Impacto: calculando...</span>
+                </div>
+              </div>
+
             </div>
 
             <!-- ═══ SMART DEBOUNCE STATUS BAR — NEW ═══ -->
@@ -2199,6 +2423,164 @@ tr:hover .cmp-td{background:rgba(255,255,255,.015)}
 
     </div>
   </div>
+
+  <!-- ════ PANEL: IMPRESSORAS ════ -->
+  <div class="panel" id="panel-impressoras">
+    <div class="panel-inner">
+
+      <div class="hero" style="margin-bottom:28px">
+        <div class="hero-eyebrow">Meu Equipamento</div>
+        <h1>Minhas <span class="gr">Impressoras</span></h1>
+        <p>Cadastre suas impressoras para calcular automaticamente o custo real por hora de cada máquina.</p>
+      </div>
+
+      <!-- HEADER ACTIONS -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="card-label">
+            <div class="cl-dot" style="background:var(--lime)"></div>
+            <span id="imp-count-label">Nenhuma impressora cadastrada</span>
+          </div>
+        </div>
+        <button onclick="openPrinterModal()" style="
+          display:inline-flex;align-items:center;gap:8px;
+          background:var(--lime);color:var(--ink);
+          font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;
+          padding:10px 20px;border-radius:9px;border:none;cursor:pointer;
+          transition:all .2s;box-shadow:0 4px 16px rgba(200,255,87,.2)">
+          + Adicionar Impressora
+        </button>
+      </div>
+
+      <!-- ACTIVE PRINTER BANNER -->
+      <div id="active-printer-banner" style="display:none;margin-bottom:16px;
+        padding:12px 16px;background:var(--lime-a);
+        border:1px solid rgba(200,255,87,.25);border-radius:12px;
+        display:none;align-items:center;gap:12px">
+        <span style="font-size:20px">🖨️</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700" id="active-banner-name">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx2);margin-top:2px" id="active-banner-meta">—</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lime);
+          background:var(--lime-a);border:1px solid rgba(200,255,87,.3);
+          padding:3px 10px;border-radius:8px">EM USO NA CALCULADORA</div>
+      </div>
+
+      <!-- GRID DE CARDS -->
+      <div id="printer-grid-container"></div>
+
+    </div>
+  </div>
+
+  <!-- MODAL DE CADASTRO -->
+  <div class="printer-modal" id="printer-modal">
+    <div class="pm-box">
+      <div class="pm-head">
+        <span class="pm-title" id="pm-title">🖨️ Nova Impressora</span>
+        <button class="pm-close" onclick="closePrinterModal()">✕</button>
+      </div>
+      <div class="pm-body">
+
+        <div class="pm-section">Identificação</div>
+        <div class="pm-row full">
+          <div class="pm-group">
+            <label class="pm-label">Nome / Apelido *</label>
+            <input class="inp" id="pm-nome" type="text" placeholder="Ex: Minha Ender 3, Bambu da bancada...">
+          </div>
+        </div>
+        <div class="pm-row">
+          <div class="pm-group">
+            <label class="pm-label">Modelo / Marca</label>
+            <input class="inp" id="pm-modelo" type="text" placeholder="Ex: Bambu P1S, Ender 3 V2">
+          </div>
+          <div class="pm-group">
+            <label class="pm-label">Tecnologia</label>
+            <select class="inp" id="pm-tipo">
+              <option value="FDM">FDM (filamento)</option>
+              <option value="MSLA">MSLA / Resina</option>
+              <option value="SLA">SLA</option>
+              <option value="SLS">SLS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pm-section">Investimento</div>
+        <div class="pm-row">
+          <div class="pm-group">
+            <label class="pm-label">Preço pago (R$) *</label>
+            <input class="inp" id="pm-preco" type="number" min="0" step="100" placeholder="Ex: 2500"
+              oninput="calcPrinterCosts()">
+            <span class="pm-hint">Valor total incluindo frete e impostos</span>
+          </div>
+          <div class="pm-group">
+            <label class="pm-label">Vida útil (anos)</label>
+            <input class="inp" id="pm-vida" type="number" min="1" max="20" value="3" step="1"
+              oninput="calcPrinterCosts()">
+            <span class="pm-hint">Estimativa para depreciação</span>
+          </div>
+        </div>
+        <div class="pm-row">
+          <div class="pm-group">
+            <label class="pm-label">Horas uso/mês</label>
+            <input class="inp" id="pm-horas-mes" type="number" min="1" value="120" step="10"
+              oninput="calcPrinterCosts()">
+            <span class="pm-hint">Média de horas que a impressora fica ligada</span>
+          </div>
+          <div class="pm-group">
+            <label class="pm-label">Manutenção/mês (R$)</label>
+            <input class="inp" id="pm-manut-mes" type="number" min="0" value="50" step="10"
+              oninput="calcPrinterCosts()">
+            <span class="pm-hint">Bico, cama, correia, lubrificação...</span>
+          </div>
+        </div>
+
+        <div class="pm-section">Energia</div>
+        <div class="pm-row">
+          <div class="pm-group">
+            <label class="pm-label">Consumo (Watts)</label>
+            <input class="inp" id="pm-watts" type="number" min="0" value="200" step="10"
+              oninput="calcPrinterCosts()">
+            <span class="pm-hint">Consumo médio durante impressão</span>
+          </div>
+          <div class="pm-group">
+            <label class="pm-label">Tarifa elétrica (R$/kWh)</label>
+            <input class="inp" id="pm-kwh" type="number" min="0" value="0.75" step="0.05"
+              oninput="calcPrinterCosts()">
+          </div>
+        </div>
+
+        <!-- RESULTADO CALCULADO -->
+        <div class="pm-result">
+          <div class="pm-result-title">⚡ Custos calculados automaticamente</div>
+          <div class="pm-result-grid">
+            <div class="pm-res-item">
+              <div class="pm-res-val" id="pm-res-hora">—</div>
+              <div class="pm-res-label">R$/hora máq.</div>
+            </div>
+            <div class="pm-res-item">
+              <div class="pm-res-val" id="pm-res-energia" style="color:var(--sky)">—</div>
+              <div class="pm-res-label">R$/hora energia</div>
+            </div>
+            <div class="pm-res-item">
+              <div class="pm-res-val" id="pm-res-break" style="color:var(--amber)">—</div>
+              <div class="pm-res-label">meses p/ pagar</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-family:'DM Mono',monospace;font-size:9px;
+            color:var(--tx3);line-height:1.6" id="pm-res-desc">
+            Preencha os campos acima para ver o cálculo.
+          </div>
+        </div>
+
+        <button class="pm-save-btn" onclick="savePrinter()">
+          💾 Salvar Impressora
+        </button>
+
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <!-- Modal de ajuda -->
@@ -2295,6 +2677,8 @@ function inputHash() {
     document.getElementById('support').value,
     document.getElementById('postproc').value,
     document.getElementById('qty').value,
+    document.getElementById('falha-pct').value,
+    document.getElementById('manut-hora').value,
   ].join('|');
 }
 
@@ -2926,11 +3310,25 @@ function doCalc() {
   const machCost  = timeH * mc;
   const laborCost = .25*lc + timeH*.1*lc;
   const engCost   = 0.15 * timeH * ec;
-  const risk      = (filCost + machCost) * .05;
-  const totalUnit = filCost + machCost + laborCost + engCost + risk + post;
+  // ── Taxa de falha: dilui o custo de retrabalho na unidade ──
+  const falhaPct  = Math.max(0, Math.min(100, +document.getElementById('falha-pct').value || 5)) / 100;
+  const manutHora = +document.getElementById('manut-hora').value || 1.5;
+
+  // Custo da falha: (custo material + máquina) × taxa ÷ (1 - taxa)
+  // Ex: 5% falha → cada peça carrega 5.26% a mais de custo
+  const risk      = (filCost + machCost) * (falhaPct / (1 - falhaPct || 0.001));
+  const manutCost = timeH * manutHora;
+  const totalUnit = filCost + machCost + laborCost + engCost + risk + manutCost + post;
   const total     = totalUnit * qty;
 
-  S.costs = { fil:filCost, mach:machCost, labor:laborCost, energy:engCost, risk, post, totalUnit, total, matName:matN, timeH, grams, qty };
+  // Atualiza info box
+  const impacto = risk + manutCost;
+  const infoEl = document.getElementById('risco-info');
+  if (infoEl) {
+    infoEl.textContent = `Falha ${(falhaPct*100).toFixed(0)}% · Manutenção R$${manutHora.toFixed(2)}/h · Impacto: +${brl(impacto)} por peça`;
+  }
+
+  S.costs = { fil:filCost, mach:machCost, labor:laborCost, energy:engCost, risk, manut:manutCost, post, totalUnit, total, matName:matN, timeH, grams, qty, falhaPct };
 
   // ── Incrementa contador de cálculos na landing page ──
   try {
@@ -2969,7 +3367,8 @@ function renderResults() {
     {label:'Hora-máquina',                       val:d.mach,  color:'var(--rose)'},
     {label:'Mão de obra',                        val:d.labor, color:'var(--violet)'},
     {label:'Energia',                            val:d.energy,color:'var(--amber)'},
-    {label:'Risco de falha (5%)',                val:d.risk,  color:'var(--tx2)'},
+    {label:`Taxa de falha (${(d.falhaPct*100).toFixed(0)}%)`, val:d.risk,  color:'var(--tx2)'},
+    {label:'Manutenção',                         val:d.manut, color:'var(--sky)'},
   ];
   if (d.post > 0) rows.push({label:'Pós-processamento', val:d.post, color:'var(--sky)'});
   if (qty > 1) rows.push({label:`× ${qty} unidades`, val:d.total, color:'var(--violet)'});
@@ -3154,7 +3553,8 @@ function exportPDF() {
     {l:'Hora-máquina',                                       v:d.mach,  c:[87,200,255]},
     {l:'Mão de obra',                                        v:d.labor, c:[167,139,250]},
     {l:'Energia elétrica',                                   v:d.energy,c:[255,179,71]},
-    {l:'Margem de risco (5%)',                               v:d.risk,  c:[120,136,168]},
+    {l:`Taxa de falha (${(d.falhaPct*100).toFixed(0)}%)`,       v:d.risk,  c:[120,136,168]},
+    {l:'Manutenção (bico, cama, correia)',                    v:d.manut, c:[87,200,255]},
   ];
   if (d.post>0) bRows.push({l:'Pós-processamento', v:d.post, c:[100,200,150]});
   bRows.forEach((r,i) => {
@@ -3812,6 +4212,7 @@ function switchTabBase(id, btn) {
   if (id === 'history') renderHistory();
   if (id === 'config') setTimeout(renderShareLink, 50);
   if (id === 'comparador') renderComparador();
+  if (id === 'impressoras') renderPrinters();
 }
 function switchTab(id, btn) { switchTabBase(id, btn); }
 
@@ -4066,11 +4467,230 @@ function renderQR(url) {
     '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--tx4);margin-top:6px">Escaneie para abrir</div>';
 }
 
+// ═══════════════════════════════════════
+//  IMPRESSORAS ENGINE
+// ═══════════════════════════════════════
+const IMP_KEY = 'orca3d_impressoras';
+const IMP_ACTIVE_KEY = 'orca3d_impressora_ativa';
+let editingPrinterId = null;
+
+function getPrinters() {
+  try { return JSON.parse(localStorage.getItem(IMP_KEY) || '[]'); } catch { return []; }
+}
+function savePrinters(list) { localStorage.setItem(IMP_KEY, JSON.stringify(list)); }
+function getActivePrinter() {
+  try { return JSON.parse(localStorage.getItem(IMP_ACTIVE_KEY) || 'null'); } catch { return null; }
+}
+function setActivePrinter(p) { localStorage.setItem(IMP_ACTIVE_KEY, JSON.stringify(p)); }
+
+function calcPrinterCosts() {
+  const preco    = +document.getElementById('pm-preco')?.value     || 0;
+  const vida     = +document.getElementById('pm-vida')?.value      || 3;
+  const horasMes = +document.getElementById('pm-horas-mes')?.value || 120;
+  const manutMes = +document.getElementById('pm-manut-mes')?.value || 50;
+  const watts    = +document.getElementById('pm-watts')?.value     || 200;
+  const kwh      = +document.getElementById('pm-kwh')?.value       || 0.75;
+  const horasVida   = vida * 12 * horasMes;
+  const deprecHora  = horasVida > 0 ? preco / horasVida : 0;
+  const manutHora   = horasMes  > 0 ? manutMes / horasMes : 0;
+  const energiaHora = (watts / 1000) * kwh;
+  const custoHora   = deprecHora + manutHora;
+  const mesesBreak  = (custoHora + energiaHora) > 0 ? preco / ((custoHora + energiaHora) * horasMes) : 0;
+  const el = (id) => document.getElementById(id);
+  if (el('pm-res-hora'))    el('pm-res-hora').textContent    = custoHora   > 0 ? 'R$' + custoHora.toFixed(2)   : '—';
+  if (el('pm-res-energia')) el('pm-res-energia').textContent = energiaHora > 0 ? 'R$' + energiaHora.toFixed(3) : '—';
+  if (el('pm-res-break'))   el('pm-res-break').textContent   = mesesBreak  > 0 ? mesesBreak.toFixed(1)          : '—';
+  if (el('pm-res-desc')) {
+    el('pm-res-desc').textContent = preco > 0
+      ? `Depreciação R$${deprecHora.toFixed(3)}/h + Manutenção R$${manutHora.toFixed(3)}/h = R$${custoHora.toFixed(2)}/h · Energia R$${energiaHora.toFixed(3)}/h`
+      : 'Preencha os campos acima para ver o cálculo.';
+  }
+  return { custoHora, energiaHora, deprecHora, manutHora, mesesBreak };
+}
+
+function openPrinterModal(id = null) {
+  editingPrinterId = id;
+  const modal = document.getElementById('printer-modal');
+  const title = document.getElementById('pm-title');
+  if (!modal) return;
+  if (id !== null) {
+    const p = getPrinters().find(x => x.id === id);
+    if (!p) return;
+    title.textContent = '✏️ Editar Impressora';
+    document.getElementById('pm-nome').value      = p.nome;
+    document.getElementById('pm-modelo').value    = p.modelo;
+    document.getElementById('pm-tipo').value      = p.tipo;
+    document.getElementById('pm-preco').value     = p.preco;
+    document.getElementById('pm-vida').value      = p.vida;
+    document.getElementById('pm-horas-mes').value = p.horasMes;
+    document.getElementById('pm-manut-mes').value = p.manutMes;
+    document.getElementById('pm-watts').value     = p.watts;
+    document.getElementById('pm-kwh').value       = p.kwh;
+  } else {
+    title.textContent = '🖨️ Nova Impressora';
+    ['pm-nome','pm-modelo'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pm-tipo').value      = 'FDM';
+    document.getElementById('pm-preco').value     = '';
+    document.getElementById('pm-vida').value      = '3';
+    document.getElementById('pm-horas-mes').value = '120';
+    document.getElementById('pm-manut-mes').value = '50';
+    document.getElementById('pm-watts').value     = '200';
+    document.getElementById('pm-kwh').value       = '0.75';
+  }
+  calcPrinterCosts();
+  modal.classList.add('show');
+}
+
+function closePrinterModal() {
+  document.getElementById('printer-modal')?.classList.remove('show');
+  editingPrinterId = null;
+}
+
+function savePrinter() {
+  const nome  = document.getElementById('pm-nome')?.value.trim();
+  const preco = +document.getElementById('pm-preco')?.value;
+  if (!nome)  { toast('Informe o nome da impressora', 'err'); return; }
+  if (!preco) { toast('Informe o preço da impressora', 'err'); return; }
+  const costs = calcPrinterCosts();
+  const printer = {
+    id:          editingPrinterId ?? Date.now(),
+    nome,
+    modelo:      document.getElementById('pm-modelo')?.value.trim() || '',
+    tipo:        document.getElementById('pm-tipo')?.value || 'FDM',
+    preco,
+    vida:        +document.getElementById('pm-vida')?.value      || 3,
+    horasMes:    +document.getElementById('pm-horas-mes')?.value || 120,
+    manutMes:    +document.getElementById('pm-manut-mes')?.value || 50,
+    watts:       +document.getElementById('pm-watts')?.value     || 200,
+    kwh:         +document.getElementById('pm-kwh')?.value       || 0.75,
+    custoHora:   costs.custoHora,
+    energiaHora: costs.energiaHora,
+    mesesBreak:  costs.mesesBreak,
+  };
+  const list = getPrinters();
+  if (editingPrinterId !== null) {
+    const idx = list.findIndex(x => x.id === editingPrinterId);
+    if (idx >= 0) list[idx] = printer; else list.push(printer);
+  } else {
+    list.push(printer);
+  }
+  savePrinters(list);
+  const active = getActivePrinter();
+  if (!active || active.id === printer.id) applyPrinter(printer, false);
+  updateImpBadge();
+  renderPrinters();
+  closePrinterModal();
+  toast(editingPrinterId !== null ? '✏️ Impressora atualizada!' : '✓ Impressora salva!', 'ok');
+}
+
+function applyPrinter(printer, showToast = true) {
+  setActivePrinter(printer);
+  document.getElementById('machcost').value   = printer.custoHora.toFixed(2);
+  document.getElementById('energycost').value = printer.energiaHora.toFixed(3);
+  document.getElementById('manut-hora').value = (printer.manutMes / printer.horasMes).toFixed(2);
+  updateActiveBanner(printer);
+  renderPrinters();
+  autoCalc(null, 'mat');
+  if (showToast) toast(`🖨️ ${printer.nome} aplicada!`, 'ok');
+}
+
+function updateActiveBanner(printer) {
+  const banner = document.getElementById('active-printer-banner');
+  const name   = document.getElementById('active-banner-name');
+  const meta   = document.getElementById('active-banner-meta');
+  if (!banner) return;
+  if (printer) {
+    banner.style.display = 'flex';
+    name.textContent = printer.nome + (printer.modelo ? ` — ${printer.modelo}` : '');
+    meta.textContent = `R$${printer.custoHora.toFixed(2)}/h máquina · R$${printer.energiaHora.toFixed(3)}/h energia · ${printer.tipo}`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function deletePrinter(id, e) {
+  e.stopPropagation();
+  if (!confirm('Remover esta impressora?')) return;
+  const list = getPrinters().filter(x => x.id !== id);
+  savePrinters(list);
+  const active = getActivePrinter();
+  if (active?.id === id) { localStorage.removeItem(IMP_ACTIVE_KEY); updateActiveBanner(null); }
+  updateImpBadge();
+  renderPrinters();
+  toast('Impressora removida', 'info');
+}
+
+function renderPrinters() {
+  const list      = getPrinters();
+  const active    = getActivePrinter();
+  const container = document.getElementById('printer-grid-container');
+  const countEl   = document.getElementById('imp-count-label');
+  if (!container) return;
+  if (countEl) {
+    countEl.textContent = list.length === 0 ? 'Nenhuma impressora cadastrada'
+      : list.length === 1 ? '1 impressora cadastrada'
+      : `${list.length} impressoras cadastradas`;
+  }
+  if (!list.length) {
+    container.innerHTML = `
+      <div class="printer-empty">
+        <div class="printer-empty-ico">🖨️</div>
+        <div class="printer-empty-txt">Nenhuma impressora ainda</div>
+        <div class="printer-empty-sub">Clique em "+ Adicionar Impressora" para começar</div>
+      </div>`;
+    return;
+  }
+  container.innerHTML = '<div class="printer-grid">' + list.map(p => {
+    const isActive = active?.id === p.id;
+    // usa só o id para referenciar — sem JSON inline no HTML
+    return `
+    <div class="printer-card${isActive ? ' active-printer' : ''}" data-pid="${p.id}">
+      <div class="pc-head">
+        <div class="pc-icon">${p.tipo === 'FDM' ? '🖨️' : p.tipo === 'MSLA' ? '🔦' : '⚙️'}</div>
+        <div class="pc-info">
+          <div class="pc-name">${p.nome}</div>
+          <div class="pc-model">${p.modelo || p.tipo} · R$${p.preco.toLocaleString('pt-BR')}</div>
+        </div>
+        <span class="pc-active-badge">● ativa</span>
+      </div>
+      <div class="pc-kpis">
+        <div class="pc-kpi"><div class="pc-kpi-val">R$${p.custoHora.toFixed(2)}</div><div class="pc-kpi-label">R$/hora</div></div>
+        <div class="pc-kpi"><div class="pc-kpi-val" style="color:var(--sky)">R$${p.energiaHora.toFixed(3)}</div><div class="pc-kpi-label">Energia/h</div></div>
+        <div class="pc-kpi"><div class="pc-kpi-val" style="color:var(--amber)">${p.mesesBreak.toFixed(1)}m</div><div class="pc-kpi-label">Break-even</div></div>
+      </div>
+      <div class="pc-actions">
+        <button class="pc-btn pc-use" onclick="applyPrinterById(${p.id})">${isActive ? '✓ Em uso' : '▶ Usar'}</button>
+        <button class="pc-btn" onclick="openPrinterModal(${p.id})">✏️</button>
+        <button class="pc-btn pc-del" onclick="deletePrinter(${p.id},event)">🗑</button>
+      </div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function applyPrinterById(id) {
+  const p = getPrinters().find(x => x.id === id);
+  if (p) applyPrinter(p, true);
+}
+
+function updateImpBadge() {
+  const list = getPrinters();
+  const b = document.getElementById('imp-badge');
+  if (!b) return;
+  if (list.length > 0) { b.style.display='inline'; b.textContent=list.length; }
+  else b.style.display='none';
+}
+
+
 window.addEventListener('DOMContentLoaded', () => {
   initThree();
   loadPref();
   loadCfg();
   updateHistBadge();
+  updateImpBadge();
+  renderPrinters();
+  // Restaura impressora ativa se houver
+  const _savedPrinter = getActivePrinter();
+  if (_savedPrinter) { updateActiveBanner(_savedPrinter); }
   renderMatGrid();
   renderFbHistory();
   updateFbStats();
