@@ -927,8 +927,8 @@ footer {
         <div class="stat-label">Materiais<br>suportados</div>
       </div>
       <div class="stat">
-        <div class="stat-val">5</div>
-        <div class="stat-label">Fatiadores<br>compatíveis</div>
+        <div class="stat-val">7</div>
+        <div class="stat-label">Abas de<br>funcionalidades</div>
       </div>
       <div class="stat">
         <div class="stat-val">0</div>
@@ -951,14 +951,14 @@ footer {
     <div class="feat-desc">STL, OBJ, 3MF ou PLY. Visualização 3D interativa com rotação, zoom e wireframe.</div>
   </div>
   <div class="feature-item reveal reveal-delay-1">
-    <div class="feat-icon">⚙️</div>
-    <div class="feat-title">Importe o G-code</div>
-    <div class="feat-desc">Cura, PrusaSlicer, Bambu, OrcaSlicer. Extrai tempo e filamento exatos automaticamente.</div>
+    <div class="feat-icon">🖨️</div>
+    <div class="feat-title">Cadastre sua impressora</div>
+    <div class="feat-desc">Informe o modelo, preço e consumo. O custo por hora é calculado automaticamente com depreciação e manutenção.</div>
   </div>
   <div class="feature-item reveal reveal-delay-2">
     <div class="feat-icon">💰</div>
-    <div class="feat-title">Calcule o custo</div>
-    <div class="feat-desc">Material, hora-máquina, mão de obra, energia e risco. Detalhamento completo por item.</div>
+    <div class="feat-title">Custo real e completo</div>
+    <div class="feat-desc">Material, hora-máquina, energia, mão de obra, taxa de falha e manutenção. Tudo no detalhamento.</div>
   </div>
   <div class="feature-item reveal reveal-delay-3">
     <div class="feat-icon">📱</div>
@@ -990,10 +990,10 @@ footer {
 
       <div class="how-step">
         <div class="how-num">02</div>
-        <div class="how-icon">⚙️</div>
-        <div class="how-title">Configure os custos</div>
+        <div class="how-icon">🖨️</div>
+        <div class="how-title">Configure sua impressora</div>
         <div class="how-desc">
-          Escolha o material, informe o preço do filamento, hora de máquina e mão de obra. Ou importe o <strong>G-code do fatiador</strong> para dados exatos de tempo e consumo.
+          Cadastre sua impressora com preço e consumo — o custo por hora é calculado automaticamente. Ajuste <strong>taxa de falha, manutenção</strong> e importe o G-code para dados exatos.
         </div>
       </div>
 
@@ -1024,6 +1024,8 @@ footer {
       </p>
       <ul class="preview-list">
         <li>Suporte a PLA, ABS, PETG, TPU, Resina e Nylon</li>
+        <li>Cadastro de impressoras com custo/hora automático</li>
+        <li>Taxa de falha e manutenção no cálculo real</li>
         <li>Cálculo automático via G-code do fatiador</li>
         <li>Projeção de lucro e faturamento mensal</li>
         <li>Exportação em PDF profissional</li>
@@ -1375,7 +1377,7 @@ const statsObs = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       const vals = entry.target.querySelectorAll('.stat-val');
-      const targets = [568, 6, 5, 0]; // GA4: 568 usuários reais
+      const targets = [568, 6, 7, 0]; // GA4: 568 usuários reais
       vals.forEach((el, i) => animateCounter(el, targets[i]));
       statsObs.disconnect();
     }
