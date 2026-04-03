@@ -1,15 +1,21 @@
 // ═══════════════════════════════════════
 //  Orça 3D Print — Counter API
-//  Vercel Serverless Function + KV Store
+//  Vercel Serverless Function + Upstash Redis
 //  Endpoint: /api/counter?action=hit|calc|get
 //
 //  Segurança:
-//  • Rate limit: 60 hits/IP/hora (via KV)
-//  • Origem restrita ao próprio domínio
+//  • Rate limit: 60 hits/IP/hora
+//  • Origem restrita ao domínio do site
 //  • action=get não incrementa (só leitura)
-//  • CORS restrito ao domínio do site
 // ═══════════════════════════════════════
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+// Upstash Redis — credenciais via variáveis de ambiente do Vercel
+// (adicionadas automaticamente ao conectar o projeto)
+const redis = new Redis({
+  url:   process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
 
 // Base histórica (GA4: 20/02 → 19/03/2026)
 const HIST_TOTAL = 738;
@@ -21,7 +27,7 @@ const ALLOWED_ORIGINS = [
   'https://www.orca3d.vercel.app',
 ];
 
-// Rate limit por IP por hora
+// Rate limit
 const RATE_LIMIT  = 60;
 const RATE_WINDOW = 3600;
 
@@ -36,23 +42,22 @@ function isAllowedOrigin(req) {
   return ALLOWED_ORIGINS.some(o => origin.startsWith(o));
 }
 
-async function checkRateLimit(ip, action) {
-  if (action === 'get') return { allowed: true };
-  const key     = `ratelimit:${ip}:${new Date().toISOString().slice(0, 13)}`;
-  const current = await kv.incr(key);
-  if (current === 1) await kv.expire(key, RATE_WINDOW);
-  return current > RATE_LIMIT
-    ? { allowed: false, current, limit: RATE_LIMIT }
-    : { allowed: true,  current, limit: RATE_LIMIT };
-}
-
 function getIP(req) {
   return (
     req.headers['x-forwarded-for']?.split(',')[0].trim() ||
     req.headers['x-real-ip'] ||
-    req.socket?.remoteAddress ||
     'unknown'
   );
+}
+
+async function checkRateLimit(ip, action) {
+  if (action === 'get') return { allowed: true };
+  const key     = `ratelimit:${ip}:${new Date().toISOString().slice(0, 13)}`;
+  const current = await redis.incr(key);
+  if (current === 1) await redis.expire(key, RATE_WINDOW);
+  return current > RATE_LIMIT
+    ? { allowed: false, current, limit: RATE_LIMIT }
+    : { allowed: true,  current, limit: RATE_LIMIT };
 }
 
 export default async function handler(req, res) {
@@ -95,11 +100,11 @@ export default async function handler(req, res) {
   try {
     if (action === 'hit') {
       const [total, todayCount] = await Promise.all([
-        kv.incr('visitas:total'),
-        kv.incr(`visitas:dia:${today}`),
+        redis.incr('visitas:total'),
+        redis.incr(`visitas:dia:${today}`),
       ]);
-      await kv.expire(`visitas:dia:${today}`, 60 * 60 * 48);
-      const calculos = await kv.get('calculos:total') || 0;
+      await redis.expire(`visitas:dia:${today}`, 60 * 60 * 48);
+      const calculos = await redis.get('calculos:total') || 0;
       return res.json({
         total:    HIST_TOTAL + total,
         today:    todayCount,
@@ -108,15 +113,15 @@ export default async function handler(req, res) {
     }
 
     if (action === 'calc') {
-      const calculos = await kv.incr('calculos:total');
+      const calculos = await redis.incr('calculos:total');
       return res.json({ calculos: HIST_CALC + calculos });
     }
 
     if (action === 'get') {
       const [total, todayCount, calculos] = await Promise.all([
-        kv.get('visitas:total'),
-        kv.get(`visitas:dia:${today}`),
-        kv.get('calculos:total'),
+        redis.get('visitas:total'),
+        redis.get(`visitas:dia:${today}`),
+        redis.get('calculos:total'),
       ]);
       return res.json({
         total:    HIST_TOTAL + (Number(total)    || 0),
