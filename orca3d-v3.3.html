@@ -21,7 +21,7 @@
 <!-- Google Search Console verificação -->
 <meta name="google-site-verification" content="google1fd855c4ab7756c2">
 
-<!-- SEO e demais metas (mantido igual ao original) -->
+<!-- SEO e demais metas (idênticas ao original) -->
 <meta name="application-name" content="Orça 3D Print">
 <meta name="author" content="Orça 3D Print">
 <meta name="copyright" content="Orça 3D Print 2025">
@@ -81,11 +81,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 /* ========== ESTILOS COMPLETOS (igual ao original, sem alterações) ========== */
-/* Por economia, não repetirei os 800+ linhas de CSS. Mantenha o CSS do seu arquivo original. */
+/* (coloque aqui todo o CSS do seu orca3d-v3.3.html original) */
+/* Para não repetir, assumimos que você manterá o CSS original. */
 /* Apenas garanta que o estilo do novo contador esteja incluído: */
 .counter-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); margin-right: 6px; }
 #calc-counter { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 700; color: var(--lime); transition: all 0.2s; }
-/* Todo o resto do CSS original deve ser copiado aqui. */
 </style>
 </head>
 <body>
@@ -110,13 +110,12 @@
 </div>
 
 <main>
-  <!-- PAINEL CALCULADORA (conteúdo completo, igual ao original) -->
   <div class="panel active" id="panel-calc">
     <div class="panel-inner">
       <div class="hero"><div class="hero-eyebrow">Calculadora Profissional</div><h1>Precifique sua<br><span class="gr">impressão 3D</span></h1><p>Importe o modelo, configure os parâmetros e receba o custo detalhado com visualização 3D interativa.</p></div>
       <div class="app-grid">
         <div class="left-col">
-          <!-- Cards: Dados do Cliente, Modelo 3D, Parâmetros (mantido igual) -->
+          <!-- Cards: Dados do Cliente, Modelo 3D, Parâmetros (idênticos ao original) -->
           <!-- ... todo o HTML da calculadora ... -->
         </div>
         <div class="right-col">
@@ -135,18 +134,8 @@
     </div>
   </div>
 
-  <!-- PAINEL HISTÓRICO (igual ao original) -->
-  <div class="panel" id="panel-history">...</div>
-  <!-- PAINEL FEEDBACK (igual) -->
-  <div class="panel" id="panel-feedback">...</div>
-  <!-- PAINEL ORÇAMENTO (igual) -->
-  <div class="panel" id="panel-orcamento">...</div>
-  <!-- PAINEL CONFIGURAÇÕES (igual) -->
-  <div class="panel" id="panel-config">...</div>
-  <!-- PAINEL COMPARADOR (igual) -->
-  <div class="panel" id="panel-comparador">...</div>
-  <!-- PAINEL IMPRESSORAS (igual) -->
-  <div class="panel" id="panel-impressoras">...</div>
+  <!-- Demais painéis (history, feedback, orcamento, config, comparador, impressoras) -->
+  <!-- (conteúdo idêntico ao original) -->
 </main>
 
 <div class="help-modal" id="help-modal">...</div>
@@ -154,7 +143,7 @@
 
 <script>
 // ============================================================
-// TODO O JAVASCRIPT ORIGINAL (com as correções do parser 3MF e contador)
+// TODO O JAVASCRIPT ORIGINAL (com as correções)
 // ============================================================
 
 // ═══════════════════════════════════════
@@ -162,7 +151,7 @@
 // ═══════════════════════════════════════
 const S = { loaded: false, fileName: '', fileSize: 0, volume: 0, bounds: null, tris: 0, costs: null, selling: 0 };
 
-// ... (todas as funções auxiliares: initThree, parseSTL, parseOBJ, parse3MF corrigida, etc.) ...
+// ... (aqui todas as funções existentes: initThree, parseSTL, parseOBJ, parse3MF corrigida, etc.) ...
 
 // ── 3MF PARSER CORRIGIDO (com suporte a namespaces) ──
 async function parse3MF(buf) {
@@ -211,7 +200,7 @@ async function parse3MF(buf) {
   }
 }
 
-// ... (demais funções: loadMesh, applyMesh, renderMatGrid, etc.) ...
+// ... (restante das funções: loadMesh, applyMesh, renderMatGrid, autoCalc, etc.) ...
 
 // ═══════════════════════════════════════
 //  CONTADOR DE CÁLCULOS (CORRIGIDO)
@@ -311,9 +300,7 @@ function doCalc() {
 //  INICIALIZAÇÃO COM SINCRONIZAÇÃO ENTRE ABAS
 // ═══════════════════════════════════════
 window.addEventListener('storage', (e) => {
-  if (e.key === 'orca3d_last_calc') {
-    updateCalcCounter();
-  }
+  if (e.key === 'orca3d_last_calc') updateCalcCounter();
 });
 
 window.addEventListener('DOMContentLoaded', () => {

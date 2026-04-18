@@ -1,7 +1,6 @@
 // ═══════════════════════════════════════
 //  Orça 3D Print — Counter API
 //  Proxy simples para CounterAPI
-//  Evita CORS e adiciona rate limiting
 // ═══════════════════════════════════════
 
 const HIST_TOTAL = 738;
