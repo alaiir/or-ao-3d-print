@@ -1,12 +1,379 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<!-- ... todo o head e CSS permanecem iguais ... -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orça 3D Print — Calculadora Profissional de Impressão 3D</title>
+<meta name="description" content="Calcule o custo real da sua impressão 3D. Filamento, energia, tempo e margem de lucro. Envie orçamentos pelo WhatsApp. 100% grátis.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'><polygon points='9,1 16,5 16,13 9,17 2,13 2,5' stroke='%230B0D14' stroke-width='1.5' fill='%23C8FF57' stroke-linejoin='round'/><circle cx='9' cy='9' r='2' fill='%230B0D14'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ========== TODOS OS ESTILOS ORIGINAIS ========== */
+/* (mantenha exatamente o CSS que você já tinha, nada foi removido) */
+:root {
+  --ink:   #080A10;
+  --ink2:  #0D1018;
+  --ink3:  #121620;
+  --ink4:  #181D2A;
+  --rim:   #1E2535;
+  --rim2:  #283044;
+  --lime:  #C8FF57;
+  --lime-a:rgba(200,255,87,.12);
+  --lime-b:rgba(200,255,87,.06);
+  --sky:   #57C8FF;
+  --sky-a: rgba(87,200,255,.1);
+  --tx:  #E8EDF8;
+  --tx2: #6B7899;
+  --tx3: #343D58;
+  --shadow: 0 20px 80px rgba(0,0,0,.7);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family:'DM Sans', sans-serif;
+  background:var(--ink);
+  color:var(--tx);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ── CUSTOM CURSOR ── */
+.cursor { width:12px; height:12px; background:var(--lime); border-radius:50%; position:fixed; top:0; left:0; pointer-events:none; z-index:9999; transition:transform .15s ease, opacity .2s; mix-blend-mode:difference; }
+.cursor-ring { width:40px; height:40px; border:1.5px solid rgba(200,255,87,.4); border-radius:50%; position:fixed; top:0; left:0; pointer-events:none; z-index:9998; transition:transform .4s cubic-bezier(.22,1,.36,1), opacity .3s; }
+.cursor.hover { transform:scale(2.5); }
+.cursor-ring.hover { transform:scale(1.5); border-color:var(--lime); }
+
+/* ── NOISE OVERLAY ── */
+body::after { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"); background-size:180px; pointer-events:none; z-index:1000; opacity:.5; }
+
+/* ── NAV ── */
+nav { position:fixed; top:0; left:0; right:0; z-index:500; height:68px; padding:0 48px; display:flex; align-items:center; justify-content:space-between; transition:all .4s ease; }
+nav.scrolled { background:rgba(8,10,16,.88); backdrop-filter:blur(20px) saturate(1.5); border-bottom:1px solid var(--rim); }
+.nav-logo { display:flex; align-items:center; gap:11px; text-decoration:none; user-select:none; }
+.nav-mark { width:36px; height:36px; background:var(--lime); border-radius:10px; display:grid; place-items:center; box-shadow:0 0 24px rgba(200,255,87,.35); flex-shrink:0; transition:transform .2s, box-shadow .2s; }
+.nav-logo:hover .nav-mark { transform:rotate(10deg) scale(1.05); box-shadow:0 0 36px rgba(200,255,87,.5); }
+.nav-mark svg { width:20px; height:20px; }
+.nav-name { font-size:18px; font-weight:700; letter-spacing:-.5px; color:var(--tx); }
+.nav-name em { font-style:normal; color:var(--lime); }
+.nav-cta { display:flex; align-items:center; gap:8px; background:var(--lime); color:var(--ink); font-family:'DM Sans',sans-serif; font-weight:700; font-size:13px; letter-spacing:.2px; padding:10px 22px; border-radius:8px; text-decoration:none; transition:all .2s; box-shadow:0 4px 20px rgba(200,255,87,.2); }
+.nav-cta:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(200,255,87,.35); filter:brightness(1.05); }
+
+/* ── HERO ── */
+.hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:0 48px; position:relative; overflow:hidden; }
+.hero-bg { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.hero-bg-orb { position:absolute; border-radius:50%; filter:blur(120px); animation:orbFloat 12s ease-in-out infinite; }
+.orb1 { width:700px; height:700px; background:radial-gradient(circle, rgba(200,255,87,.07) 0%, transparent 70%); top:-200px; left:-200px; animation-duration:14s; }
+.orb2 { width:500px; height:500px; background:radial-gradient(circle, rgba(87,200,255,.05) 0%, transparent 70%); bottom:-100px; right:-100px; animation-duration:10s; animation-delay:-5s; }
+.orb3 { width:300px; height:300px; background:radial-gradient(circle, rgba(200,255,87,.04) 0%, transparent 70%); top:50%; right:20%; animation-duration:8s; animation-delay:-2s; }
+@keyframes orbFloat { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(30px,-20px) scale(1.05); } 66% { transform:translate(-20px,30px) scale(.95); } }
+.hero-grid { position:absolute; inset:0; pointer-events:none; background-image: linear-gradient(rgba(30,37,53,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(30,37,53,.4) 1px, transparent 1px); background-size:64px 64px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%); }
+.hero-content { position:relative; z-index:2; max-width:1100px; }
+.hero-eyebrow { display:inline-flex; align-items:center; gap:10px; font-family:'DM Mono', monospace; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--lime); margin-bottom:28px; animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) both; }
+.hero-eyebrow::before { content:''; width:28px; height:1.5px; background:linear-gradient(90deg, var(--lime), transparent); }
+.eyebrow-badge { background:var(--lime-a); border:1px solid rgba(200,255,87,.2); padding:3px 10px; border-radius:20px; font-size:9px; letter-spacing:2px; }
+.hero-title { font-family:'Bebas Neue', sans-serif; font-size:clamp(72px, 11vw, 160px); line-height:.93; letter-spacing:-2px; margin-bottom:32px; animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) .1s both; }
+.hero-title .line1 { display:block; color:var(--tx); }
+.hero-title .line2 { display:block; background:linear-gradient(105deg, var(--lime) 0%, #e8ff99 40%, var(--sky) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.hero-title .line3 { display:block; color:var(--tx3); -webkit-text-stroke:1px var(--rim2); -webkit-text-fill-color:transparent; }
+.hero-desc { font-size:17px; line-height:1.7; color:var(--tx2); max-width:520px; margin-bottom:44px; letter-spacing:-.1px; animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) .2s both; }
+.hero-desc strong { color:var(--tx); font-weight:600; }
+.hero-actions { display:flex; align-items:center; gap:16px; flex-wrap:wrap; animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) .3s both; }
+.btn-primary { display:inline-flex; align-items:center; gap:10px; background:var(--lime); color:var(--ink); font-family:'DM Sans',sans-serif; font-weight:700; font-size:15px; letter-spacing:.2px; padding:16px 32px; border-radius:12px; text-decoration:none; transition:all .25s; box-shadow:0 8px 32px rgba(200,255,87,.25); position:relative; overflow:hidden; }
+.btn-primary::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,.15), transparent); opacity:0; transition:opacity .2s; }
+.btn-primary:hover { transform:translateY(-3px); box-shadow:0 16px 48px rgba(200,255,87,.35); }
+.btn-primary:hover::before { opacity:1; }
+.btn-primary svg { transition:transform .2s; }
+.btn-primary:hover svg { transform:translateX(4px); }
+.btn-secondary { display:inline-flex; align-items:center; gap:8px; color:var(--tx2); font-size:14px; font-weight:500; text-decoration:none; letter-spacing:-.1px; transition:color .2s; padding:16px 8px; }
+.btn-secondary:hover { color:var(--tx); }
+.btn-secondary .arr { width:28px; height:28px; border-radius:50%; border:1px solid var(--rim2); display:grid; place-items:center; font-size:13px; transition:all .2s; }
+.btn-secondary:hover .arr { border-color:var(--lime); color:var(--lime); background:var(--lime-a); }
+.hero-stats { display:flex; gap:32px; flex-wrap:wrap; margin-top:64px; padding-top:36px; border-top:1px solid var(--rim); animation:fadeSlideUp .8s cubic-bezier(.22,1,.36,1) .4s both; }
+.stat { display:flex; flex-direction:column; gap:4px; }
+.stat-val { font-family:'Bebas Neue', sans-serif; font-size:42px; line-height:1; color:var(--lime); letter-spacing:-.5px; }
+.stat-label { font-family:'DM Mono', monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--tx3); }
+.scroll-hint { position:absolute; bottom:36px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; animation:fadeSlideUp .8s .6s both; z-index:2; }
+.scroll-hint span { font-family:'DM Mono', monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--tx3); }
+.scroll-line { width:1px; height:48px; background:linear-gradient(180deg, var(--rim2), transparent); position:relative; overflow:hidden; }
+.scroll-line::after { content:''; position:absolute; top:-100%; left:0; width:1px; height:100%; background:var(--lime); animation:scrollDown 1.8s ease-in-out infinite; }
+@keyframes scrollDown { 0% { top:-100%; } 100% { top:100%; } }
+
+/* ── FEATURES STRIP ── */
+.features-strip { padding:80px 48px; display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--rim); border-top:1px solid var(--rim); border-bottom:1px solid var(--rim); position:relative; z-index:2; }
+.feature-item { background:var(--ink); padding:40px 32px; display:flex; flex-direction:column; gap:16px; transition:background .25s; position:relative; overflow:hidden; }
+.feature-item::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--lime); transform:scaleX(0); transform-origin:left; transition:transform .3s ease; }
+.feature-item:hover { background:var(--ink3); }
+.feature-item:hover::before { transform:scaleX(1); }
+.feat-icon { width:48px; height:48px; border-radius:12px; background:var(--lime-a); border:1px solid rgba(200,255,87,.15); display:grid; place-items:center; font-size:22px; transition:transform .2s; }
+.feature-item:hover .feat-icon { transform:scale(1.1) rotate(-5deg); }
+.feat-title { font-size:16px; font-weight:700; letter-spacing:-.3px; }
+.feat-desc { font-size:13px; color:var(--tx2); line-height:1.65; }
+
+/* ── PREVIEW SECTION ── */
+.preview-section { padding:120px 48px; position:relative; overflow:hidden; }
+.preview-section::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--rim),transparent); }
+.preview-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+.preview-eyebrow { font-family:'DM Mono', monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--sky); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+.preview-eyebrow::before { content:''; width:20px; height:1px; background:var(--sky); }
+.preview-title { font-family:'Bebas Neue', sans-serif; font-size:clamp(44px,5vw,72px); line-height:.95; letter-spacing:-1px; margin-bottom:20px; }
+.preview-title .accent { color:var(--lime); }
+.preview-desc { font-size:15px; color:var(--tx2); line-height:1.7; margin-bottom:32px; }
+.preview-list { list-style:none; display:flex; flex-direction:column; gap:12px; margin-bottom:40px; }
+.preview-list li { display:flex; align-items:center; gap:12px; font-size:14px; color:var(--tx2); }
+.preview-list li::before { content:''; width:18px; height:18px; flex-shrink:0; background:var(--lime-a); border:1px solid rgba(200,255,87,.25); border-radius:50%; background-image:url("data:image/svg+xml,%3Csvg width='10' height='8' viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l2.5 2.5L9 1' stroke='%23C8FF57' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:center; }
+.preview-mockup { position:relative; }
+.mockup-window { background:var(--ink2); border:1px solid var(--rim); border-radius:20px; overflow:hidden; box-shadow:var(--shadow); transform:perspective(1000px) rotateY(-8deg) rotateX(4deg); transition:transform .4s ease; }
+.mockup-window:hover { transform:perspective(1000px) rotateY(-2deg) rotateX(1deg); }
+.mockup-bar { background:var(--ink3); border-bottom:1px solid var(--rim); padding:14px 18px; display:flex; align-items:center; gap:7px; }
+.mockup-dot { width:11px; height:11px; border-radius:50%; }
+.mockup-url { flex:1; margin:0 12px; background:var(--ink4); border:1px solid var(--rim2); border-radius:6px; padding:5px 12px; font-family:'DM Mono', monospace; font-size:10px; color:var(--tx3); display:flex; align-items:center; gap:6px; }
+.mockup-url::before { content:'🔒'; font-size:9px; opacity:.5; }
+.mockup-body { padding:20px; }
+.mockup-kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+.mkpi { background:var(--ink4); border:1px solid var(--rim); border-radius:10px; padding:12px; position:relative; overflow:hidden; }
+.mkpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--kc,var(--lime)); }
+.mkpi-label { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:1.5px; text-transform:uppercase; color:var(--tx3); margin-bottom:6px; }
+.mkpi-val { font-family:'DM Mono',monospace; font-size:18px; font-weight:500; color:var(--kc,var(--lime)); line-height:1; }
+.mockup-bar-rows { display:flex; flex-direction:column; gap:6px; }
+.mbar-row { display:flex; align-items:center; gap:8px; }
+.mbar-label { font-size:10px; color:var(--tx3); width:70px; flex-shrink:0; font-family:'DM Mono',monospace; font-size:8px; }
+.mbar-track { flex:1; height:6px; background:var(--rim); border-radius:3px; overflow:hidden; }
+.mbar-fill { height:100%; border-radius:3px; animation:barGrow 2s cubic-bezier(.4,0,.2,1) forwards; animation-play-state:paused; }
+.mbar-fill.animate { animation-play-state:running; }
+@keyframes barGrow { from{width:0} }
+.mbar-val { font-family:'DM Mono',monospace; font-size:9px; color:var(--tx2); width:40px; text-align:right; flex-shrink:0; }
+.mockup-badge { position:absolute; background:var(--lime); color:var(--ink); font-family:'DM Mono',monospace; font-size:10px; font-weight:700; padding:8px 14px; border-radius:8px; box-shadow:0 8px 24px rgba(200,255,87,.3); white-space:nowrap; animation:badgeFloat 3s ease-in-out infinite; }
+@keyframes badgeFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.badge-tl { top:-18px; left:-20px; }
+.badge-br { bottom:-18px; right:-20px; background:var(--ink3); color:var(--sky); border:1px solid rgba(87,200,255,.25); animation-delay:-1.5s; }
+
+/* ── TESTIMONIALS ── */
+.testimonials { padding:120px 48px; position:relative; }
+.testimonials::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--rim),transparent); }
+.section-header { text-align:center; margin-bottom:64px; }
+.section-tag { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--tx3); margin-bottom:16px; display:block; }
+.section-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(48px,6vw,80px); line-height:.95; letter-spacing:-1px; }
+.section-title .lime { color:var(--lime); }
+.testimonials-grid { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.tcard { background:var(--ink2); border:1px solid var(--rim); border-radius:20px; padding:28px; position:relative; overflow:hidden; transition:all .3s ease; display:flex; flex-direction:column; gap:20px; }
+.tcard::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 0% 0%, var(--lime-b) 0%, transparent 60%); opacity:0; transition:opacity .3s; }
+.tcard:hover { border-color:rgba(200,255,87,.2); transform:translateY(-4px); }
+.tcard:hover::before { opacity:1; }
+.tcard.featured { border-color:rgba(200,255,87,.2); background:var(--ink3); }
+.tcard.featured::before { opacity:1; }
+.tcard-quote { font-size:32px; color:var(--lime); opacity:.3; font-family:'Bebas Neue',sans-serif; line-height:1; }
+.tcard-text { font-size:14px; line-height:1.75; color:var(--tx2); flex:1; }
+.tcard-text strong { color:var(--tx); font-weight:600; }
+.tcard-author { display:flex; align-items:center; gap:12px; padding-top:16px; border-top:1px solid var(--rim); }
+.tcard-avatar { width:42px; height:42px; border-radius:50%; background:var(--ink4); border:1px solid var(--rim2); display:grid; place-items:center; font-size:18px; flex-shrink:0; }
+.tcard-name { font-size:13px; font-weight:600; letter-spacing:-.2px; }
+.tcard-role { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); letter-spacing:.5px; margin-top:2px; }
+.tcard-stars { margin-left:auto; color:var(--lime); font-size:12px; letter-spacing:2px; }
+
+/* ── CTA SECTION ── */
+.cta-section { padding:120px 48px; text-align:center; position:relative; overflow:hidden; }
+.cta-section::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--rim),transparent); }
+.cta-glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:800px; height:400px; background:radial-gradient(ellipse, rgba(200,255,87,.06) 0%, transparent 70%); pointer-events:none; }
+.cta-tag { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--lime); display:block; margin-bottom:24px; }
+.cta-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(52px,8vw,100px); line-height:.93; letter-spacing:-2px; margin-bottom:20px; }
+.cta-sub { font-size:16px; color:var(--tx2); max-width:480px; margin:0 auto 48px; line-height:1.65; }
+.cta-actions { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-bottom:48px; }
+.cta-trust { display:flex; align-items:center; justify-content:center; gap:24px; flex-wrap:wrap; }
+.trust-item { display:flex; align-items:center; gap:8px; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--tx3); }
+.trust-item::before { content:'✓'; color:var(--lime); font-weight:700; }
+
+/* ── FOOTER ── */
+.counter-strip { border-top:1px solid var(--rim); padding:18px 48px; display:flex; align-items:center; justify-content:center; gap:40px; background:var(--ink2); flex-wrap:wrap; }
+.counter-item { display:flex; align-items:center; gap:10px; }
+.counter-dot { width:6px; height:6px; border-radius:50%; background:var(--lime); flex-shrink:0; box-shadow:0 0 8px rgba(200,255,87,.6); }
+.counter-dot.sky  { background:var(--sky); box-shadow:0 0 8px rgba(87,200,255,.6); }
+.counter-dot.amber { background:#FFB347; box-shadow:0 0 8px rgba(255,179,71,.6); }
+.counter-dot.pulse { animation:pdot 1.4s ease-in-out infinite; }
+@keyframes pdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.6)} }
+.counter-val { font-family:'DM Mono',monospace; font-size:16px; font-weight:500; color:var(--tx); letter-spacing:-.5px; min-width:50px; transition:all .4s ease; }
+.counter-val.loading { color:var(--tx3); animation:shimtxt 1s ease-in-out infinite; }
+@keyframes shimtxt { 0%,100%{opacity:.3} 50%{opacity:.7} }
+.counter-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--tx3); }
+.counter-sep { width:1px; height:28px; background:var(--rim2); }
+
+footer { padding:24px 48px; border-top:1px solid var(--rim); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+.footer-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.footer-copy { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); letter-spacing:.5px; }
+.footer-links { display:flex; gap:24px; }
+.footer-links a { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); text-decoration:none; letter-spacing:1px; text-transform:uppercase; transition:color .2s; }
+.footer-links a:hover { color:var(--lime); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeSlideUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+.reveal { opacity:0; transform:translateY(32px); transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal-delay-1 { transition-delay:.1s; }
+.reveal-delay-2 { transition-delay:.2s; }
+.reveal-delay-3 { transition-delay:.3s; }
+.reveal-delay-4 { transition-delay:.4s; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){ .preview-inner { grid-template-columns:1fr; gap:48px; } .mockup-window { transform:none; } .testimonials-grid { grid-template-columns:1fr 1fr; } .features-strip { grid-template-columns:1fr 1fr; } }
+@media(max-width:700px){ nav { padding:0 20px; } .hero { padding:0 20px; } .hero-title { font-size:clamp(58px,14vw,100px); } .hero-stats { gap:24px; } .stat-val { font-size:32px; } .features-strip { grid-template-columns:1fr; padding:48px 20px; } .preview-section, .testimonials, .cta-section { padding:80px 20px; } .testimonials-grid { grid-template-columns:1fr; } .cta-title { font-size:clamp(44px,10vw,80px); } .counter-strip { padding:16px 20px; gap:20px; } footer { padding:24px 20px; flex-direction:column; align-items:flex-start; } body { cursor:auto; } .cursor, .cursor-ring { display:none; } .mockup-badge { display:none; } }
+
+/* ── COMO FUNCIONA ── */
+.how-section { padding:120px 48px; position:relative; }
+.how-section::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--rim),transparent); }
+.how-inner { max-width:1100px; margin:0 auto; }
+.how-steps { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:64px; position:relative; }
+.how-steps::before { content:''; position:absolute; top:52px; left:calc(16.66% + 24px); right:calc(16.66% + 24px); height:1px; background:linear-gradient(90deg, var(--lime), var(--sky)); opacity:.3; z-index:0; }
+.how-step { display:flex; flex-direction:column; align-items:center; text-align:center; padding:40px 32px; position:relative; z-index:1; opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+.how-step.visible { opacity:1; transform:translateY(0); }
+.how-step:nth-child(1){ transition-delay:.05s; }
+.how-step:nth-child(2){ transition-delay:.2s; }
+.how-step:nth-child(3){ transition-delay:.35s; }
+.how-num { width:52px; height:52px; border-radius:50%; background:var(--ink3); border:1px solid var(--rim2); display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:13px; font-weight:700; color:var(--tx3); margin-bottom:28px; position:relative; transition:all .3s ease; }
+.how-num::after { content:''; position:absolute; inset:-4px; border-radius:50%; background:conic-gradient(var(--step-color, var(--lime)) var(--step-pct,0%), transparent 0%); z-index:-1; opacity:0; transition:opacity .3s, --step-pct .8s ease; }
+.how-step.visible .how-num::after { opacity:1; --step-pct:100%; }
+.how-step:nth-child(1) { --step-color:var(--lime); }
+.how-step:nth-child(2) { --step-color:var(--sky); }
+.how-step:nth-child(3) { --step-color:var(--violet); }
+.how-step.visible:nth-child(1) .how-num { border-color:rgba(200,255,87,.4); color:var(--lime); background:var(--lime-a); box-shadow:0 0 24px rgba(200,255,87,.15); }
+.how-step.visible:nth-child(2) .how-num { border-color:rgba(87,200,255,.4); color:var(--sky); background:var(--sky-a); box-shadow:0 0 24px rgba(87,200,255,.15); }
+.how-step.visible:nth-child(3) .how-num { border-color:rgba(167,139,250,.4); color:var(--violet); background:var(--violet-a); box-shadow:0 0 24px rgba(167,139,250,.15); }
+.how-icon { font-size:36px; margin-bottom:20px; transition:transform .3s ease; }
+.how-step:hover .how-icon { transform:scale(1.15) rotate(-5deg); }
+.how-title { font-family:'DM Sans',sans-serif; font-size:18px; font-weight:700; letter-spacing:-.3px; margin-bottom:12px; color:var(--tx); }
+.how-desc { font-size:14px; color:var(--tx2); line-height:1.7; }
+.how-desc strong { color:var(--tx); font-weight:600; }
+.how-arrow { position:absolute; top:52px; right:-20px; font-size:18px; color:var(--tx3); z-index:2; display:none; }
+@media(max-width:900px){ .how-section { padding:80px 20px; } .how-steps { grid-template-columns:1fr; gap:0; } .how-steps::before { display:none; } .how-step { padding:32px 20px; border-bottom:1px solid var(--rim); } .how-step:last-child { border-bottom:none; } }
+</style>
 </head>
 <body>
-<!-- ... todo o HTML da landing page (hero, features, preview, etc.) permanece igual ... -->
 
-<!-- Counter Strip (já existe) -->
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- Nav -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-mark">
+      <svg viewBox="0 0 18 18" fill="none">
+        <polygon points="9,1 16,5 16,13 9,17 2,13 2,5" stroke="#0B0D14" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+        <circle cx="9" cy="9" r="2" fill="#0B0D14"/>
+      </svg>
+    </div>
+    <span class="nav-name">Orça<em> 3D Print</em></span>
+  </a>
+  <a href="orca3d-v3.3.html" class="nav-cta">
+    Abrir Calculadora
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-bg-orb orb1"></div>
+    <div class="hero-bg-orb orb2"></div>
+    <div class="hero-bg-orb orb3"></div>
+    <div class="hero-grid"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><span class="eyebrow-badge">100% Grátis</span> Calculadora Profissional de Impressão 3D</div>
+    <h1 class="hero-title"><span class="line1">Precifique</span><span class="line2">Impressão</span><span class="line3">3D certo.</span></h1>
+    <p class="hero-desc">Pare de adivinhar o preço. O Orça 3D calcula <strong>custo real de filamento, tempo de máquina, energia e margem de lucro</strong> — tudo em segundos, com visualização 3D do modelo.</p>
+    <div class="hero-actions">
+      <a href="orca3d-v3.3.html" class="btn-primary">⚡ Calcular agora — é grátis<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="#como-funciona" class="btn-secondary">Ver como funciona<span class="arr">↓</span></a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-val">568</div><div class="stat-label">Makers<br>já usaram</div></div>
+      <div class="stat"><div class="stat-val">6</div><div class="stat-label">Materiais<br>suportados</div></div>
+      <div class="stat"><div class="stat-val">7</div><div class="stat-label">Abas de<br>funcionalidades</div></div>
+      <div class="stat"><div class="stat-val">0</div><div class="stat-label">Cadastros<br>necessários</div></div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- Features strip -->
+<div class="features-strip" id="como-funciona">
+  <div class="feature-item reveal"><div class="feat-icon">📦</div><div class="feat-title">Carregue o modelo</div><div class="feat-desc">STL, OBJ, 3MF ou PLY. Visualização 3D interativa com rotação, zoom e wireframe.</div></div>
+  <div class="feature-item reveal reveal-delay-1"><div class="feat-icon">🖨️</div><div class="feat-title">Cadastre sua impressora</div><div class="feat-desc">Informe o modelo, preço e consumo. O custo por hora é calculado automaticamente com depreciação e manutenção.</div></div>
+  <div class="feature-item reveal reveal-delay-2"><div class="feat-icon">💰</div><div class="feat-title">Custo real e completo</div><div class="feat-desc">Material, hora-máquina, energia, mão de obra, taxa de falha e manutenção. Tudo no detalhamento.</div></div>
+  <div class="feature-item reveal reveal-delay-3"><div class="feat-icon">📱</div><div class="feat-title">Envie pelo WhatsApp</div><div class="feat-desc">Link personalizado para seus clientes. Eles pedem, você recebe no WhatsApp. Simples assim.</div></div>
+</div>
+
+<!-- Como funciona section -->
+<section class="how-section">
+  <div class="how-inner">
+    <div class="section-header reveal"><span class="section-tag">Simples assim</span><h2 class="section-title">Como <span class="lime">funciona</span></h2></div>
+    <div class="how-steps">
+      <div class="how-step"><div class="how-num">01</div><div class="how-icon">📦</div><div class="how-title">Carregue o modelo</div><div class="how-desc">Arraste o arquivo <strong>STL, OBJ, 3MF ou PLY</strong> direto na calculadora. O modelo aparece em 3D na tela — você pode girar, dar zoom e ver cada detalhe.</div></div>
+      <div class="how-step"><div class="how-num">02</div><div class="how-icon">🖨️</div><div class="how-title">Configure sua impressora</div><div class="how-desc">Cadastre sua impressora com preço e consumo — o custo por hora é calculado automaticamente. Ajuste <strong>taxa de falha, manutenção</strong> e importe o G-code para dados exatos.</div></div>
+      <div class="how-step"><div class="how-num">03</div><div class="how-icon">💰</div><div class="how-title">Receba o preço ideal</div><div class="how-desc">Veja o custo detalhado por item, ajuste a <strong>margem de lucro</strong> e exporte o orçamento em PDF ou envie direto pelo WhatsApp para o cliente.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Preview section -->
+<section class="preview-section">
+  <div class="preview-inner">
+    <div class="preview-text reveal">
+      <div class="preview-eyebrow">Calculadora completa</div>
+      <h2 class="preview-title">Todos os<br>custos em<br><span class="accent">um lugar.</span></h2>
+      <p class="preview-desc">Da matéria-prima ao preço de venda. Configure materiais, ajuste margens e veja a projeção mensal do seu negócio.</p>
+      <ul class="preview-list">
+        <li>Suporte a PLA, ABS, PETG, TPU, Resina e Nylon</li>
+        <li>Cadastro de impressoras com custo/hora automático</li>
+        <li>Taxa de falha e manutenção no cálculo real</li>
+        <li>Cálculo automático via G-code do fatiador</li>
+        <li>Projeção de lucro e faturamento mensal</li>
+        <li>Exportação em PDF profissional</li>
+        <li>Histórico de orçamentos salvo localmente</li>
+        <li>Funciona 100% offline após carregamento</li>
+      </ul>
+      <a href="orca3d-v3.3.html" class="btn-primary" style="display:inline-flex">Abrir a calculadora<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+    <div class="preview-mockup reveal reveal-delay-2">
+      <div class="mockup-badge badge-tl">✓ G-code lido!</div>
+      <div class="mockup-window">
+        <div class="mockup-bar"><div class="mockup-dot" style="background:#FF5F57"></div><div class="mockup-dot" style="background:#FFBD2E"></div><div class="mockup-dot" style="background:#28C840"></div><div class="mockup-url">orca3d.vercel.app</div></div>
+        <div class="mockup-body">
+          <div class="mockup-kpis"><div class="mkpi" style="--kc:var(--lime)"><div class="mkpi-label">Filamento</div><div class="mkpi-val">42g</div></div><div class="mkpi" style="--kc:#FF6B8A"><div class="mkpi-label">Tempo</div><div class="mkpi-val">2h30</div></div><div class="mkpi" style="--kc:var(--sky)"><div class="mkpi-label">Custo</div><div class="mkpi-val">R$18</div></div></div>
+          <div style="background:var(--ink4);border:1px solid var(--rim);border-radius:10px;padding:14px;margin-bottom:8px"><div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-bottom:10px">Detalhamento</div><div class="mockup-bar-rows"><div class="mbar-row"><div class="mbar-label">Material</div><div class="mbar-track"><div class="mbar-fill animate" style="width:35%;background:var(--lime)"></div></div><div class="mbar-val" style="color:var(--lime)">R$3,36</div></div><div class="mbar-row"><div class="mbar-label">Máquina</div><div class="mbar-track"><div class="mbar-fill animate" style="width:22%;background:#FF6B8A;animation-delay:.2s"></div></div><div class="mbar-val" style="color:#FF6B8A">R$8,75</div></div><div class="mbar-row"><div class="mbar-label">Mão de obra</div><div class="mbar-track"><div class="mbar-fill animate" style="width:50%;background:var(--sky);animation-delay:.4s"></div></div><div class="mbar-val" style="color:var(--sky)">R$5,12</div></div><div class="mbar-row"><div class="mbar-label">Energia</div><div class="mbar-track"><div class="mbar-fill animate" style="width:8%;background:#FFB347;animation-delay:.6s"></div></div><div class="mbar-val" style="color:#FFB347">R$0,77</div></div></div></div>
+          <div style="background:rgba(200,255,87,.06);border:1px solid rgba(200,255,87,.15);border-radius:10px;padding:14px;text-align:center"><div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px">Preço de Venda</div><div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--sky);letter-spacing:-1px">R$ 27,00</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3);margin-top:4px">Margem 50% · Lucro R$9,00</div></div>
+        </div>
+      </div>
+      <div class="mockup-badge badge-br">📄 PDF exportado!</div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+  <div class="section-header reveal"><span class="section-tag">Quem usa</span><h2 class="section-title">O que dizem<br>os <span class="lime">makers.</span></h2></div>
+  <div class="testimonials-grid">
+    <div class="tcard featured reveal"><div class="tcard-quote">"</div><p class="tcard-text">Antes eu chutava o preço e quase sempre cobrava barato demais. Com o Orça 3D eu finalmente entendi <strong>quanto custa de verdade cada peça</strong> e consegui aumentar minha margem sem perder clientes.</p><div class="tcard-author"><div class="tcard-avatar">🖨️</div><div><div class="tcard-name">Lucas M.</div><div class="tcard-role">Maker · Impressão FDM</div></div><div class="tcard-stars">★★★★★</div></div></div>
+    <div class="tcard reveal reveal-delay-1"><div class="tcard-quote">"</div><p class="tcard-text">O link de orçamento é genial. Mando para o cliente, ele preenche e já chega no meu WhatsApp tudo organizado. <strong>Economizo pelo menos 30 minutos por pedido.</strong></p><div class="tcard-author"><div class="tcard-avatar">⚙️</div><div><div class="tcard-name">Fernanda R.</div><div class="tcard-role">Prestadora de serviços 3D</div></div><div class="tcard-stars">★★★★★</div></div></div>
+    <div class="tcard reveal reveal-delay-2"><div class="tcard-quote">"</div><p class="tcard-text">Importar o G-code direto do PrusaSlicer e já ter o custo calculado automaticamente é simplesmente <strong>perfeito</strong>. Não existe outra ferramenta assim gratuita.</p><div class="tcard-author"><div class="tcard-avatar">🔧</div><div><div class="tcard-name">Ricardo S.</div><div class="tcard-role">Engenheiro · Prototipagem</div></div><div class="tcard-stars">★★★★★</div></div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <span class="cta-tag reveal">Comece agora mesmo</span>
+  <h2 class="cta-title reveal">Calcule.<br>Precifique.<br><span style="color:var(--lime)">Lucre.</span></h2>
+  <p class="cta-sub reveal reveal-delay-1">Sem cadastro, sem instalação, sem custo.<br>Abre no navegador e já funciona.</p>
+  <div class="cta-actions reveal reveal-delay-2"><a href="orca3d-v3.3.html" class="btn-primary" style="font-size:16px;padding:18px 36px">⚡ Abrir o Orça 3D Print<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+  <div class="cta-trust reveal reveal-delay-3"><div class="trust-item">100% Gratuito</div><div class="trust-item">Sem cadastro</div><div class="trust-item">Funciona offline</div></div>
+</section>
+
+<!-- Counter Strip -->
 <div class="counter-strip">
   <div class="counter-item"><div class="counter-dot pulse"></div><div><div class="counter-val loading" id="cnt-total">—</div><div class="counter-label">Visitas totais</div></div></div>
   <div class="counter-sep"></div>
@@ -15,25 +382,49 @@
   <div class="counter-item"><div class="counter-dot amber"></div><div><div class="counter-val" id="cnt-calc" style="color:var(--lime)">—</div><div class="counter-label">Cálculos feitos</div></div></div>
 </div>
 
-<!-- Footer (mantido) -->
-<footer>...</footer>
+<!-- Footer -->
+<footer>
+  <a href="#" class="footer-logo"><div class="nav-mark" style="width:28px;height:28px;border-radius:8px"><svg viewBox="0 0 18 18" fill="none" style="width:16px;height:16px"><polygon points="9,1 16,5 16,13 9,17 2,13 2,5" stroke="#0B0D14" stroke-width="1.5" fill="none" stroke-linejoin="round"/><circle cx="9" cy="9" r="2" fill="#0B0D14"/></svg></div><span class="nav-name" style="font-size:14px">Orça<em> 3D Print</em></span></a>
+  <div class="footer-copy">© 2025 Orça 3D Print · Feito com ♥ em Betim, MG</div>
+  <div class="footer-links"><a href="orca3d-v3.3.html">Calculadora</a><a href="orca3d-v3.3.html#feedback">Feedback</a></div>
+</footer>
 
 <script>
-// ============================================================
-// SCRIPT CORRIGIDO DA LANDING PAGE (com polling e storage)
-// ============================================================
+// ── Custom cursor ──
+const cursor     = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.transform = `translate(${mx-6}px,${my-6}px)`; });
+function animateCursor() { rx += (mx - rx - 20) * .12; ry += (my - ry - 20) * .12; cursorRing.style.transform = `translate(${rx}px,${ry}px)`; requestAnimationFrame(animateCursor); }
+animateCursor();
+document.querySelectorAll('a,button,.feature-item,.tcard').forEach(el => { el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); cursorRing.classList.add('hover'); }); el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); cursorRing.classList.remove('hover'); }); });
 
-// ── Custom cursor, navbar scroll, scroll reveal (mantidos) ──
-// ... (todo o código existente da landing page, exceto a função loadCounters) ...
+// ── Navbar scroll ──
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 40); });
 
-// ── NOVA FUNÇÃO LOADCOUNTERS (melhorada) ──
+// ── Scroll reveal ──
+const revealEls = document.querySelectorAll('.reveal, .how-step');
+const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); entry.target.querySelectorAll('.mbar-fill').forEach(bar => bar.classList.add('animate')); } }); }, { threshold: 0.15 });
+revealEls.forEach(el => observer.observe(el));
+const mockupObs = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.querySelectorAll('.mbar-fill').forEach(bar => bar.style.animationPlayState = 'running'); } }); }, { threshold: 0.3 });
+document.querySelectorAll('.mockup-window').forEach(el => mockupObs.observe(el));
+
+// ── Parallax on hero orbs ──
+window.addEventListener('scroll', () => { const y = window.scrollY; document.querySelector('.orb1').style.transform = `translate(${y*.02}px,${y*.04}px)`; document.querySelector('.orb2').style.transform = `translate(${-y*.02}px,${-y*.03}px)`; });
+
+// ============================================================
+// CONTADOR DE VISITAS E CÁLCULOS – VERSÃO CORRIGIDA (com polling e sync)
+// ============================================================
+const HIST_TOTAL = 738;
+const HIST_CALC  = 800;
+
 async function loadCounters() {
   function fmt(n) {
     if (!n || isNaN(n)) return '0';
     if (n >= 1000) return (n/1000).toFixed(1).replace('.',',') + 'k';
     return parseInt(n).toLocaleString('pt-BR');
   }
-
   function setVal(id, val, color) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -59,8 +450,8 @@ async function loadCounters() {
     setVal('cnt-calc',  data.calculos, 'var(--lime)');
   } catch(e) {
     console.warn('Erro ao buscar contadores, usando fallback local', e);
-    const localTotal = localStorage.getItem('orca3d_visit_total') || 738;
-    const localCalc   = localStorage.getItem('orca3d_calc_count')  || 800;
+    const localTotal = localStorage.getItem('orca3d_visit_total') || HIST_TOTAL;
+    const localCalc   = localStorage.getItem('orca3d_calc_count')  || HIST_CALC;
     setVal('cnt-total', localTotal, 'var(--tx)');
     setVal('cnt-today', 0,          'var(--sky)');
     setVal('cnt-calc',  localCalc,  'var(--lime)');
@@ -69,24 +460,23 @@ async function loadCounters() {
 
 // Polling a cada 30 segundos
 let pollingInterval;
-function startPolling() {
-  if (pollingInterval) clearInterval(pollingInterval);
-  pollingInterval = setInterval(loadCounters, 30000);
-}
+function startPolling() { if (pollingInterval) clearInterval(pollingInterval); pollingInterval = setInterval(loadCounters, 30000); }
 
 // Sincronização entre abas via storage event
-window.addEventListener('storage', (e) => {
-  if (e.key === 'orca3d_last_calc') {
-    loadCounters();
-  }
-});
+window.addEventListener('storage', (e) => { if (e.key === 'orca3d_last_calc') loadCounters(); });
 
 // Inicialização
-window.addEventListener('DOMContentLoaded', () => {
-  loadCounters();
-  startPolling();
-  // ... (todo o resto do código de inicialização da landing page: animações, observadores, etc.) ...
-});
+window.addEventListener('DOMContentLoaded', () => { loadCounters(); startPolling(); });
+
+// ── Counter animation for stats (mantido) ──
+function animateCounter(el, target, suffix='') {
+  let start = 0; const duration = 1200;
+  const step = timestamp => { if (!start) start = timestamp; const progress = Math.min((timestamp - start) / duration, 1); const eased = 1 - Math.pow(1 - progress, 3); el.textContent = Math.floor(eased * target) + suffix; if (progress < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+const statsObs = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { const vals = entry.target.querySelectorAll('.stat-val'); const targets = [568, 6, 7, 0]; vals.forEach((el, i) => animateCounter(el, targets[i])); statsObs.disconnect(); } }); }, { threshold: 0.5 });
+const statsEl = document.querySelector('.hero-stats'); if (statsEl) statsObs.observe(statsEl);
 </script>
+
 </body>
 </html>
