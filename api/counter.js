@@ -14,6 +14,7 @@ const HIST_TOTAL = 738;
 const HIST_CALC  = 800;
 
 const ALLOWED_ORIGINS = [
+  'https://or-ca-3d-print.vercel.app',
   'https://orca3d.vercel.app',
   'https://www.orca3d.vercel.app',
 ];
