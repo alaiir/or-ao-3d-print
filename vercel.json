@@ -1,4 +1,11 @@
 {
+  "functions": {
+    "api/counter.js": {
+      "runtime": "nodejs20.x",
+      "memory": 128,
+      "maxDuration": 10
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",
@@ -17,7 +24,6 @@
       ]
     }
   ],
-  "rewrites": [],
   "cleanUrls": true,
   "trailingSlash": false
 }

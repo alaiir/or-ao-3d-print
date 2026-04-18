@@ -2,32 +2,22 @@
 //  Orça 3D Print — Counter API
 //  Vercel Serverless Function + Upstash Redis
 //  Endpoint: /api/counter?action=hit|calc|get
-//
-//  Segurança:
-//  • Rate limit: 60 hits/IP/hora
-//  • Origem restrita ao domínio do site
-//  • action=get não incrementa (só leitura)
 // ═══════════════════════════════════════
-import { Redis } from '@upstash/redis';
+const { Redis } = require('@upstash/redis');
 
-// Upstash Redis — credenciais via variáveis de ambiente do Vercel
-// (adicionadas automaticamente ao conectar o projeto)
 const redis = new Redis({
   url:   process.env.KV_REST_API_URL,
   token: process.env.KV_REST_API_TOKEN,
 });
 
-// Base histórica (GA4: 20/02 → 19/03/2026)
 const HIST_TOTAL = 738;
 const HIST_CALC  = 800;
 
-// Domínios permitidos
 const ALLOWED_ORIGINS = [
   'https://orca3d.vercel.app',
   'https://www.orca3d.vercel.app',
 ];
 
-// Rate limit
 const RATE_LIMIT  = 60;
 const RATE_WINDOW = 3600;
 
@@ -60,8 +50,7 @@ async function checkRateLimit(ip, action) {
     : { allowed: true,  current, limit: RATE_LIMIT };
 }
 
-export default async function handler(req, res) {
-  // ── CORS ──
+module.exports = async function handler(req, res) {
   const origin = getOrigin(req);
   const allowedOrigin = ALLOWED_ORIGINS.find(o => origin.startsWith(o))
     || (origin.includes('localhost') ? origin : null)
@@ -81,7 +70,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'action inválida' });
   }
 
-  // ── Rate limit ──
+  // Rate limit
   const ip = getIP(req);
   try {
     const rate = await checkRateLimit(ip, action);
@@ -95,7 +84,6 @@ export default async function handler(req, res) {
     console.warn('Rate limit check failed:', e.message);
   }
 
-  // ── Lógica principal ──
   const today = new Date().toISOString().slice(0, 10);
   try {
     if (action === 'hit') {
@@ -136,4 +124,4 @@ export default async function handler(req, res) {
       total: HIST_TOTAL, today: 0, calculos: HIST_CALC, fallback: true,
     });
   }
-}
+};
