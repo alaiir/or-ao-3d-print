@@ -1,0 +1,8 @@
+{
+  "name": "orca3d-print",
+  "version": "1.0.0",
+  "description": "Orça 3D Print — Calculadora de Orçamento para Impressão 3D",
+  "dependencies": {
+    "@upstash/redis": "^1.34.0"
+  }
+}

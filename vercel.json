@@ -17,6 +17,7 @@
       ]
     }
   ],
+  "rewrites": [],
   "cleanUrls": true,
   "trailingSlash": false
 }
