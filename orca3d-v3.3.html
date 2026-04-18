@@ -113,6 +113,8 @@
   gtag('config', 'G-WSDGZFKC63');
 </script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@300;400;500&display=swap');
@@ -2920,16 +2922,54 @@ function parseOBJ(txt) {
   return { v: new Float32Array(verts), n: new Float32Array(verts.length), t: verts.length/9 };
 }
 
-function loadMesh(buf, name) {
-  const ext = name.split('.').pop().toLowerCase();
-  let parsed;
-  try { parsed = ext==='obj' ? parseOBJ(new TextDecoder().decode(buf)) : parseSTL(buf); }
-  catch(e) { toast('Erro ao ler o arquivo.','err'); return; }
-  if (!parsed || parsed.t < 4) { toast('Arquivo inválido ou vazio.','err'); return; }
+// ── 3MF PARSER ──
+async function parse3MF(buf) {
+  try {
+    const zip  = await JSZip.loadAsync(buf);
+    // Encontra o arquivo de modelo principal dentro do ZIP
+    const modelFile = zip.file('3D/3dmodel.model') ||
+                      Object.values(zip.files).find(f => f.name.endsWith('.model'));
+    if (!modelFile) throw new Error('Arquivo .model não encontrado no 3MF');
 
+    const xml  = await modelFile.async('string');
+    const parser = new DOMParser();
+    const doc  = parser.parseFromString(xml, 'application/xml');
+
+    const vertices  = [];
+    const positions = [];
+
+    // Lê vértices
+    doc.querySelectorAll('vertex').forEach(v => {
+      vertices.push([
+        parseFloat(v.getAttribute('x') || 0),
+        parseFloat(v.getAttribute('y') || 0),
+        parseFloat(v.getAttribute('z') || 0),
+      ]);
+    });
+
+    // Lê triângulos
+    doc.querySelectorAll('triangle').forEach(t => {
+      const i1 = parseInt(t.getAttribute('v1'));
+      const i2 = parseInt(t.getAttribute('v2'));
+      const i3 = parseInt(t.getAttribute('v3'));
+      if (vertices[i1] && vertices[i2] && vertices[i3]) {
+        positions.push(...vertices[i1], ...vertices[i2], ...vertices[i3]);
+      }
+    });
+
+    if (positions.length === 0) throw new Error('Nenhum triângulo encontrado no 3MF');
+
+    const arr = new Float32Array(positions);
+    return { v: arr, n: new Float32Array(arr.length), t: positions.length / 9 };
+  } catch(e) {
+    throw new Error('Erro ao ler .3MF: ' + e.message);
+  }
+}
+
+function applyMesh(parsed, name) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(parsed.v, 3));
-  geo.setAttribute('normal', new THREE.BufferAttribute(parsed.n, 3));
+  geo.setAttribute('normal',   new THREE.BufferAttribute(parsed.n, 3));
   geo.computeVertexNormals(); geo.computeBoundingBox();
   const bb=geo.boundingBox, sz=new THREE.Vector3(), ctr=new THREE.Vector3();
   bb.getSize(sz); bb.getCenter(ctr);
@@ -2940,19 +2980,39 @@ function loadMesh(buf, name) {
   mesh = new THREE.Mesh(geo, mat); mesh.castShadow=true; scene.add(mesh);
   radius = Math.max(sz.x,sz.y,sz.z)*2.5; theta=45; phi=30; target={x:0,y:sz.y/2,z:0}; updCam();
 
-  S.bounds = { x:sz.x, y:sz.y, z:sz.z }; S.tris = parsed.t;
-  S.volume = (sz.x*sz.y*sz.z)/1000*0.45;
+  S.bounds={x:sz.x,y:sz.y,z:sz.z}; S.tris=parsed.t;
+  S.volume=(sz.x*sz.y*sz.z)/1000*0.45;
 
-  document.getElementById('v-empty').style.display = 'none';
-  document.getElementById('v-ctrl').style.display = 'flex';
-  document.getElementById('v-hint').style.display = 'block';
-  const vs = document.getElementById('v-stats');
-  vs.style.display = 'flex';
-  vs.innerHTML = `<span>${parsed.t.toLocaleString('pt-BR')} tri</span><span>${sz.x.toFixed(1)}×${sz.y.toFixed(1)}×${sz.z.toFixed(1)} mm</span>`;
-  document.getElementById('v-dims').textContent = `${sz.x.toFixed(0)}×${sz.y.toFixed(0)}×${sz.z.toFixed(0)} mm · ${S.volume.toFixed(1)} cm³`;
+  document.getElementById('v-empty').style.display='none';
+  document.getElementById('v-ctrl').style.display='flex';
+  document.getElementById('v-hint').style.display='block';
+  const vs=document.getElementById('v-stats');
+  vs.style.display='flex';
+  vs.innerHTML=`<span>${parsed.t.toLocaleString('pt-BR')} tri</span><span>${sz.x.toFixed(1)}×${sz.y.toFixed(1)}×${sz.z.toFixed(1)} mm</span>`;
+  document.getElementById('v-dims').textContent=`${sz.x.toFixed(0)}×${sz.y.toFixed(0)}×${sz.z.toFixed(0)} mm · ${S.volume.toFixed(1)} cm³`;
   document.getElementById('btn-calc').classList.add('ready');
   toast('✓ Modelo carregado!', 'ok');
   setTimeout(doCalc, 300);
+}
+
+function loadMesh(buf, name) {
+  const ext = name.split('.').pop().toLowerCase();
+
+  // 3MF é um ZIP — processa assincronamente
+  if (ext === '3mf') {
+    if (typeof JSZip === 'undefined') { toast('Erro: JSZip não carregado.','err'); return; }
+    parse3MF(buf).then(parsed => {
+      if (!parsed || parsed.t < 4) { toast('3MF inválido ou sem geometria.','err'); return; }
+      applyMesh(parsed, name);
+    }).catch(e => toast('Erro ao ler .3MF: ' + e.message, 'err'));
+    return;
+  }
+
+  let parsed;
+  try { parsed = ext==='obj' ? parseOBJ(new TextDecoder().decode(buf)) : parseSTL(buf); }
+  catch(e) { toast('Erro ao ler o arquivo.','err'); return; }
+  if (!parsed || parsed.t < 4) { toast('Arquivo inválido ou vazio.','err'); return; }
+  applyMesh(parsed, name);
 }
 
 // ═══════════════════════════════════════

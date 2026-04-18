@@ -1,27 +1,17 @@
 // ═══════════════════════════════════════
 //  Orça 3D Print — Counter API
-//  Vercel Serverless Function + Upstash Redis
-//  Endpoint: /api/counter?action=hit|calc|get
+//  Proxy simples para CounterAPI
+//  Evita CORS e adiciona rate limiting
 // ═══════════════════════════════════════
-const { Redis } = require('@upstash/redis');
-
-// Upstash conectado via Vercel — tenta todas as variáveis possíveis
-const redis = new Redis({
-  url:   process.env.UPSTASH_REDIS_REST_URL  || process.env.KV_REST_API_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN,
-});
 
 const HIST_TOTAL = 738;
 const HIST_CALC  = 800;
+const NS = 'orca3dprint-2025';
 
 const ALLOWED_ORIGINS = [
   'https://or-ca-3d-print.vercel.app',
   'https://orca3d.vercel.app',
-  'https://www.orca3d.vercel.app',
 ];
-
-const RATE_LIMIT  = 60;
-const RATE_WINDOW = 3600;
 
 function getOrigin(req) {
   return req.headers['origin'] || req.headers['referer'] || '';
@@ -32,24 +22,6 @@ function isAllowedOrigin(req) {
   if (origin.includes('localhost') || origin.includes('127.0.0.1')) return true;
   if (!origin) return true;
   return ALLOWED_ORIGINS.some(o => origin.startsWith(o));
-}
-
-function getIP(req) {
-  return (
-    req.headers['x-forwarded-for']?.split(',')[0].trim() ||
-    req.headers['x-real-ip'] ||
-    'unknown'
-  );
-}
-
-async function checkRateLimit(ip, action) {
-  if (action === 'get') return { allowed: true };
-  const key     = `ratelimit:${ip}:${new Date().toISOString().slice(0, 13)}`;
-  const current = await redis.incr(key);
-  if (current === 1) await redis.expire(key, RATE_WINDOW);
-  return current > RATE_LIMIT
-    ? { allowed: false, current, limit: RATE_LIMIT }
-    : { allowed: true,  current, limit: RATE_LIMIT };
 }
 
 module.exports = async function handler(req, res) {
@@ -68,59 +40,45 @@ module.exports = async function handler(req, res) {
   if (!isAllowedOrigin(req))    return res.status(403).json({ error: 'Origem não permitida' });
 
   const action = req.query.action || 'hit';
-  if (!['hit', 'calc', 'get'].includes(action)) {
-    return res.status(400).json({ error: 'action inválida' });
-  }
+  const today  = new Date().toISOString().slice(0,10).replace(/-/g,'');
 
-  // Rate limit
-  const ip = getIP(req);
   try {
-    const rate = await checkRateLimit(ip, action);
-    res.setHeader('X-RateLimit-Limit',     rate.limit || RATE_LIMIT);
-    res.setHeader('X-RateLimit-Remaining', Math.max(0, (rate.limit || RATE_LIMIT) - (rate.current || 0)));
-    if (!rate.allowed) {
-      res.setHeader('Retry-After', RATE_WINDOW);
-      return res.status(429).json({ error: 'Muitas requisições. Tente em 1 hora.' });
-    }
-  } catch (e) {
-    console.warn('Rate limit check failed:', e.message);
-  }
+    const base = 'https://api.counterapi.dev/v1/' + NS;
 
-  const today = new Date().toISOString().slice(0, 10);
-  try {
     if (action === 'hit') {
-      const [total, todayCount] = await Promise.all([
-        redis.incr('visitas:total'),
-        redis.incr(`visitas:dia:${today}`),
+      const [rTotal, rDay, rCalc] = await Promise.all([
+        fetch(`${base}/visitas/up`).then(r=>r.json()),
+        fetch(`${base}/dia-${today}/up`).then(r=>r.json()),
+        fetch(`${base}/calculos/get`).then(r=>r.json()),
       ]);
-      await redis.expire(`visitas:dia:${today}`, 60 * 60 * 48);
-      const calculos = await redis.get('calculos:total') || 0;
       return res.json({
-        total:    HIST_TOTAL + total,
-        today:    todayCount,
-        calculos: HIST_CALC + Number(calculos),
+        total:    HIST_TOTAL + (rTotal.count || 0),
+        today:    rDay.count  || 0,
+        calculos: HIST_CALC  + (rCalc.count  || 0),
       });
     }
 
     if (action === 'calc') {
-      const calculos = await redis.incr('calculos:total');
-      return res.json({ calculos: HIST_CALC + calculos });
+      const r = await fetch(`${base}/calculos/up`).then(r=>r.json());
+      return res.json({ calculos: HIST_CALC + (r.count || 0) });
     }
 
     if (action === 'get') {
-      const [total, todayCount, calculos] = await Promise.all([
-        redis.get('visitas:total'),
-        redis.get(`visitas:dia:${today}`),
-        redis.get('calculos:total'),
+      const [rTotal, rDay, rCalc] = await Promise.all([
+        fetch(`${base}/visitas/get`).then(r=>r.json()),
+        fetch(`${base}/dia-${today}/get`).then(r=>r.json()),
+        fetch(`${base}/calculos/get`).then(r=>r.json()),
       ]);
       return res.json({
-        total:    HIST_TOTAL + (Number(total)    || 0),
-        today:    Number(todayCount) || 0,
-        calculos: HIST_CALC + (Number(calculos)  || 0),
+        total:    HIST_TOTAL + (rTotal.count || 0),
+        today:    rDay.count  || 0,
+        calculos: HIST_CALC  + (rCalc.count  || 0),
       });
     }
 
-  } catch (err) {
+    return res.status(400).json({ error: 'action inválida' });
+
+  } catch(err) {
     console.error('Counter error:', err);
     return res.status(200).json({
       total: HIST_TOTAL, today: 0, calculos: HIST_CALC, fallback: true,
