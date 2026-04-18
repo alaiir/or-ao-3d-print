@@ -2925,44 +2925,74 @@ function parseOBJ(txt) {
 // ── 3MF PARSER ──
 async function parse3MF(buf) {
   try {
-    const zip  = await JSZip.loadAsync(buf);
-    // Encontra o arquivo de modelo principal dentro do ZIP
-    const modelFile = zip.file('3D/3dmodel.model') ||
-                      Object.values(zip.files).find(f => f.name.endsWith('.model'));
-    if (!modelFile) throw new Error('Arquivo .model não encontrado no 3MF');
+    const zip = await JSZip.loadAsync(buf);
+    // Localiza o primeiro arquivo .model (pode estar em 3D/ ou na raiz)
+    const modelFile = zip.file(/\.model$/i)[0];
+    if (!modelFile) throw new Error('Nenhum arquivo .model encontrado no 3MF');
 
-    const xml  = await modelFile.async('string');
+    const xml = await modelFile.async('string');
     const parser = new DOMParser();
-    const doc  = parser.parseFromString(xml, 'application/xml');
+    const doc = parser.parseFromString(xml, 'application/xml');
 
-    const vertices  = [];
+    // Função auxiliar para buscar elementos ignorando namespace
+    const findElem = (elem, nsFallback = '*') => {
+      // tenta com namespace explícito (mais comum)
+      let el = doc.querySelector(`[xmlns] ${elem}, ${elem}`);
+      if (el) return el;
+      // fallback: qualquer elemento com nome local igual
+      return doc.getElementsByTagNameNS('*', elem)[0];
+    };
+
+    const vertices = [];
     const positions = [];
 
-    // Lê vértices
-    doc.querySelectorAll('vertex').forEach(v => {
-      vertices.push([
-        parseFloat(v.getAttribute('x') || 0),
-        parseFloat(v.getAttribute('y') || 0),
-        parseFloat(v.getAttribute('z') || 0),
-      ]);
-    });
+    // Busca o elemento <model>
+    let model = findElem('model');
+    if (!model) throw new Error('Elemento <model> não encontrado');
 
-    // Lê triângulos
-    doc.querySelectorAll('triangle').forEach(t => {
-      const i1 = parseInt(t.getAttribute('v1'));
-      const i2 = parseInt(t.getAttribute('v2'));
-      const i3 = parseInt(t.getAttribute('v3'));
-      if (vertices[i1] && vertices[i2] && vertices[i3]) {
-        positions.push(...vertices[i1], ...vertices[i2], ...vertices[i3]);
+    // Busca recursos (resources) – pode estar em qualquer nível
+    let resources = model.querySelector('resources') || findElem('resources');
+    if (!resources) resources = model; // alguns arquivos têm vértices diretamente no model
+
+    // Lê todos os vértices (suporta <vertex> com e sem namespace)
+    const vertexNodes = resources.querySelectorAll('vertex, [xmlns|="vertex"]');
+    for (const v of vertexNodes) {
+      const x = parseFloat(v.getAttribute('x') || 0);
+      const y = parseFloat(v.getAttribute('y') || 0);
+      const z = parseFloat(v.getAttribute('z') || 0);
+      vertices.push([x, y, z]);
+    }
+
+    if (vertices.length === 0) throw new Error('Nenhum vértice encontrado');
+
+    // Localiza objetos que contenham malhas (<mesh>)
+    const objects = resources.querySelectorAll('object');
+    for (const obj of objects) {
+      const mesh = obj.querySelector('mesh, [xmlns|="mesh"]');
+      if (!mesh) continue;
+
+      const triangles = mesh.querySelectorAll('triangle, [xmlns|="triangle"]');
+      for (const tri of triangles) {
+        const v1 = parseInt(tri.getAttribute('v1'));
+        const v2 = parseInt(tri.getAttribute('v2'));
+        const v3 = parseInt(tri.getAttribute('v3'));
+        if (vertices[v1] && vertices[v2] && vertices[v3]) {
+          positions.push(...vertices[v1], ...vertices[v2], ...vertices[v3]);
+        }
       }
-    });
+    }
 
-    if (positions.length === 0) throw new Error('Nenhum triângulo encontrado no 3MF');
+    if (positions.length === 0) throw new Error('Nenhum triângulo encontrado');
 
     const arr = new Float32Array(positions);
-    return { v: arr, n: new Float32Array(arr.length), t: positions.length / 9 };
-  } catch(e) {
-    throw new Error('Erro ao ler .3MF: ' + e.message);
+    return {
+      v: arr,
+      n: new Float32Array(arr.length), // normais serão recalculadas depois
+      t: positions.length / 9
+    };
+  } catch (e) {
+    console.error('Erro parse3MF:', e);
+    throw new Error('Falha ao ler arquivo 3MF: ' + e.message);
   }
 }
 
